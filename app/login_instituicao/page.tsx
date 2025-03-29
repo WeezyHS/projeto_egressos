@@ -6,11 +6,12 @@ import { useRouter } from 'next/navigation';
 export default function CriarContaInstituicao() {
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
+  const [erro, setErro] = useState(''); //Mensagem de erro
   const router = useRouter();
 
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
-    // Aqui você pode adicionar a lógica para enviar os dados para o backend
+    //Adicionar a lógica para enviar os dados para o backend
     console.log('Email:', email, 'Senha:', senha);
 
     router.push("/perfil_instituicao"); //Redireciona para perfilinstituicao
@@ -18,7 +19,7 @@ export default function CriarContaInstituicao() {
 
   return (
     <div>
-      <h1>Criar Conta de Instituição</h1>
+      <h1>Conta de Instituição</h1>
       <form onSubmit={handleSubmit}>
         <label htmlFor="email">Email:</label>
         <input type="email" id="email" value={email} onChange={(e) => setEmail(e.target.value)}/>
