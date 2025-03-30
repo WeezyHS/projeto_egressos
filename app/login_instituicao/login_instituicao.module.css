@@ -7,6 +7,25 @@
     font-size: 24px;
     font-weight: bold;
     color: black;
+    margin-bottom: 60px; /*Adiciona uma margem na parte de baixo*/
+}
+
+/* .labEmail{
+
+} */
+
+.labSenha{
+    margin-left: 15px;
+}
+
+.email{
+    margin-left: 5px;
+    border: 2px solid black;
+}
+
+.senha{
+    margin-left: 5px;
+    border: 2px solid black;
 }
 
 .CriarConta{
@@ -17,6 +36,7 @@
     border-radius: 5px;
     cursor: pointer;
     font-size: 16px;
+    margin-left: 30px; /*Adiciona uma margem à esquerda*/
 }
 
 .CriarConta:hover{
@@ -31,6 +51,7 @@
     border-radius: 5px;
     cursor: pointer;
     font-size: 16px;
+    margin-top: 30px;
 }
 
 .Entrar:hover{
