@@ -1,0 +1,38 @@
+.container{
+    padding: 20px;
+    background-color: blueviolet;
+}
+
+.titulo{
+    font-size: 24px;
+    font-weight: bold;
+    color: black;
+}
+
+.CriarConta{
+    background-color: green;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.CriarConta:hover{
+    background-color: #45a049;
+}
+
+.Entrar{
+    background-color: green;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.Entrar:hover{
+    background-color: #45a049;
+}
