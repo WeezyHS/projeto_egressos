@@ -34,10 +34,10 @@ export default function CriarContaInstituicao() {
     <div className={styles.container}>
       <h1 className={styles.titulo}>Conta de Instituição</h1>
 
-      <label htmlFor="email">Email:</label>
-      <input type="email" id="email" value={email} onChange={(e) => setEmail(e.target.value)}/>
-      <label htmlFor="senha">Senha:</label>
-      <input type="password" id="senha" value={senha} onChange={(e) => setSenha(e.target.value)}/>
+      <label className={styles.labEmail} htmlFor="email">Email:</label>
+      <input className={styles.email} type="email" value={email} onChange={(e) => setEmail(e.target.value)}/>
+      <label className={styles.labSenha} htmlFor="senha">Senha:</label>
+      <input className={styles.senha} type="password" value={senha} onChange={(e) => setSenha(e.target.value)}/>
 
       <button className={styles.CriarConta} onClick={handleCriarConta}>Criar Conta</button><br/>
       <button className={styles.Entrar} onClick={handleEntrar}>Entrar</button>
