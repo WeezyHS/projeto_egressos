@@ -39,8 +39,8 @@ export default function CriarContaInstituicao() {
       <label htmlFor="senha">Senha:</label>
       <input type="password" id="senha" value={senha} onChange={(e) => setSenha(e.target.value)}/>
 
-      <button onClick={handleCriarConta}>Criar Conta</button><br/>
-      <button onClick={handleEntrar}>Entrar</button>
+      <button className={styles.CriarConta} onClick={handleCriarConta}>Criar Conta</button><br/>
+      <button className={styles.Entrar} onClick={handleEntrar}>Entrar</button>
     </div>
   );
 }
