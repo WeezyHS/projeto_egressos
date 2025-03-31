@@ -1,0 +1,39 @@
+.container{
+    display: flex;
+    justify-content: center; /*Centraliza horizontalmente*/
+    align-items: center; /*Centraliza verticalmente*/
+    height: 100vh;
+    flex-direction: column;
+}
+
+.form{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 300px;
+}
+
+.labelPadrao{
+    font-weight: bold;
+    font-size: 14px;
+    text-align: left;
+}
+
+.inputPadrao{
+    width: 300px;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.salvarPerfil{
+    background-color: green;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    margin-left: 30px; /*Adiciona uma margem à esquerda*/
+    border: 1px solid white;
+}
