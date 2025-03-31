@@ -10,7 +10,7 @@ export default function CriarContaInstituicao() {
 
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
-    // Aqui você pode adicionar a lógica para enviar os dados para o backend
+    // Adicionar a lógica para enviar os dados para o backend
     console.log('Email:', email, 'Senha:', senha);
 
     router.push("/perfil_instituicao"); //Redireciona para perfilinstituicao
