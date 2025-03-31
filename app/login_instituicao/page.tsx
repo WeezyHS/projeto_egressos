@@ -10,10 +10,25 @@ export default function CriarContaInstituicao() {
   const [senha, setSenha] = useState("");
   const router = useRouter();
 
-  //Caso os campos não sejam preenchidos
+  //Validação do formato de email
+  const validacaoEmail = (email: string) => {
+    const regex = /^[^\s@]+@(gmail\.com|outlook\.com)$/;
+    return regex.test(email);
+  }
+
+  //Caso os campos não sejam preenchidos e caso o e-mail seja inválido
   const camposVazios = () =>{
     if (!email || !senha){
       alert("Preencha todos os campos antes de continuar!");
+      return false;
+    }
+
+    if (!validacaoEmail(email)){
+      alert("Insira um e-mail válido!");
+      return false;
+    }
+    if (senha.length < 8){
+      alert("A senha deve ter no mínimo 8 caracteres!");
       return false;
     }
     return true;
