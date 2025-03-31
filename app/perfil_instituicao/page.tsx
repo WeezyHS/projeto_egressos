@@ -75,7 +75,7 @@ export default function PerfilInstituicao() {
         <label className={styles.labelPadrao} htmlFor="cpfRepresentante">CPF do Representante Legal:</label>
         <input className={styles.inputPadrao} type="text" id="cpfRepresentante" value={cpfRepresentante} onChange={(e) => setCpfRepresentante(e.target.value)} />
 
-        <button className={styles.salvarPerfil} onClick={() => router.push("/app_instituicao")}>Salvar Perfil</button>
+        <button className={styles.salvarPerfil} type="submit">Salvar Perfil</button>
       </form>
     </div>
   );
