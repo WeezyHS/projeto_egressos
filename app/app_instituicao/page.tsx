@@ -5,7 +5,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import Papa from 'papaparse';
 
-interface AlunosCSVRow{
+interface AlunosCSVRow{ //Modelo (tipo) para garantir que os dados lidos do arquivo CSV tenham a estrutura correta ao serem processados.
     curso: string;
     nome: string;
     cpf: string;
@@ -16,7 +16,7 @@ interface AlunosCSVRow{
 
 export default function App_Instituicao(){
 
-    const [perfil, setPerfil] = useState<any>(null);
+    const [perfil, setPerfil] = useState<any>(null); //Armazenam e controlam diversas informações. Gerencia dados carregados, filtrados e exibidos no sistema de gerenciamento de alunos e cursos
     const [pagina, setPagina] = useState(1);
     const [alunosFiltrados, setAlunosFiltrados] = useState<any[]>([]);
     const [totalPaginas, setTotalPaginas] = useState(1);
@@ -29,14 +29,14 @@ export default function App_Instituicao(){
     const [cursos, setCursos] = useState<any[]>([]);
     const [alunos, setAlunos] = useState<any[]>([]);
 
-    useEffect(() => {
+    useEffect(() => { //Carrega os dados do perfil da Instituição armazenados no localStorage
         const dadosPerfil = localStorage.getItem("perfilInstituicao");
         if (dadosPerfil){
             setPerfil(JSON.parse(dadosPerfil));
         }
     }, []);
 
-    useEffect(() => {
+    useEffect(() => { //Chama a função exibirAlunos() sempre que alguma das dependências listadas muda.
         exibirAlunos();
     }, [perfil, pessoas, matriculas, cursos, pagina, filtroCurso, filtroEntrada, filtroSaida, ordenacao]);
 
@@ -51,19 +51,18 @@ export default function App_Instituicao(){
     // function enviarEmail(email: string, codigo: string){
     //     console.log(`E-mail enviado para ${email} com o código: ${codigo}`)
     // }
-    //PRINCIPAL
-    const processarCSV = (file: File, tipo: "cursos" | "alunos") => {
+
+    const processarCSV = (file: File, tipo: "cursos" | "alunos") => { //Carrega e processa arquivos CSV contendo dados de alunos ou cursos.
         const reader = new FileReader();
         
-        reader.onload = (e) => {
+        reader.onload = (e) => { //Leitura e processamento para ter o arquivo como texto
             if (!e.target?.result) return;
     
-            Papa.parse(e.target.result as string, {
+            Papa.parse(e.target.result as string, { //Converte o conteúdo CSV para um array de objetos
                 header: true,
                 skipEmptyLines: true,
                 complete: (result) => {
-                    console.log("Dados CSV processados:", result.data);
-                    setAlunos((result.data as AlunosCSVRow[]).map(row => ({
+                    setAlunos((result.data as AlunosCSVRow[]).map(row => ({ //Define padrões de valores. Caso um dos campos estiver vazio, é introduzido "" para não ficar vazia.
                         curso: String(row.curso || ""),
                         nome: String(row.nome || ""),
                         cpf: String(row.cpf || ""),
@@ -74,57 +73,46 @@ export default function App_Instituicao(){
                 },
             });
         };
-    
-        reader.readAsText(file);
+        reader.readAsText(file); //Leitura do arquivo como texto. Retorna para o "onload".
     };
 
-    const exibirAlunos = () => {
+    const exibirAlunos = () => { //Filtra, ordena, pagina e atualiza a lista de alunos exibida no sistema.
         const alunosFiltrados = alunos
             .filter(aluno => filtroCurso ? aluno.curso === filtroCurso : true)
             .filter(aluno => filtroEntrada ? aluno.entrada.includes(filtroEntrada) : true)
             .filter(aluno => filtroSaida ? aluno.saida?.includes(filtroSaida) : true)
             .sort((a, b) => a[ordenacao].localeCompare(b[ordenacao]));
 
-    const alunosPorPagina = 10;
-    const totalPaginasCalculado = Math.ceil(alunosFiltrados.length / alunosPorPagina);
+    const alunosPorPagina = 10; //Cada página exibe 10 alunos
+    const totalPaginasCalculado = Math.ceil(alunosFiltrados.length / alunosPorPagina); //Divide a quantidade de alunos filtrados por 10
     setTotalPaginas(totalPaginasCalculado);
 
-    const alunosPagina = alunosFiltrados.slice((pagina - 1) * alunosPorPagina, pagina * alunosPorPagina);
+    const alunosPagina = alunosFiltrados.slice((pagina - 1) * alunosPorPagina, pagina * alunosPorPagina); //Determina os alunos que devem ser exibidos. "slice" pega apenas os alunos da página atual
     
-    setAlunosFiltrados(alunosPagina);
+    setAlunosFiltrados(alunosPagina); //Exibe apenas alunos da página atual
     };
 
-    const handleAnterior = () => {
+    const handleAnterior = () => { //Controla a navegação entre páginas na tabela de alunos.
         setPagina(prevPagina => Math.max(prevPagina - 1, 1));
     }
-    const handleProximo = () => {
+    const handleProximo = () => { //Controla a navegação entre páginas na tabela de alunos.
         setPagina(prevPagina => Math.min(prevPagina + 1, totalPaginas));
     }
 
-    if (!perfil){
+    if (!perfil){ //Verifica se o perfil da instituição foi carregado. Caso não, houve um erro.
         return <p>Carregando perfil...</p>;
     }
-    console.log("Alunos Filtrados:", alunosFiltrados);
+
     return(
         <div className={styles.container}>
             <h1 className={styles.tituloPrincipal}>Perfil da Instituição</h1>
-            {perfil.fotoPerfil && (
-                <img src={perfil.fotoPerfil} alt="Foto de Perfil" className={styles.fotoPerfil}/>
-            )}
-            <ul>
-                {cursos.map((curso, index) => (
-                    <li key={index}>{curso}</li>
-                ))}
-            </ul>
+            {perfil.fotoPerfil && (<img src={perfil.fotoPerfil} alt="Foto de Perfil" className={styles.fotoPerfil}/>)}
+            <ul>{cursos.map((curso, index) => (<li key={index}>{curso}</li>))}</ul>
             <div className={styles.filtros}>
                 <label className={styles.filtroCurso} htmlFor="filtroCurso">Curso:</label>
                 <select className={styles.select} value={filtroCurso} onChange={(e) => setFiltroCurso(e.target.value)} id="filtroCurso">
                     <option value="">Todos</option>
-                    {cursos.map((curso, index) => (
-                        <option key={index} value={curso["Nome do Curso"]}>
-                            {curso["Nome do Curso"]}
-                        </option>
-                    ))}
+                    {cursos.map((curso, index) => (<option key={index} value={curso["Nome do Curso"]}>{curso["Nome do Curso"]}</option>))}
                 </select>
                 <label className={styles.AnoSemestre} htmlFor="filtroEntrada">Ano/Semestre de Entrada:</label>
                 <input className={styles.input} type="text" placeholder="Ano/Semestre Entrada" id="filtroEntrada" value={filtroEntrada} onChange={(e) => setFiltroEntrada(e.target.value)}/>
@@ -144,6 +132,7 @@ export default function App_Instituicao(){
                 <label className={styles.label}>Arquivo de Cursos</label>
                 <input type="file" accept=".csv" onChange={(e) => e.target.files && processarCSV(e.target.files[0], "alunos")} />
             </div>
+            {/*Tabela para filtrar os dados das planilhas CSV*/}
             <table>
                 <thead>
                     <tr>
@@ -157,7 +146,6 @@ export default function App_Instituicao(){
                 </thead>
                 <tbody>
                     {alunosFiltrados.map((aluno, index) => {
-                        console.log(`Aluno ${index}:`, aluno);
                         return(
                             <tr key={index}>
                                 <td>{String(aluno.nome || "")}</td>
@@ -166,7 +154,6 @@ export default function App_Instituicao(){
                                 <td>{String(aluno.curso || "")}</td>
                                 <td>{String(aluno.entrada || "")}</td>
                                 <td>{String(aluno.saida || "")}</td>
-                                {/* <td>{String(aluno.saida || "Em andamento")}</td> */}
                             </tr>
                         );
                     })}
