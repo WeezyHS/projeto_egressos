@@ -1,0 +1,79 @@
+.container{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    max-width: 800px;
+    margin: 0 auto;
+    /* text-align: center; */
+}
+
+.fotoPerfil{
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    margin-bottom: 20px;
+}
+
+.filtros, .ordenacao{
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.filtros label, .ordenacao label{
+    margin-right: 10px;
+}
+
+.th, .td{
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}
+
+.th{
+    background-color: #f2f2f2;
+}
+
+.paginacao{
+    display: flex;
+    align-items: center;
+    margin-top: 20px;
+}
+
+.paginacao button{
+    margin: 0 5px;
+}
+
+.tabelaAlunos{
+    border-collapse: collapse;
+    width: 100%;
+    border: 1px solid #ddd;
+}
+
+.textoCursos{
+    margin-top: 10px;
+    margin-bottom: 20px;
+}
+
+.textoAlunos{
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+.tituloPrincipal{
+    margin-bottom: 30px;
+}
+
+.AnoSemestre{
+    margin-top: 15px;
+    margin-bottom: 80px;
+    margin-left: 30px;
+}
+
+.filtroCurso{
+
+}
+
+.select{
+    /* margin-right: 10px; */
+}
