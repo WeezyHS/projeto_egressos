@@ -37,19 +37,8 @@ export default function App_Instituicao(){
     }, []);
 
     useEffect(() => {
-        console.log("Perfil:", perfil);
-        console.log("Cursos carregados:", cursos);
-        console.log("Alunos carregados:", pessoas);
-        console.log("Matrículas carregadas:", matriculas);
-        console.log("Página Atual:", pagina);
-        console.log("Filtros:", { filtroCurso, filtroEntrada, filtroSaida });
-        console.log("Ordenação:", ordenacao);
         exibirAlunos();
     }, [perfil, pessoas, matriculas, cursos, pagina, filtroCurso, filtroEntrada, filtroSaida, ordenacao]);
-
-    // useEffect(() => {
-    //     exibirAlunos();
-    // }, [pessoas, matriculas, cursos])
 
     // function gerarCodigoAleatorio(){
     //     const caracteres = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
@@ -119,17 +108,14 @@ export default function App_Instituicao(){
     return(
         <div className={styles.container}>
             <h1 className={styles.tituloPrincipal}>Perfil da Instituição</h1>
-
             {perfil.fotoPerfil && (
                 <img src={perfil.fotoPerfil} alt="Foto de Perfil" className={styles.fotoPerfil}/>
             )}
-
             <ul>
                 {cursos.map((curso, index) => (
                     <li key={index}>{curso}</li>
                 ))}
             </ul>
-
             <div className={styles.filtros}>
                 <label className={styles.filtroCurso} htmlFor="filtroCurso">Curso:</label>
                 <select className={styles.select} value={filtroCurso} onChange={(e) => setFiltroCurso(e.target.value)} id="filtroCurso">
@@ -152,7 +138,6 @@ export default function App_Instituicao(){
                     <option value="saida">Ano/Semestre Saída</option>
                 </select>
             </div>
-
             <div className={styles.ordenacao}>
                 <label className={styles.label} htmlFor="ordenacao">Arquivo de Alunos:</label>
                 <input type="file" accept=".csv" onChange={(e) => e.target.files && processarCSV(e.target.files[0], "cursos")} />
@@ -173,7 +158,6 @@ export default function App_Instituicao(){
                 <tbody>
                     {alunosFiltrados.map((aluno, index) => {
                         console.log(`Aluno ${index}:`, aluno);
-
                         return(
                             <tr key={index}>
                                 <td>{String(aluno.nome || "")}</td>
@@ -188,7 +172,6 @@ export default function App_Instituicao(){
                     })}
                 </tbody>
             </table>
-
             <div className={styles.paginacao}>
                 <button className={styles.button} id="anterior" onClick={handleAnterior} disabled={pagina === 1}>Anterior</button>
                 <span>{pagina} / {totalPaginas}</span>
