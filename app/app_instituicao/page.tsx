@@ -17,19 +17,17 @@ interface AlunosCSVRow{
 export default function App_Instituicao(){
 
     const [perfil, setPerfil] = useState<any>(null);
-    const [cursos, setCursos] = useState<string[]>([]);
     const [pagina, setPagina] = useState(1);
     const [alunosFiltrados, setAlunosFiltrados] = useState<any[]>([]);
     const [totalPaginas, setTotalPaginas] = useState(1);
-
     const [pessoas, setPessoas] = useState<{ id: number; nome: string; cpf: string; email: string }[]>([]);
     const [matriculas, setMatriculas] = useState<{ cursoId: number; pessoaId: number; entrada: string; saida: string | null }[]>([]);
-
     const [filtroCurso, setFiltroCurso] = useState("");
     const [filtroEntrada, setFiltroEntrada] = useState("");
     const [filtroSaida, setFiltroSaida] = useState("");
     const [ordenacao, setOrdenacao] = useState("nome");
-
+    const [cursos, setCursos] = useState<any[]>([]);
+    const [alunos, setAlunos] = useState<any[]>([]);
 
     useEffect(() => {
         const dadosPerfil = localStorage.getItem("perfilInstituicao");
@@ -49,74 +47,62 @@ export default function App_Instituicao(){
         exibirAlunos();
     }, [perfil, pessoas, matriculas, cursos, pagina, filtroCurso, filtroEntrada, filtroSaida, ordenacao]);
 
-    useEffect(() => {
-        exibirAlunos();
-    }, [pessoas, matriculas, cursos])
+    // useEffect(() => {
+    //     exibirAlunos();
+    // }, [pessoas, matriculas, cursos])
 
-    function gerarCodigoAleatorio(){
-        const caracteres = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-        let codigo = "";
-        for (let i = 0; i < 8; i++){
-            codigo += caracteres.charAt(Math.floor(Math.random() * caracteres.length));
-        }
-        return codigo;
-    }
-    function enviarEmail(email: string, codigo: string){
-        console.log(`E-mail enviado para ${email} com o código: ${codigo}`)
-    }
+    // function gerarCodigoAleatorio(){
+    //     const caracteres = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    //     let codigo = "";
+    //     for (let i = 0; i < 8; i++){
+    //         codigo += caracteres.charAt(Math.floor(Math.random() * caracteres.length));
+    //     }
+    //     return codigo;
+    // }
+    // function enviarEmail(email: string, codigo: string){
+    //     console.log(`E-mail enviado para ${email} com o código: ${codigo}`)
+    // }
+    //PRINCIPAL
+    const processarCSV = (file: File, tipo: "cursos" | "alunos") => {
+        const reader = new FileReader();
+        
+        reader.onload = (e) => {
+            if (!e.target?.result) return;
+    
+            Papa.parse(e.target.result as string, {
+                header: true,
+                skipEmptyLines: true,
+                complete: (result) => {
+                    console.log("Dados CSV processados:", result.data);
+                    setAlunos((result.data as AlunosCSVRow[]).map(row => ({
+                        curso: String(row.curso || ""),
+                        nome: String(row.nome || ""),
+                        cpf: String(row.cpf || ""),
+                        email: String(row.email || ""),
+                        entrada: String(row.entrada || ""),
+                        saida: String(row.saida || "Em andamento")
+                    })));
+                },
+            });
+        };
+    
+        reader.readAsText(file);
+    };
 
     const exibirAlunos = () => {
-
-        let alunosFiltrados = pessoas.filter(aluno => {
-            const matricula = matriculas.find((m) => m.pessoaId === aluno.id);
-            if (!matricula) return false;
-
-            const curso = cursos[matricula.cursoId - 1];
-
-            if (filtroCurso && filtroCurso !== curso) return false;
-            if (filtroEntrada && filtroEntrada !== matricula.entrada) return false;
-            if (filtroSaida && filtroSaida && filtroSaida !== matricula.saida) return false;
-
-            return true;
-        });
-        alunosFiltrados.sort((a, b) => {
-            if (ordenacao === "nome") return a.nome.localeCompare(b.nome);
-            if (ordenacao === "cpf") return a.cpf.localeCompare(b.cpf);
-            if (ordenacao === "email") return a.email.localeCompare(b.email);
-            if (ordenacao === "curso") {
-                const matriculaA = matriculas.find(m => m.pessoaId === a.id);
-                const matriculaB = matriculas.find(m => m.pessoaId === b.id);
-
-                if (matriculaA && matriculaB){
-                    const cursoA = cursos[matriculaA.cursoId - 1];
-                    const cursoB = cursos[matriculaB.cursoId - 1];
-                    return cursoA.localeCompare(cursoB);
-                }
-        }
-        return 0;
-    });
-
-    setAlunosFiltrados(alunosFiltrados);
+        const alunosFiltrados = alunos
+            .filter(aluno => filtroCurso ? aluno.curso === filtroCurso : true)
+            .filter(aluno => filtroEntrada ? aluno.entrada.includes(filtroEntrada) : true)
+            .filter(aluno => filtroSaida ? aluno.saida?.includes(filtroSaida) : true)
+            .sort((a, b) => a[ordenacao].localeCompare(b[ordenacao]));
 
     const alunosPorPagina = 10;
     const totalPaginasCalculado = Math.ceil(alunosFiltrados.length / alunosPorPagina);
-
     setTotalPaginas(totalPaginasCalculado);
 
     const alunosPagina = alunosFiltrados.slice((pagina - 1) * alunosPorPagina, pagina * alunosPorPagina);
-
-        const paginaAtualSpan = document.getElementById("paginaAtual");
-        const totalPaginasSpan = document.getElementById("totalPaginas");
-        if (paginaAtualSpan && totalPaginasSpan) {
-            paginaAtualSpan.textContent = pagina.toString();
-            totalPaginasSpan.textContent = totalPaginasCalculado.toString();
-        }
-        const anteriorButton = document.getElementById("anterior") as HTMLButtonElement;
-        const proximoButton = document.getElementById("proximo") as HTMLButtonElement;
-        if (anteriorButton && proximoButton) {
-            anteriorButton.disabled = pagina === 1;
-            proximoButton.disabled = pagina === totalPaginasCalculado;
-        }
+    
+    setAlunosFiltrados(alunosPagina);
     };
 
     const handleAnterior = () => {
@@ -126,76 +112,10 @@ export default function App_Instituicao(){
         setPagina(prevPagina => Math.min(prevPagina + 1, totalPaginas));
     }
 
-    const handleImportarCSV = (event: React.ChangeEvent<HTMLInputElement>) => {
-        if (event.target.files && event.target.files.length > 0){
-            const file = event.target.files[0];
-            Papa.parse(file, {
-                complete: (result) => {
-                    const novosCursos = result.data.map((row: any) => row[0]).filter((nome: string) => nome.trim() !== "");
-                    setCursos(prevCursos => {
-                        const cursosUnicos = Array.from(new Set([...prevCursos, ...novosCursos]));
-                        return cursosUnicos;
-                    });
-                },
-                skipEmptyLines: true,
-                error: (error) => {
-                    console.log("Erro ao processar CSV de cursos:", error);
-                }
-            });
-        }
-    };
-
-    const handleImportarCSVAlunos = (event: React.ChangeEvent<HTMLInputElement>) => {
-        if (event.target.files && event.target.files.length > 0){
-            const file = event.target.files[0];
-            Papa.parse(file, {
-                header: true,
-                complete: (result) => {
-                    (result.data as AlunosCSVRow[]).forEach((row) => {
-                        const { curso, nome, cpf, email, entrada, saida } = row;
-
-                        let pessoaId: number;
-
-                        setPessoas(prevPessoas => {
-                            const pessoaExistente = prevPessoas.find(p => p.cpf === cpf);
-                            pessoaId = pessoaExistente ? pessoaExistente.id : prevPessoas.length + 1;
-
-                        if (!pessoaExistente){
-                            const novaPessoa = { id: pessoaId, nome, cpf, email };
-                            const codigo = gerarCodigoAleatorio();
-                            enviarEmail(email, codigo);
-                            return [...prevPessoas, novaPessoa];
-                        }
-                        return prevPessoas;
-                        });
-
-                        setMatriculas(prevMatriculas => {
-                            const cursoIndex = cursos.findIndex(c => c === curso);
-                            const cursoId = cursoIndex !== -1 ? cursoIndex + 1 : 0;
-
-                            if (cursoId !== 0) {
-                                return [...prevMatriculas, { cursoId, pessoaId, entrada, saida: saida || null }];
-                            } else {
-                                console.log(`Curso "${curso}" não encontrado!`);
-                                return prevMatriculas;
-                            }
-                        });
-                    });
-                    console.log("Pessoas:", pessoas);
-                    console.log("Matrículas:", matriculas);
-                },
-                skipEmptyLines: true,
-                error: (error) => {
-                    console.log("Erro ao processar CSV de alunos:", error);
-                }
-            });
-        }
-    };
-
     if (!perfil){
         return <p>Carregando perfil...</p>;
     }
-
+    console.log("Alunos Filtrados:", alunosFiltrados);
     return(
         <div className={styles.container}>
             <h1 className={styles.tituloPrincipal}>Perfil da Instituição</h1>
@@ -204,67 +124,69 @@ export default function App_Instituicao(){
                 <img src={perfil.fotoPerfil} alt="Foto de Perfil" className={styles.fotoPerfil}/>
             )}
 
-            <h2 className={styles.textoCursos}>Gerenciar Cursos</h2>
-            <input type="file" accept=".csv" onChange={handleImportarCSV}/>
-
             <ul>
                 {cursos.map((curso, index) => (
                     <li key={index}>{curso}</li>
                 ))}
             </ul>
-            <h2 className={styles.textoAlunos}>Gerenciar Alunos</h2>
-            <input type="file" accept=".csv" onChange={handleImportarCSVAlunos}/> {/*Carregar arquivo CSV de Alunos*/}
 
             <div className={styles.filtros}>
                 <label className={styles.filtroCurso} htmlFor="filtroCurso">Curso:</label>
                 <select className={styles.select} value={filtroCurso} onChange={(e) => setFiltroCurso(e.target.value)} id="filtroCurso">
                     <option value="">Todos</option>
-                    {cursos.map((curso) => (
-                        <option key={curso} value={curso}>
-                            {curso}
+                    {cursos.map((curso, index) => (
+                        <option key={index} value={curso["Nome do Curso"]}>
+                            {curso["Nome do Curso"]}
                         </option>
                     ))}
                 </select>
                 <label className={styles.AnoSemestre} htmlFor="filtroEntrada">Ano/Semestre de Entrada:</label>
-                <input className={styles.input} type="text" id="filtroEntrada" value={filtroEntrada} onChange={(e) => setFiltroEntrada(e.target.value)}/>
+                <input className={styles.input} type="text" placeholder="Ano/Semestre Entrada" id="filtroEntrada" value={filtroEntrada} onChange={(e) => setFiltroEntrada(e.target.value)}/>
 
                 <label className={styles.AnoSemestre} htmlFor="filtroSaida">Ano/Semestre de Saída:</label>
-                <input className={styles.input} type="text" id="filtroSaida" value={filtroSaida} onChange={(e) => setFiltroSaida(e.target.value)}/>
-            </div>
-
-            <div className={styles.ordenacao}>
-                <label className={styles.label} htmlFor="ordenacao">Ordenar por:</label>
-                <select className={styles.select} id="ordenacao" value={ordenacao} onChange={(e) => setOrdenacao(e.target.value)}>
+                <input className={styles.input} type="text" placeholder="Ano/Semestre Saída" id="filtroSaida" value={filtroSaida} onChange={(e) => setFiltroSaida(e.target.value)}/>
+                
+                <select onChange={(e) => setOrdenacao(e.target.value)}>
                     <option value="nome">Nome</option>
-                    <option value="cpf">CPF</option>
-                    <option value="email">E-mail</option>
-                    <option value="curso">Curso</option>
+                    <option value="entrada">Ano/Semestre Entrada</option>
+                    <option value="saida">Ano/Semestre Saída</option>
                 </select>
             </div>
 
-            <table className={styles.tabelaAlunos} id="tabelaAlunos">
-                    <thead>
-                        <tr className={styles.tr}>
-                            <th className={styles.th}>Nome</th>
-                            <th className={styles.th}>CPF</th>
-                            <th className={styles.th}>E-mail</th>
-                            <th className={styles.th}>Curso</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {alunosFiltrados.map((aluno) => {
-                            const matricula = matriculas.find(m => m.pessoaId === aluno.id);
-                            const cursoNome = matricula && cursos[matricula.cursoId - 1] ? cursos[matricula.cursoId - 1] : "Curso não encontrado!";
-                            return(
-                                <tr key={aluno.id}>
-                                    <td>{aluno.nome}</td>
-                                    <td>{aluno.cpf}</td>
-                                    <td>{aluno.email}</td>
-                                    <td>{cursoNome}</td>
-                                </tr>
-                            );
-                        })}
-                    </tbody>
+            <div className={styles.ordenacao}>
+                <label className={styles.label} htmlFor="ordenacao">Arquivo de Alunos:</label>
+                <input type="file" accept=".csv" onChange={(e) => e.target.files && processarCSV(e.target.files[0], "cursos")} />
+                <label className={styles.label}>Arquivo de Cursos</label>
+                <input type="file" accept=".csv" onChange={(e) => e.target.files && processarCSV(e.target.files[0], "alunos")} />
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Nome</th>
+                        <th>CPF</th>
+                        <th>Email</th>
+                        <th>Curso</th>
+                        <th>Ano/Semestre Entrada</th>
+                        <th>Ano/Semestre Saída</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {alunosFiltrados.map((aluno, index) => {
+                        console.log(`Aluno ${index}:`, aluno);
+
+                        return(
+                            <tr key={index}>
+                                <td>{String(aluno.nome || "")}</td>
+                                <td>{String(aluno.cpf || "")}</td>
+                                <td>{String(aluno.email || "")}</td>
+                                <td>{String(aluno.curso || "")}</td>
+                                <td>{String(aluno.entrada || "")}</td>
+                                <td>{String(aluno.saida || "")}</td>
+                                {/* <td>{String(aluno.saida || "Em andamento")}</td> */}
+                            </tr>
+                        );
+                    })}
+                </tbody>
             </table>
 
             <div className={styles.paginacao}>
