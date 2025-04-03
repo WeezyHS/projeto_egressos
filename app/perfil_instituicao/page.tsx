@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import styles from "./perfil_instituicao.module.css";
 import { useState } from 'react';
+import { read } from "fs";
 
 export default function PerfilInstituicao() {
   const [fotoPerfil, setFotoPerfil] = useState<File | null>(null);
@@ -17,7 +18,7 @@ export default function PerfilInstituicao() {
   const router = useRouter();
 
   const camposVazios = () =>{
-    if (!fotoPerfil || !nomeCompleto || !cnpj || !telefone || !endereco || !cep || !nomeRepresentante || !cpfRepresentante){
+    if (!fotoPerfil || !nomeCompleto.trim() || !cnpj.trim() || !telefone.trim() || !endereco.trim() || !cep.trim() || !nomeRepresentante.trim() || !cpfRepresentante.trim()){
       alert("Preencha todos os campos antes de continuar!");
       return false;
     }
@@ -41,10 +42,45 @@ export default function PerfilInstituicao() {
   };
 
   const handleFotoPerfilChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (!camposVazios()) return;
+    // if (!camposVazios()) return;
     if (event.target.files && event.target.files[0]) {
       setFotoPerfil(event.target.files[0]);
     }
+  };
+
+  const handleSalvarPerfil = () => {
+    if (!camposVazios()) return;
+
+    if (!fotoPerfil){
+      alert("Escolha uma foto de perfil!");
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = () => {
+
+      console.log("Imagem convertida com sucesso!");
+
+      const dadosPerfil = {
+        fotoPerfil: reader.result,
+        nomeCompleto: nomeCompleto.trim(),
+        cnpj: cnpj.trim(),
+        telefone: telefone.trim(),
+        endereco: endereco.trim(),
+        cep: cep.trim(),
+        nomeRepresentante: nomeRepresentante.trim(),
+        cpfRepresentante: cpfRepresentante.trim()
+      };
+      console.log("Salvando no localStorage:", dadosPerfil);
+      localStorage.setItem("perfilInstituicao", JSON.stringify(dadosPerfil));
+
+      console.log("Redirecionando para /app_instituicao...");
+      router.push("/app_instituicao"); //Direciona para a página do perfil pronto
+    };
+    reader.onerror = () => {
+      console.log("Erro ao ler a imagem!");
+    };
+    reader.readAsDataURL(fotoPerfil);
   };
 
   return (
@@ -75,7 +111,7 @@ export default function PerfilInstituicao() {
         <label className={styles.labelPadrao} htmlFor="cpfRepresentante">CPF do Representante Legal:</label>
         <input className={styles.inputPadrao} type="text" id="cpfRepresentante" value={cpfRepresentante} onChange={(e) => setCpfRepresentante(e.target.value)} />
 
-        <button className={styles.salvarPerfil} type="submit">Salvar Perfil</button>
+        <button className={styles.salvarPerfil} type="button" onClick={handleSalvarPerfil}>Salvar Perfil</button>
       </form>
     </div>
   );
