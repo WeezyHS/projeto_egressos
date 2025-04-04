@@ -15,7 +15,6 @@ export default function CriarContaInstituicao() {
     const regex = /^[^\s@]+@(gmail\.com|outlook\.com)$/;
     return regex.test(email);
   }
-
   //Caso os campos não sejam preenchidos e caso o e-mail seja inválido
   const camposVazios = () =>{
     if (!email || !senha){
