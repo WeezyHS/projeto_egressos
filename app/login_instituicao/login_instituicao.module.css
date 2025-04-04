@@ -10,10 +10,6 @@
     margin-bottom: 60px; /*Adiciona uma margem na parte de baixo*/
 }
 
-/* .labEmail{
-
-} */
-
 .labSenha{
     margin-left: 15px;
 }
@@ -33,14 +29,14 @@
     color: white;
     padding: 10px 20px;
     border: none;
-    border-radius: 5px;
+    border-radius: 10px; /*Bordas com curvas*/
     cursor: pointer;
     font-size: 16px;
     margin-left: 30px; /*Adiciona uma margem à esquerda*/
     border: 1px solid black;
 }
 
-.CriarConta:hover{
+.CriarConta:hover{ /*Aplica um estilo quando o usuário passa o mouse sobre o elemento*/
     background-color: #45a049;
 }
 
@@ -49,7 +45,7 @@
     color: white;
     padding: 10px 20px;
     border: none;
-    border-radius: 5px;
+    border-radius: 10px;
     cursor: pointer;
     font-size: 16px;
     margin-top: 30px;
