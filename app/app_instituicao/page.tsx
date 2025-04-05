@@ -35,41 +35,102 @@ export default function App_Instituicao(){
             setPerfil(JSON.parse(dadosPerfil));
         }
     }, []);
-
     useEffect(() => { //Chama a função exibirAlunos() sempre que alguma das dependências listadas muda.
         exibirAlunos();
     }, [perfil, pessoas, matriculas, cursos, pagina, filtroCurso, filtroEntrada, filtroSaida, ordenacao]);
 
-    // function gerarCodigoAleatorio(){
-    //     const caracteres = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-    //     let codigo = "";
-    //     for (let i = 0; i < 8; i++){
-    //         codigo += caracteres.charAt(Math.floor(Math.random() * caracteres.length));
-    //     }
-    //     return codigo;
-    // }
-    // function enviarEmail(email: string, codigo: string){
-    //     console.log(`E-mail enviado para ${email} com o código: ${codigo}`)
-    // }
+    function gerarCodigoAleatorio(){ //Gera um código quando uma pessoa é cadastrada
+        const caracteres = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+        let codigo = "";
+        for (let i = 0; i < 8; i++){
+            codigo += caracteres.charAt(Math.floor(Math.random() * caracteres.length));
+        }
+        return codigo;
+    }
+    function enviarEmail(email: string, codigo: string){ //Envia o código gerado por e-mail
+        console.log(`E-mail enviado para ${email} com o código: ${codigo}`)
+    }
 
     const processarCSV = (file: File, tipo: "cursos" | "alunos") => { //Carrega e processa arquivos CSV contendo dados de alunos ou cursos.
         const reader = new FileReader();
-        
+
         reader.onload = (e) => { //Leitura e processamento para ter o arquivo como texto
             if (!e.target?.result) return;
-    
+
             Papa.parse(e.target.result as string, { //Converte o conteúdo CSV para um array de objetos
                 header: true,
                 skipEmptyLines: true,
                 complete: (result) => {
-                    setAlunos((result.data as AlunosCSVRow[]).map(row => ({ //Define padrões de valores. Caso um dos campos estiver vazio, é introduzido "" para não ficar vazia.
-                        curso: String(row.curso || ""),
-                        nome: String(row.nome || ""),
-                        cpf: String(row.cpf || ""),
-                        email: String(row.email || ""),
-                        entrada: String(row.entrada || ""),
-                        saida: String(row.saida || "Em andamento")
-                    })));
+                    console.log("Dados CSV processados:", result.data);
+
+                    const CPFDuplicado = new Map(); //Evita CPFs duplicados na planilha
+                    if (tipo === "alunos"){
+                    (result.data as AlunosCSVRow[]).forEach(row => {
+                        const cpf = String(row.cpf || "");
+                        if (!CPFDuplicado.has(cpf)){
+                            CPFDuplicado.set(cpf, {
+                                curso: String(row.curso || ""),
+                                nome: String(row.nome || ""),
+                                cpf,
+                                email: String(row.email || ""),
+                                entrada: String(row.entrada || ""),
+                                saida: String(row.saida || "Em andamento")
+                            });
+                        }
+                    });
+                    const dadosFiltrados = Array.from(CPFDuplicado.values());
+                    const cursoMap = new Map<string, number>();
+                    const pessoaMap = new Map<string, number>();
+                    let cursoIdCounter = 1;
+                    let pessoaIdCounter = 1;
+                    const novosCursos: { id: number; nome: string }[] = [];
+                    const novasPessoas: { id: number; nome: string; cpf: string; email: string }[] = [];
+                    const novasMatriculas: {
+                        cursoId: number;
+                        pessoaId: number;
+                        entrada: string;
+                        saida: string | null;
+                        matricula: string;
+                    }[] = [];
+
+                    dadosFiltrados.forEach(aluno => {
+                        const cursoNome = aluno.curso.trim();
+                        const cpf = aluno.cpf.trim();
+                        if (!cursoMap.has(cursoNome)) { // Cursos
+                            cursoMap.set(cursoNome, cursoIdCounter++);
+                            novosCursos.push({ id: cursoMap.get(cursoNome)!, nome: cursoNome });
+                        }
+                        if (!pessoaMap.has(cpf)) { // Pessoas
+                            pessoaMap.set(cpf, pessoaIdCounter++);
+                            const codigo = gerarCodigoAleatorio(); //Gera código aleatório
+                            enviarEmail(aluno.email, codigo); //Simula envio do código por e-mail
+                            novasPessoas.push({
+                                id: pessoaMap.get(cpf)!,
+                                nome: aluno.nome,
+                                cpf: aluno.cpf,
+                                email: aluno.email
+                            });
+                        }
+                        const cursoId = cursoMap.get(cursoNome)!; // Matrícula
+                        const pessoaId = pessoaMap.get(cpf)!;
+                        const entrada = aluno.entrada;
+                        const saida = aluno.saida === "Em andamento" ? "Em andamento" : aluno.saida;
+                        const matricula = `${cursoId}-${pessoaId}-${entrada}-${saida}`;
+                        novasMatriculas.push({
+                            cursoId,
+                            pessoaId,
+                            entrada: aluno.entrada,
+                            saida: aluno.saida === "Em andamento" ? null : aluno.saida,
+                            matricula
+                        });
+                    });
+                    setAlunos(dadosFiltrados);
+                    console.log("Estado alunos atualizado:", dadosFiltrados);
+                    setCursos(novosCursos);
+                    setPessoas(novasPessoas);
+                    setMatriculas(novasMatriculas);
+                }
+                    setAlunos(Array.from(CPFDuplicado.values()));
                 },
             });
         };
@@ -107,12 +168,12 @@ export default function App_Instituicao(){
         <div className={styles.container}>
             <h1 className={styles.tituloPrincipal}>Perfil da Instituição</h1>
             {perfil.fotoPerfil && (<img src={perfil.fotoPerfil} alt="Foto de Perfil" className={styles.fotoPerfil}/>)}
-            <ul>{cursos.map((curso, index) => (<li key={index}>{curso}</li>))}</ul>
+            <ul>{cursos.map((curso, index) => (<li key={index}>{curso.nome}</li>))}</ul>
             <div className={styles.filtros}>
                 <label className={styles.filtroCurso} htmlFor="filtroCurso">Curso:</label>
                 <select className={styles.select} value={filtroCurso} onChange={(e) => setFiltroCurso(e.target.value)} id="filtroCurso">
                     <option value="">Todos</option>
-                    {cursos.map((curso, index) => (<option key={index} value={curso["Nome do Curso"]}>{curso["Nome do Curso"]}</option>))}
+                    {cursos.map((curso, index) => (<option key={index} value={curso.nome}>{curso.nome}</option>))}
                 </select>
                 <label className={styles.AnoSemestre} htmlFor="filtroEntrada">Ano/Semestre de Entrada:</label>
                 <input className={styles.input} type="text" placeholder="Ano/Semestre Entrada" id="filtroEntrada" value={filtroEntrada} onChange={(e) => setFiltroEntrada(e.target.value)}/>
@@ -128,9 +189,9 @@ export default function App_Instituicao(){
             </div>
             <div className={styles.ordenacao}>
                 <label className={styles.label} htmlFor="ordenacao">Arquivo de Alunos:</label>
-                <input type="file" accept=".csv" onChange={(e) => e.target.files && processarCSV(e.target.files[0], "cursos")} />
-                <label className={styles.label}>Arquivo de Cursos</label>
                 <input type="file" accept=".csv" onChange={(e) => e.target.files && processarCSV(e.target.files[0], "alunos")} />
+                <label className={styles.label}>Arquivo de Cursos</label>
+                <input type="file" accept=".csv" onChange={(e) => e.target.files && processarCSV(e.target.files[0], "cursos")} />
             </div>
             {/*Tabela para filtrar os dados das planilhas CSV*/}
             <table>
