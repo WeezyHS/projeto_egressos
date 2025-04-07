@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@emailjs/browser": "^4.4.1",
     "next": "15.2.4",
     "papaparse": "^5.5.2",
     "projeto_egressos": "file:",

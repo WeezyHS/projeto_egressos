@@ -1,9 +1,10 @@
 'use client';
 
 import styles from "./app_instituicao.module.css";
+import emailjs from '@emailjs/browser';
 import React, { useEffect, useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import Papa from 'papaparse';
+import Papa, { ParseResult, ParseError } from 'papaparse';
 
 interface AlunosCSVRow{ //Modelo (tipo) para garantir que os dados lidos do arquivo CSV tenham a estrutura correta ao serem processados.
     curso: string;
@@ -11,7 +12,14 @@ interface AlunosCSVRow{ //Modelo (tipo) para garantir que os dados lidos do arqu
     cpf: string;
     email: string;
     entrada: string;
-    saida?: string;
+    saida?: string | null;
+}
+interface Matricula{
+  cursoId: number;
+  pessoaId: number;
+  entrada: string;
+  saida: string | null;
+  matricula: string;
 }
 
 export default function App_Instituicao(){
@@ -48,94 +56,156 @@ export default function App_Instituicao(){
         return codigo;
     }
     function enviarEmail(email: string, codigo: string){ //Envia o código gerado por e-mail
-        console.log(`E-mail enviado para ${email} com o código: ${codigo}`)
+        const enviarEmail = async (email: string, codigo: string) =>{
+            console.log(`E-mail enviado para ${email} com o código: ${codigo}`);
+            try {
+                await emailjs.send(
+                    "service_rqwpj7q",
+                    "template_12nvjhg",
+                    { to_email: email, codigo },
+                    "Ygc6WQijXU3rWrMEV"
+                );
+                console.log("E-mail enviado com sucesso!");
+            } catch (error){
+                console.log("Erro no envio:", error);
+            }
+        }
+        const templateParams = {
+            to_email: email,
+            codigo: codigo,
+        };
+        emailjs.send("service_rqwpj7q", "template_12nvjhg", templateParams, "Ygc6WQijXU3rWrMEV")
+            .then((response) => {
+                console.log("E-mail enviado com sucesso!", response.status, response.text);
+            }, (error) => {
+                console.log("Erro ao enviar e-mail:", error);
+            });
+    }
+    const processarCSV = async (file: File, tipo: "cursos" | "alunos"): Promise<void> => {
+      return new Promise<void>((resolve, reject) => {
+      const reader = new FileReader();
+      const emailsEnviados = new Set<string>();
+
+    reader.onload = async (e: ProgressEvent<FileReader>) => { // Handlers para eventos do FileReader
+      if (!e.target?.result) {
+        reject(new Error("Falha ao ler o arquivo"));
+        return;
+      }
+      try {
+        await processarDadosCSV(e.target.result as string, tipo, emailsEnviados);
+        resolve();
+      } catch (error) {
+        reject(error);
+      }
+    };
+
+    reader.onerror = () => {
+      reject(new Error("Erro na leitura do arquivo"));
+    };
+
+    reader.readAsText(file);
+  });
+};
+
+const processarDadosCSV = async ( // Função separada para processamento lógico
+  csvData: string,
+  tipo: "cursos" | "alunos",
+  emailsEnviados: Set<string>
+): Promise<void> => {
+  return new Promise((resolve, reject) => {
+    Papa.parse<AlunosCSVRow>(csvData, {
+      header: true,
+      skipEmptyLines: true,
+      complete: (result: ParseResult<AlunosCSVRow>) => {
+        try {
+          if (tipo === "alunos") {
+            (async () => {
+              await processarAlunos(result.data, emailsEnviados);
+              resolve();
+            })();
+          } else{
+            resolve();
+          }
+        } catch (error) {
+          reject(error);
+        }
+      },
+      error: (err: Error) => {
+        reject(new Error(`Erro ao parsear CSV: ${err.message}`));
+      },
+    });
+  });
+};
+
+const processarAlunos = async ( // Lógica específica para alunos
+  dados: AlunosCSVRow[],
+  emailsEnviados: Set<string>
+): Promise<void> => {
+  const CPFDuplicado = new Map<string, AlunosCSVRow>();
+  const novosCursos: { id: number; nome: string }[] = [];
+  const novasPessoas: { id: number; nome: string; cpf: string; email: string }[] = [];
+  const novasMatriculas: Matricula[] = [];
+
+  dados.forEach((row) => {
+    const cpf = String(row.cpf || "").trim();
+    if (!CPFDuplicado.has(cpf)) {
+      CPFDuplicado.set(cpf, {
+        curso: String(row.curso || ""),
+        nome: String(row.nome || ""),
+        cpf,
+        email: String(row.email || ""),
+        entrada: String(row.entrada || ""),
+        saida: !row.saida || row.saida.trim() === "" ? "Em andamento" : row.saida
+      });
+    }
+  });
+
+  const dadosFiltrados = Array.from(CPFDuplicado.values());
+  const cursoMap = new Map<string, number>();
+  const pessoaMap = new Map<string, number>();
+  let cursoIdCounter = 1;
+  let pessoaIdCounter = 1;
+
+  for (const aluno of dadosFiltrados) { // Processamento assíncrono serializado
+    const cursoNome = aluno.curso.trim();
+    const cpf = aluno.cpf.trim();
+
+    if (!cursoMap.has(cursoNome)) { // Processar cursos
+      cursoMap.set(cursoNome, cursoIdCounter++);
+      novosCursos.push({ id: cursoMap.get(cursoNome)!, nome: cursoNome });
     }
 
-    const processarCSV = (file: File, tipo: "cursos" | "alunos") => { //Carrega e processa arquivos CSV contendo dados de alunos ou cursos.
-        const reader = new FileReader();
+    if (!pessoaMap.has(cpf) && !emailsEnviados.has(aluno.email)) { // Processar pessoas (com controle de e-mails únicos)
+      const codigo = gerarCodigoAleatorio();
+      await enviarEmail(aluno.email, codigo);
+      emailsEnviados.add(aluno.email);
 
-        reader.onload = (e) => { //Leitura e processamento para ter o arquivo como texto
-            if (!e.target?.result) return;
+      pessoaMap.set(cpf, pessoaIdCounter++);
+      novasPessoas.push({
+        id: pessoaMap.get(cpf)!,
+        nome: aluno.nome,
+        cpf: aluno.cpf,
+        email: aluno.email,
+      });
+    }
 
-            Papa.parse(e.target.result as string, { //Converte o conteúdo CSV para um array de objetos
-                header: true,
-                skipEmptyLines: true,
-                complete: (result) => {
-                    console.log("Dados CSV processados:", result.data);
+    const cursoId = cursoMap.get(cursoNome)!; // Matrículas
+    const pessoaId = pessoaMap.get(cpf)!;
+    const saidaTratada = aluno.saida === "Em andamento" ? null : aluno.saida || null;
+    novasMatriculas.push({
+      cursoId,
+      pessoaId,
+      entrada: aluno.entrada,
+      saida: saidaTratada,
+      matricula: `${cursoId}-${pessoaId}-${aluno.entrada}-${aluno.saida || "Em andamento"}`,
+    });
+  }
 
-                    const CPFDuplicado = new Map(); //Evita CPFs duplicados na planilha
-                    if (tipo === "alunos"){
-                    (result.data as AlunosCSVRow[]).forEach(row => {
-                        const cpf = String(row.cpf || "");
-                        if (!CPFDuplicado.has(cpf)){
-                            CPFDuplicado.set(cpf, {
-                                curso: String(row.curso || ""),
-                                nome: String(row.nome || ""),
-                                cpf,
-                                email: String(row.email || ""),
-                                entrada: String(row.entrada || ""),
-                                saida: String(row.saida || "Em andamento")
-                            });
-                        }
-                    });
-                    const dadosFiltrados = Array.from(CPFDuplicado.values());
-                    const cursoMap = new Map<string, number>();
-                    const pessoaMap = new Map<string, number>();
-                    let cursoIdCounter = 1;
-                    let pessoaIdCounter = 1;
-                    const novosCursos: { id: number; nome: string }[] = [];
-                    const novasPessoas: { id: number; nome: string; cpf: string; email: string }[] = [];
-                    const novasMatriculas: {
-                        cursoId: number;
-                        pessoaId: number;
-                        entrada: string;
-                        saida: string | null;
-                        matricula: string;
-                    }[] = [];
-
-                    dadosFiltrados.forEach(aluno => {
-                        const cursoNome = aluno.curso.trim();
-                        const cpf = aluno.cpf.trim();
-                        if (!cursoMap.has(cursoNome)) { // Cursos
-                            cursoMap.set(cursoNome, cursoIdCounter++);
-                            novosCursos.push({ id: cursoMap.get(cursoNome)!, nome: cursoNome });
-                        }
-                        if (!pessoaMap.has(cpf)) { // Pessoas
-                            pessoaMap.set(cpf, pessoaIdCounter++);
-                            const codigo = gerarCodigoAleatorio(); //Gera código aleatório
-                            enviarEmail(aluno.email, codigo); //Simula envio do código por e-mail
-                            novasPessoas.push({
-                                id: pessoaMap.get(cpf)!,
-                                nome: aluno.nome,
-                                cpf: aluno.cpf,
-                                email: aluno.email
-                            });
-                        }
-                        const cursoId = cursoMap.get(cursoNome)!; // Matrícula
-                        const pessoaId = pessoaMap.get(cpf)!;
-                        const entrada = aluno.entrada;
-                        const saida = aluno.saida === "Em andamento" ? "Em andamento" : aluno.saida;
-                        const matricula = `${cursoId}-${pessoaId}-${entrada}-${saida}`;
-                        novasMatriculas.push({
-                            cursoId,
-                            pessoaId,
-                            entrada: aluno.entrada,
-                            saida: aluno.saida === "Em andamento" ? null : aluno.saida,
-                            matricula
-                        });
-                    });
-                    setAlunos(dadosFiltrados);
-                    console.log("Estado alunos atualizado:", dadosFiltrados);
-                    setCursos(novosCursos);
-                    setPessoas(novasPessoas);
-                    setMatriculas(novasMatriculas);
-                }
-                    setAlunos(Array.from(CPFDuplicado.values()));
-                },
-            });
-        };
-        reader.readAsText(file); //Leitura do arquivo como texto. Retorna para o "onload".
-    };
+  setAlunos(dadosFiltrados); // Atualização de estado (batch)
+  setCursos(novosCursos);
+  setPessoas(novasPessoas);
+  setMatriculas(novasMatriculas);
+};
 
     const exibirAlunos = () => { //Filtra, ordena, pagina e atualiza a lista de alunos exibida no sistema.
         const alunosFiltrados = alunos
