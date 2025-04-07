@@ -55,32 +55,26 @@ export default function App_Instituicao(){
         }
         return codigo;
     }
-    function enviarEmail(email: string, codigo: string){ //Envia o código gerado por e-mail
-        const enviarEmail = async (email: string, codigo: string) =>{
-            console.log(`E-mail enviado para ${email} com o código: ${codigo}`);
-            try {
-                await emailjs.send(
-                    "service_rqwpj7q",
-                    "template_12nvjhg",
-                    { to_email: email, codigo },
-                    "Ygc6WQijXU3rWrMEV"
-                );
-                console.log("E-mail enviado com sucesso!");
-            } catch (error){
-                console.log("Erro no envio:", error);
-            }
-        }
-        const templateParams = {
-            to_email: email,
-            codigo: codigo,
-        };
-        emailjs.send("service_rqwpj7q", "template_12nvjhg", templateParams, "Ygc6WQijXU3rWrMEV")
-            .then((response) => {
-                console.log("E-mail enviado com sucesso!", response.status, response.text);
-            }, (error) => {
-                console.log("Erro ao enviar e-mail:", error);
-            });
+    async function enviarEmail(email: string, codigo: string): Promise<boolean>{ //Envia o código gerado por e-mail
+      const templateParams = {
+        to_email: email,
+        codigo: codigo,
+      };
+
+      try {
+        const response = await emailjs.send(
+          "service_rqwpj7q",
+          "template_12nvjhg",
+          templateParams,
+        "Ygc6WQijXU3rWrMEV"
+      );
+      console.log(`E-mail para ${email} enviado! Status:`, response.status);
+      return true;
+    } catch (error){
+      console.error(`Falha ao enviar para ${email}:`, error);
+      return false;
     }
+    };
     const processarCSV = async (file: File, tipo: "cursos" | "alunos"): Promise<void> => {
       return new Promise<void>((resolve, reject) => {
       const reader = new FileReader();
@@ -177,16 +171,20 @@ const processarAlunos = async ( // Lógica específica para alunos
 
     if (!pessoaMap.has(cpf) && !emailsEnviados.has(aluno.email)) { // Processar pessoas (com controle de e-mails únicos)
       const codigo = gerarCodigoAleatorio();
-      await enviarEmail(aluno.email, codigo);
-      emailsEnviados.add(aluno.email);
-
-      pessoaMap.set(cpf, pessoaIdCounter++);
-      novasPessoas.push({
-        id: pessoaMap.get(cpf)!,
-        nome: aluno.nome,
-        cpf: aluno.cpf,
-        email: aluno.email,
-      });
+      const enviado = await enviarEmail(aluno.email, codigo);
+      
+      if (enviado) {
+        emailsEnviados.add(aluno.email);
+        pessoaMap.set(cpf, pessoaIdCounter++);
+        novasPessoas.push({
+            id: pessoaMap.get(cpf)!,
+            nome: aluno.nome,
+            cpf: aluno.cpf,
+            email: aluno.email,
+        });
+    } else{
+      console.error(`Cadastro incompleto para ${aluno.nome} - email falhou`);
+      continue;
     }
 
     const cursoId = cursoMap.get(cursoNome)!; // Matrículas
@@ -200,7 +198,7 @@ const processarAlunos = async ( // Lógica específica para alunos
       matricula: `${cursoId}-${pessoaId}-${aluno.entrada}-${aluno.saida || "Em andamento"}`,
     });
   }
-
+}
   setAlunos(dadosFiltrados); // Atualização de estado (batch)
   setCursos(novosCursos);
   setPessoas(novasPessoas);
