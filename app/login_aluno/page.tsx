@@ -32,7 +32,7 @@ export default function CriarContaInstituicao() {
   const handleCriarConta = () =>{ //Direcionta para perfil_aluno
     if (!camposVazios()) return;
 
-    router.push("");
+    router.push("/criarconta_aluno");
   }
 
   const handleEntrar = () => { //Direciona para app_aluno
