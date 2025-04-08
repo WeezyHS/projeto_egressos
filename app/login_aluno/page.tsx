@@ -13,8 +13,8 @@ export default function CriarContaInstituicao() {
     const regex = /^[^\s@]+@(gmail\.com|outlook\.com)$/;
     return regex.test(email);
   }
-  //Caso os campos não sejam preenchidos e caso o e-mail seja inválido
-  const camposVazios = () =>{
+
+  const camposVazios = () =>{ //Caso os campos não sejam preenchidos e caso o e-mail seja inválido
     if (!email || !senha){
       alert("Preencha todos os campos antes de continuar!");
       return false;
@@ -30,8 +30,6 @@ export default function CriarContaInstituicao() {
   };
 
   const handleCriarConta = () =>{ //Direcionta para perfil_aluno
-    if (!camposVazios()) return;
-
     router.push("/criarconta_aluno");
   }
 
@@ -48,8 +46,8 @@ export default function CriarContaInstituicao() {
         <label className={styles.labSenha} htmlFor="senha">Senha:</label>
         <input className={styles.senha} type="password" id="senha" value={senha} onChange={(e) => setSenha(e.target.value)}/>
 
-        <button className={styles.CriarConta} onClick={handleCriarConta}>Criar Conta</button>
         <button className={styles.Entrar} onClick={handleEntrar}>Entrar</button>
+        <button className={styles.CriarConta} onClick={handleCriarConta}>Criar Conta</button>
     </div>
   );
 }
