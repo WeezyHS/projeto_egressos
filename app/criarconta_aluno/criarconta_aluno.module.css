@@ -1,6 +1,15 @@
-.container{
-    padding: 20px;
+.duasColunas{
     background-color: blueviolet;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    align-items: center;
+}
+
+.campo{
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 16px;
 }
 
 .titulo{
@@ -10,6 +19,10 @@
     margin-bottom: 60px;
 }
 
+.labCpf{
+    margin-left: 5px;
+}
+
 .cpf{
     margin-left: 5px;
     border: 2px solid black;
@@ -17,10 +30,50 @@
 }
 
 .labSenha{
-    margin-left: 15px;
+    margin-left: 5px;
 }
 
 .senha{
+    margin-left: 5px;
+    border: 2px solid black;
+    border-radius: 3px;
+}
+
+.labTelefone{
+    margin-left: 5px;
+}
+
+.telefone{
+    margin-left: 5px;
+    border: 2px solid black;
+    border-radius: 3px;
+}
+
+.labEmail{
+    margin-left: 5px;
+}
+
+.email{
+    margin-left: 5px;
+    border: 2px solid black;
+    border-radius: 3px;
+}
+
+.labCidade{
+    margin-left: 5px;
+}
+
+.cidade{
+    margin-left: 5px;
+    border: 2px solid black;
+    border-radius: 3px;
+}
+
+.labEstado{
+    margin-left: 5px;
+}
+
+.estado{
     margin-left: 5px;
     border: 2px solid black;
     border-radius: 3px;
@@ -36,6 +89,16 @@
     margin-left: 30px;
     border: 1px solid black;
     border-radius: 10px;
+}
+
+.labPais{
+    margin-left: 5px;
+}
+
+.pais{
+    margin-left: 5px;
+    border: 2px solid black;
+    border-radius: 3px;
 }
 
 .CriarConta:hover{
