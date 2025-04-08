@@ -3,10 +3,17 @@
 import styles from './criarconta_aluno.module.css';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import emailjs from '@emailjs/browser';
 
 export default function CriarContaAluno(){
     const [cpf, setCpf] = useState('');
     const [senha, setSenha] = useState('');
+    const [telefone, setTelefone] = useState('');
+    const [email, setEmail] = useState('');
+    const [cidade, setCidade] = useState('');
+    const [estado, setEstado] = useState('');
+    const [pais, setPais] = useState('');
+
     const [erro, setErro] = useState('');
     const router = useRouter();
 
@@ -30,9 +37,29 @@ export default function CriarContaAluno(){
         return true;
     }
 
+    const gerarCodigo = () =>{
+        return Math.floor(100000 + Math.random() * 900000).toString();
+    }
+
     const handleCadastrar = () =>{
         if (!camposVazios()) return;
-        router.push("/app_aluno");
+        const codigo = gerarCodigo();
+        //router.push("/app_aluno");
+
+        const templateParams = {
+            to_email: cpf + 'wesleyhenderson200@gmail.com',
+            codigo_acesso: codigo,
+        }
+
+        emailjs.send("service_rqwpj7q", "template_12nvjhg", templateParams, "Ygc6WQijXU3rWrMEV")
+        .then(() => {
+          alert("Conta criada! Código enviado por e-mail.");
+          router.push("/app_aluno");
+        })
+        .catch((error) => {
+            console.error("Erro ao enviar e-mail:", error);
+            alert("Erro ao enviar o código. Tente novamente!");
+          });
     }
 
     const camposVazios = () => {
@@ -54,11 +81,36 @@ export default function CriarContaAluno(){
     return(
         <div className={styles.container}>
             <h1 className={styles.titulo}>Criar Conta</h1>
-            <label className={styles.labCpf} htmlFor="cpf">CPF:</label>
-        <input className={styles.cpf} type="text" id="cpf" value={cpf} onChange={(e) => setCpf(e.target.value)}/>
-        <label className={styles.labSenha} htmlFor="senha">Senha:</label>
-        <input className={styles.senha} type="password" id="senha" value={senha} onChange={(e) => setSenha(e.target.value)}/>
-
+            <div className={styles.duasColunas}>
+                <div className={styles.campo}>
+                    <label className={styles.labCpf} htmlFor="cpf">CPF:</label>
+                    <input className={styles.cpf} type="text" id="cpf" value={cpf} onChange={(e) => setCpf(e.target.value)}/>
+                </div>
+                <div className={styles.campo}>
+                    <label className={styles.labSenha} htmlFor="senha">Senha:</label>
+                    <input className={styles.senha} type="password" value={senha} onChange={(e) => setSenha(e.target.value)}/>
+                </div>
+                <div className={styles.campo}>
+                    <label className={styles.labTelefone} htmlFor="telefone">Número de telefone:</label>
+                    <input className={styles.telefone} type="password" value={telefone} onChange={(e) => setTelefone(e.target.value)}/>
+                </div>
+                <div className={styles.campo}>
+                    <label className={styles.labEmail} htmlFor="email">E-mail:</label>
+                    <input className={styles.email} type="text" value={email} onChange={(e) => setEmail(e.target.value)}/>
+                </div>
+                <div className={styles.campo}>
+                    <label className={styles.labCidade} htmlFor="localizacao">Cidade:</label>
+                    <input className={styles.cidade} type="password" value={cidade} onChange={(e) => setCidade(e.target.value)}/>
+                </div>
+                <div className={styles.campo}>
+                    <label className={styles.labEstado} htmlFor="localizacao">Estado:</label>
+                    <input className={styles.estado} type="password" value={estado} onChange={(e) => setEstado(e.target.value)}/>
+                </div>
+                <div className={styles.campo}>
+                    <label className={styles.labPais} htmlFor="localizacao">País:</label>
+                    <input className={styles.pais} type="password" value={pais} onChange={(e) => setPais(e.target.value)}/>
+                </div>
+        </div>
         <button className={styles.Cadastrar} onClick={handleCadastrar}>Cadastrar</button>
         </div>
     );
