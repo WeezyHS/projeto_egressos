@@ -1,11 +1,11 @@
 'use client';
 
-import styles from './criarconta_aluno.module.css';
+import styles from './criarconta_egresso.module.css';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import emailjs from '@emailjs/browser';
 
-export default function CriarContaAluno(){
+export default function CriarContaEgresso(){
     const [fotoPerfil, SetFotoPerfil] = useState<File | null>(null);
     const [cpf, setCpf] = useState('');
     const [senha, setSenha] = useState('');
@@ -50,10 +50,9 @@ export default function CriarContaAluno(){
         return Math.floor(100000 + Math.random() * 900000).toString();
     }
 
-    const handleCadastrar = () =>{
+    const handleProximo = () =>{
         if (!camposVazios()) return;
         const codigo = gerarCodigo();
-        //router.push("/app_aluno");
 
         const templateParams = {
             to_email: cpf + 'wesleyhenderson200@gmail.com',
@@ -63,7 +62,7 @@ export default function CriarContaAluno(){
         emailjs.send("service_rqwpj7q", "template_12nvjhg", templateParams, "Ygc6WQijXU3rWrMEV")
         .then(() => {
           alert("Conta criada! Código enviado por e-mail.");
-          router.push("/app_aluno");
+          router.push("/criarconta2_egresso");
         })
         .catch((error) => {
             console.error("Erro ao enviar e-mail:", error);
@@ -135,7 +134,7 @@ export default function CriarContaAluno(){
                     <input className={styles.instagram} type="text" placeholder='https://instagram.com/...' value={redesSociais.instagram} onChange={(e) => setRedesSociais({ ...redesSociais, instagram: e.target.value })}/>
                 </div>
         </div>
-        <button className={styles.Cadastrar} onClick={handleCadastrar}>Próximo</button>
+        <button className={styles.Cadastrar} onClick={handleProximo}>Próximo</button>
         </div>
     );
 }
