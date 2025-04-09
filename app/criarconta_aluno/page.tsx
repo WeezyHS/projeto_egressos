@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import emailjs from '@emailjs/browser';
 
 export default function CriarContaAluno(){
+    const [fotoPerfil, SetFotoPerfil] = useState<File | null>(null);
     const [cpf, setCpf] = useState('');
     const [senha, setSenha] = useState('');
     const [telefone, setTelefone] = useState('');
@@ -16,6 +17,13 @@ export default function CriarContaAluno(){
 
     const [erro, setErro] = useState('');
     const router = useRouter();
+
+    const handleFotoChange = (e: React.ChangeEvent<HTMLInputElement>) =>{
+        const file = e.target.files?.[0];
+        if (file){
+            SetFotoPerfil(file);
+        }
+    };
 
     const validacaoCPF = (cpf: string) => {
         cpf = cpf.replace(/[^\d]+/g, "");
@@ -83,6 +91,13 @@ export default function CriarContaAluno(){
             <h1 className={styles.titulo}>Criar Conta</h1>
             <div className={styles.duasColunas}>
                 <div className={styles.campo}>
+                    <label className={styles.labFoto}>Foto de perfil:</label>
+                    <input className={styles.foto} id="foto_perfil" type="file" accept="image/*" onChange={handleFotoChange} style={{ display:"none" }}/>
+                    <label className={styles.botaoPersonalizado} htmlFor="foto_perfil">Fazer upload</label>
+                    {fotoPerfil && <p className={styles.nomeArquivo}>{fotoPerfil.name}</p>}
+                    {fotoPerfil && (<img className={styles.preview} src={URL.createObjectURL(fotoPerfil)} alt="Preview"/>)}
+                </div>
+                <div className={styles.campo}>
                     <label className={styles.labCpf} htmlFor="cpf">CPF:</label>
                     <input className={styles.cpf} type="text" id="cpf" value={cpf} onChange={(e) => setCpf(e.target.value)}/>
                 </div>
@@ -92,7 +107,7 @@ export default function CriarContaAluno(){
                 </div>
                 <div className={styles.campo}>
                     <label className={styles.labTelefone} htmlFor="telefone">Número de telefone:</label>
-                    <input className={styles.telefone} type="password" value={telefone} onChange={(e) => setTelefone(e.target.value)}/>
+                    <input className={styles.telefone} type="text" value={telefone} onChange={(e) => setTelefone(e.target.value)}/>
                 </div>
                 <div className={styles.campo}>
                     <label className={styles.labEmail} htmlFor="email">E-mail:</label>
@@ -100,15 +115,15 @@ export default function CriarContaAluno(){
                 </div>
                 <div className={styles.campo}>
                     <label className={styles.labCidade} htmlFor="localizacao">Cidade:</label>
-                    <input className={styles.cidade} type="password" value={cidade} onChange={(e) => setCidade(e.target.value)}/>
+                    <input className={styles.cidade} type="text" value={cidade} onChange={(e) => setCidade(e.target.value)}/>
                 </div>
                 <div className={styles.campo}>
                     <label className={styles.labEstado} htmlFor="localizacao">Estado:</label>
-                    <input className={styles.estado} type="password" value={estado} onChange={(e) => setEstado(e.target.value)}/>
+                    <input className={styles.estado} type="text" value={estado} onChange={(e) => setEstado(e.target.value)}/>
                 </div>
                 <div className={styles.campo}>
                     <label className={styles.labPais} htmlFor="localizacao">País:</label>
-                    <input className={styles.pais} type="password" value={pais} onChange={(e) => setPais(e.target.value)}/>
+                    <input className={styles.pais} type="text" value={pais} onChange={(e) => setPais(e.target.value)}/>
                 </div>
         </div>
         <button className={styles.Cadastrar} onClick={handleCadastrar}>Cadastrar</button>
