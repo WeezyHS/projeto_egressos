@@ -19,6 +19,33 @@
     margin-bottom: 60px;
 }
 
+.botaoPersonalizado{
+    background-color: #6200ea;
+    color: white;
+    padding: 10px 20px;
+    display: inline-block;
+    cursor: pointer;
+    width: 140px;
+    border-radius: 8px;
+    font-weight: bold;
+    margin-top: 5px;
+}
+
+.nomeArquivo{
+    font-size: 0.9rem;
+    margin-top: 5px;
+    color: #333;
+}
+
+.preview{
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    margin-top: 10px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+}
+
 .labCpf{
     margin-left: 5px;
 }
@@ -27,6 +54,7 @@
     margin-left: 5px;
     border: 2px solid black;
     border-radius: 3px;
+    width: 200px;
 }
 
 .labSenha{
@@ -37,6 +65,7 @@
     margin-left: 5px;
     border: 2px solid black;
     border-radius: 3px;
+    width: 200px;
 }
 
 .labTelefone{
@@ -47,6 +76,7 @@
     margin-left: 5px;
     border: 2px solid black;
     border-radius: 3px;
+    width: 200px;
 }
 
 .labEmail{
@@ -57,6 +87,7 @@
     margin-left: 5px;
     border: 2px solid black;
     border-radius: 3px;
+    width: 200px;
 }
 
 .labCidade{
@@ -67,6 +98,7 @@
     margin-left: 5px;
     border: 2px solid black;
     border-radius: 3px;
+    width: 180px;
 }
 
 .labEstado{
@@ -77,6 +109,7 @@
     margin-left: 5px;
     border: 2px solid black;
     border-radius: 3px;
+    width: 150px;
 }
 
 .Cadastrar{
@@ -99,6 +132,7 @@
     margin-left: 5px;
     border: 2px solid black;
     border-radius: 3px;
+    width: 180px;
 }
 
 .CriarConta:hover{
