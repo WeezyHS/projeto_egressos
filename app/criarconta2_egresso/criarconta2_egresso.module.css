@@ -1,0 +1,108 @@
+.duasColunas{
+    background-color: blueviolet;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    align-items: center;
+}
+
+.campo{
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 16px;
+}
+
+.titulo{
+    font-size: 24px;
+    font-weight: bold;
+    color: black;
+    margin-bottom: 60px;
+}
+
+.labNomeEmpresa{
+    margin-left: 40px;
+}
+
+.nomeEmpresa{
+    margin-left: 40px;
+    border: 2px solid black;
+    border-radius: 3px;
+    width: 200px;
+    margin-left: 40px;
+}
+
+.labCidadeEmpresa{
+    margin-left: 40px;
+}
+
+.cidadeEmpresa{
+    margin-left: 40px;
+    border: 2px solid black;
+    border-radius: 3px;
+    width: 200px;
+}
+
+.labEstadoEmpresa{
+    margin-left: 40px;
+}
+
+.estadoEmpresa{
+    margin-left: 40px;
+    border: 2px solid black;
+    border-radius: 3px;
+    width: 200px;
+}
+
+.labPaisEmpresa{
+    margin-left: 40px;
+}
+
+.paisEmpresa{
+    margin-left: 40px;
+    border: 2px solid black;
+    border-radius: 3px;
+    width: 200px;
+}
+
+.labCargo{
+    margin-left: 40px;
+}
+
+.cargo{
+    margin-left: 40px;
+    border: 2px solid black;
+    border-radius: 3px;
+    width: 200px;
+}
+
+.labAnoEntrada{
+    margin-left: 40px;
+}
+
+.anoEntrada{
+    margin-left: 40px;
+    border: 2px solid black;
+    border-radius: 3px;
+    width: 200px;
+}
+
+.visivel{
+    margin-left: 30px;
+    margin-top: 20px;
+    font-size: 1rem;
+}
+
+.Finalizar{
+    background-color: green;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    cursor: pointer;
+    width: 140px;
+    font-size: 16px;
+    margin-top: 80px;
+    margin-bottom: 30px;
+    margin-left: 140px;
+    border-radius: 10px;
+    border: 1px solid black;
+}
