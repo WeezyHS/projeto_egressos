@@ -20,7 +20,7 @@ export default function CriarContaEgresso2(){
     }
     return(
         <div className={styles.container}>
-        <h1 className={styles.titulo}>PARA DESENVOLVER</h1>
+        <h1 className={styles.titulo}>PARA DESENVOLVER!!!</h1>
         <div className={styles.duasColunas}>
 
         </div>
