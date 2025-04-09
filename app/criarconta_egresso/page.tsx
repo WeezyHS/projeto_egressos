@@ -14,6 +14,7 @@ export default function CriarContaAluno(){
     const [cidade, setCidade] = useState('');
     const [estado, setEstado] = useState('');
     const [pais, setPais] = useState('');
+    const [redesSociais, setRedesSociais] = useState({ linkedin: '', instagram: '', github: '' });
 
     const [erro, setErro] = useState('');
     const router = useRouter();
@@ -125,8 +126,16 @@ export default function CriarContaAluno(){
                     <label className={styles.labPais} htmlFor="localizacao">País:</label>
                     <input className={styles.pais} type="text" value={pais} onChange={(e) => setPais(e.target.value)}/>
                 </div>
+                <div className={styles.campo}>
+                    <label className={styles.labLinkedin} htmlFor="linkedin">Linkedin:</label>
+                    <input className={styles.linkedin} type="text" placeholder='https://www.linkedin.com/in/...' value={redesSociais.linkedin} onChange={(e) => setRedesSociais({ ...redesSociais, linkedin: e.target.value })}/>
+                </div>
+                <div className={styles.campo}>
+                    <label className={styles.labInstagram} htmlFor="instagram">Instagram:</label>
+                    <input className={styles.instagram} type="text" placeholder='https://instagram.com/...' value={redesSociais.instagram} onChange={(e) => setRedesSociais({ ...redesSociais, instagram: e.target.value })}/>
+                </div>
         </div>
-        <button className={styles.Cadastrar} onClick={handleCadastrar}>Cadastrar</button>
+        <button className={styles.Cadastrar} onClick={handleCadastrar}>Próximo</button>
         </div>
     );
 }
