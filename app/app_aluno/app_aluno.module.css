@@ -1,6 +1,45 @@
+.container{
+    padding: 20px; /*Bordas*/
+    background-color: blanchedalmond;
+}
+
 .titulo{
     font-size: 24px;
     font-weight: bold;
-    /* color: black; */
+    color: black;
     margin-bottom: 60px;
+}
+
+.labFiltroNome{
+    font-weight: bold;
+    color: black;
+}
+
+.filtroNome{
+    margin-left: 5px;
+    border: 2px solid black;
+    border-radius: 3px;
+    width: 200px;
+    background-color: white;
+    color: black;
+}
+
+.labFiltroCargo{
+    margin-left: 50px;
+    font-weight: bold;
+    color: black;
+}
+
+.filtroCargo{
+    margin-left: 5px;
+    border: 2px solid black;
+    border-radius: 3px;
+    width: 200px;
+    background-color: white;
+    color: black;
+}
+
+.lista{
+    margin-top: 70px;
+    color: black;
 }
