@@ -1,0 +1,60 @@
+.container{
+    padding: 20px;
+    background-color: blueviolet;
+}
+
+.titulo{
+    font-size: 24px;
+    font-weight: bold;
+    color: black;
+    margin-bottom: 60px;
+}
+
+.email{
+    margin-left: 5px;
+    border: 2px solid black;
+    border-radius: 3px;
+}
+
+.labSenha{
+    margin-left: 15px;
+}
+
+.senha{
+    margin-left: 5px;
+    border: 2px solid black;
+    border-radius: 3px;
+}
+
+.CriarConta{
+    background-color: green;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    margin-left: 30px;
+    border: 1px solid black;
+    border-radius: 10px;
+}
+
+.CriarConta:hover{ /*Aplica um estilo quando o usuário passa o mouse sobre o elemento*/
+    background-color: #45a049;
+}
+
+.Entrar{
+    background-color: green;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 10px; /*Bordas com curvas*/
+    cursor: pointer;
+    font-size: 16px;
+    margin-top: 30px;
+    margin-left: 25px;
+    border: 1px solid black;
+}
+
+.Entrar:hover{
+    background-color: #45a049;
+}
