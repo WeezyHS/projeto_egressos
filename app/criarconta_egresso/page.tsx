@@ -61,7 +61,7 @@ export default function CriarContaEgresso(){
 
         emailjs.send("service_rqwpj7q", "template_12nvjhg", templateParams, "Ygc6WQijXU3rWrMEV") //Envia código por e-mail
         .then(() => {
-          alert("Conta criada! Código enviado por e-mail.");
+        //   alert("Código enviado por e-mail.");
           router.push("/criarconta2_egresso");
         })
         .catch((error) => {
