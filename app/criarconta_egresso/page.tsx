@@ -14,7 +14,7 @@ export default function CriarContaEgresso(){
     const [cidade, setCidade] = useState('');
     const [estado, setEstado] = useState('');
     const [pais, setPais] = useState('');
-    const [redesSociais, setRedesSociais] = useState({ linkedin: '', instagram: '', github: '' });
+    const [redesSociais, setRedesSociais] = useState({ linkedin: '', instagram: '' });
 
     const [erro, setErro] = useState('');
     const router = useRouter();
@@ -71,7 +71,7 @@ export default function CriarContaEgresso(){
     }
 
     const camposVazios = () => {
-        if (!cpf || !senha){
+        if (!fotoPerfil || !cpf || !senha || !redesSociais.linkedin || !redesSociais.instagram){
             alert("Preencha todos os campos!");
             return false;
         }
