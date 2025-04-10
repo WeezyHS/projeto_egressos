@@ -1,6 +1,7 @@
 'use client';
 
 import styles from './criarconta2_egresso.module.css';
+import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
 export default function CriarContaEgresso2(){
@@ -11,14 +12,14 @@ export default function CriarContaEgresso2(){
     const [cargo, setCargo] = useState('');
     const [anoEntrada, setAnoEntrada] = useState('');
     const [visivel, setVisivel] = useState(true);
+    const router = useRouter();
 
     const handleFinalizar = () =>{
         if (!nomeEmpresa || !cidadeEmpresa || !estadoEmpresa || !paisEmpresa || !cargo || !anoEntrada) {
             alert('Preencha todos os campos!');
             return;
         }
-        alert("Informações salvas!");
-        //router.push("/app_aluno");
+        router.push("/app_aluno");
     }
     return(
         <div className={styles.container}>
