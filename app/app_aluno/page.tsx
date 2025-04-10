@@ -2,7 +2,7 @@
 
 import styles from './app_aluno.module.css';
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 
 interface Egresso{
     id: number;
