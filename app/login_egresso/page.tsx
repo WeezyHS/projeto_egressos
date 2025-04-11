@@ -38,25 +38,23 @@ export default function Login_Egresso() {
     if (!camposVazios()) return;
 
     try{
-      const res = await fetch('/api/egresso/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, senha })
-    });
-    if (!res.ok) {
-      const erro = await res.json();
-      alert(erro.error);
-      return;
+      const res = await fetch("/api/egresso/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, senha }),
+      });
+      if (!res.ok){
+        const errorData = await res.json();
+        alert(errorData.error || "Erro ao fazer login!");
+        return;
+      }
+      const userData = await res.json();
+      console.log("Usuário logado:", userData.egresso);
+      router.push("/app_aluno");
+    } catch (error){
+      console.log("Erro ao conectar com o servidor:", error);
+      alert("Erro ao conectar com o servidor!");
     }
-
-    const data = await res.json();
-    console.log(data.egresso); // Aqui você pode guardar o ID, por exemplo
-
-    router.push("/app_aluno");
-  } catch(error){
-    alert("Erro ao conectar com o servidor!");
-    console.error(error);
-  }
 }
 
   return (
