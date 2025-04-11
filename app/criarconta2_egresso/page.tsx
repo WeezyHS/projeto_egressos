@@ -26,27 +26,27 @@ export default function CriarContaEgresso2(){
         <h1 className={styles.titulo}>PARA DESENVOLVER!!!</h1>
         <div className={styles.duasColunas}>
             <div className={styles.campo}>
-                <label className={styles.labNomeEmpresa}>Nome da empresa:</label>
+                <label className={styles.labNomeEmpresa}>Nome da empresa:*</label>
                 <input className={styles.nomeEmpresa} type="text" value={nomeEmpresa} onChange={(e) => setNomeEmpresa(e.target.value)} />
             </div>
             <div className={styles.campo}>
-                <label className={styles.labCidadeEmpresa}>Cidade da empresa:</label>
+                <label className={styles.labCidadeEmpresa}>Cidade da empresa:*</label>
                 <input className={styles.cidadeEmpresa} type="text" value={cidadeEmpresa} onChange={(e) => setCidadeEmpresa(e.target.value)} />
             </div>
             <div className={styles.campo}>
-                <label className={styles.labEstadoEmpresa}>Estado da empresa:</label>
+                <label className={styles.labEstadoEmpresa}>Estado da empresa:*</label>
                 <input className={styles.estadoEmpresa} type="text" value={estadoEmpresa} onChange={(e) => setEstadoEmpresa(e.target.value)} />
             </div>
             <div className={styles.campo}>
-                <label className={styles.labPaisEmpresa}>País da empresa:</label>
+                <label className={styles.labPaisEmpresa}>País da empresa:*</label>
                 <input className={styles.paisEmpresa} type="text" value={paisEmpresa} onChange={(e) => setPaisEmpresa(e.target.value)} />
             </div>
             <div className={styles.campo}>
-                <label className={styles.labCargo}>Nome do cargo/função:</label>
+                <label className={styles.labCargo}>Nome do cargo/função:*</label>
                 <input className={styles.cargo} type="text" value={cargo} onChange={(e) => setCargo(e.target.value)} />
             </div>
             <div className={styles.campo}>
-                <label className={styles.labAnoEntrada}>Ano de entrada na empresa:</label>
+                <label className={styles.labAnoEntrada}>Ano de entrada na empresa:*</label>
                 <input className={styles.anoEntrada} type="text" value={anoEntrada} onChange={(e) => setAnoEntrada(e.target.value)} />
             </div>
             <div className={styles.visivel}>
