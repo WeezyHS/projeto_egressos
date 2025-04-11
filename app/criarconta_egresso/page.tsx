@@ -52,6 +52,7 @@ export default function CriarContaEgresso(){
 
     const handleProximo = () =>{
         if (!camposVazios()) return;
+        
         const codigo = gerarCodigo();
 
         const templateParams = {
@@ -71,8 +72,8 @@ export default function CriarContaEgresso(){
     }
 
     const camposVazios = () => {
-        if (!fotoPerfil || !cpf || !senha || !redesSociais.linkedin || !redesSociais.instagram){
-            alert("Preencha todos os campos!");
+        if (!fotoPerfil || !cpf || !senha || !telefone || !cidade || !estado || !pais){
+            alert("Preencha todos os campos obrigatórios!");
             return false;
         }
         if (!validacaoCPF(cpf)){
@@ -91,38 +92,38 @@ export default function CriarContaEgresso(){
             <h1 className={styles.titulo}>Criar Conta</h1>
             <div className={styles.duasColunas}>
                 <div className={styles.campo}>
-                    <label className={styles.labFoto}>Foto de perfil:</label>
+                    <label className={styles.labFoto}>Foto de perfil:*</label>
                     <input className={styles.foto} id="foto_perfil" type="file" accept="image/*" onChange={handleFotoChange} style={{ display:"none" }}/>
                     <label className={styles.botaoPersonalizado} htmlFor="foto_perfil">Fazer upload</label>
                     {fotoPerfil && <p className={styles.nomeArquivo}>{fotoPerfil.name}</p>}
                     {fotoPerfil && (<img className={styles.preview} src={URL.createObjectURL(fotoPerfil)} alt="Preview"/>)}
                 </div>
                 <div className={styles.campo}>
-                    <label className={styles.labCpf} htmlFor="cpf">CPF:</label>
+                    <label className={styles.labCpf} htmlFor="cpf">CPF:*</label>
                     <input className={styles.cpf} type="text" id="cpf" value={cpf} onChange={(e) => setCpf(e.target.value)}/>
                 </div>
                 <div className={styles.campo}>
-                    <label className={styles.labSenha} htmlFor="senha">Senha:</label>
+                    <label className={styles.labSenha} htmlFor="senha">Senha:*</label>
                     <input className={styles.senha} type="password" value={senha} onChange={(e) => setSenha(e.target.value)}/>
                 </div>
                 <div className={styles.campo}>
-                    <label className={styles.labTelefone} htmlFor="telefone">Número de telefone:</label>
+                    <label className={styles.labTelefone} htmlFor="telefone">Número de telefone:*</label>
                     <input className={styles.telefone} type="text" value={telefone} onChange={(e) => setTelefone(e.target.value)}/>
                 </div>
                 <div className={styles.campo}>
-                    <label className={styles.labEmail} htmlFor="email">E-mail:</label>
+                    <label className={styles.labEmail} htmlFor="email">E-mail:*</label>
                     <input className={styles.email} type="text" value={email} onChange={(e) => setEmail(e.target.value)}/>
                 </div>
                 <div className={styles.campo}>
-                    <label className={styles.labCidade} htmlFor="localizacao">Cidade:</label>
+                    <label className={styles.labCidade} htmlFor="localizacao">Cidade:*</label>
                     <input className={styles.cidade} type="text" value={cidade} onChange={(e) => setCidade(e.target.value)}/>
                 </div>
                 <div className={styles.campo}>
-                    <label className={styles.labEstado} htmlFor="localizacao">Estado:</label>
+                    <label className={styles.labEstado} htmlFor="localizacao">Estado:*</label>
                     <input className={styles.estado} type="text" value={estado} onChange={(e) => setEstado(e.target.value)}/>
                 </div>
                 <div className={styles.campo}>
-                    <label className={styles.labPais} htmlFor="localizacao">País:</label>
+                    <label className={styles.labPais} htmlFor="localizacao">País:*</label>
                     <input className={styles.pais} type="text" value={pais} onChange={(e) => setPais(e.target.value)}/>
                 </div>
                 <div className={styles.campo}>
