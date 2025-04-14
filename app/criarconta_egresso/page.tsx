@@ -50,26 +50,56 @@ export default function CriarContaEgresso(){
         return Math.floor(100000 + Math.random() * 900000).toString();
     }
 
-    const handleProximo = () =>{
+    const handleProximo = async () =>{
         if (!camposVazios()) return;
-        
-        const codigo = gerarCodigo();
 
-        const templateParams = {
-            to_email: cpf + 'wesleyhenderson200@gmail.com',
-            codigo_acesso: codigo,
+        try{
+            const formData = new FormData();
+            formData.append('fotoPerfil', fotoPerfil as Blob);
+            formData.append('cpf', cpf);
+            formData.append('senha', senha);
+            formData.append('telefone', telefone);
+            formData.append('email', email);
+            formData.append('cidade', cidade);
+            formData.append('estado', estado);
+            formData.append('pais', pais);
+            formData.append('linkedin', redesSociais.linkedin);
+            formData.append('instagram', redesSociais.instagram);
+
+            const response = await fetch("/api/egresso/criar_conta", {
+                method: "POST",
+                body: formData,
+            });
+
+            if (!response.ok){
+                const errorData = await response.json();
+                alert(errorData.error || "Erro ao criar conta!");
+                return;
+            }
+
+            const successData = await response.json();
+            console.log("Egresso criado:", successData.egresso);
+
+            const codigo = gerarCodigo();
+            const templateParams = {
+                to_email: email,
+                codigo_acesso: codigo,
+            };
+
+            emailjs.send("service_rqwpj7q", "template_12nvjhg", templateParams, "Ygc6WQijXU3rWrMEV") //Envia código por e-mail
+                .then(() => {
+                //   alert("Código enviado por e-mail.");
+                router.push("/criarconta2_egresso");
+                })
+                .catch((error) => {
+                    console.error("Erro ao enviar e-mail:", error);
+                    alert("Erro ao enviar o código. Tente novamente!");
+                });
+        } catch (error){
+            console.log("Erro ao conectar com o servidor", error);
+            alert("Erro ao enviar o código. Tente novamente.");
         }
-
-        emailjs.send("service_rqwpj7q", "template_12nvjhg", templateParams, "Ygc6WQijXU3rWrMEV") //Envia código por e-mail
-        .then(() => {
-        //   alert("Código enviado por e-mail.");
-          router.push("/criarconta2_egresso");
-        })
-        .catch((error) => {
-            console.error("Erro ao enviar e-mail:", error);
-            alert("Erro ao enviar o código. Tente novamente!");
-          });
-    }
+    };
 
     const camposVazios = () => {
         if (!fotoPerfil || !cpf || !senha || !telefone || !cidade || !estado || !pais){
