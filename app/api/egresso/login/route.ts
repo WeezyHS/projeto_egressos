@@ -1,4 +1,4 @@
-//Código API Route de login
+//Código API Route de login (login_egresso)
 
 import { PrismaClient } from "@/app/generated/prisma";
 import bcrypt from 'bcrypt';
