@@ -26,7 +26,6 @@ model Egresso {
   fotoPerfil String?
   linkedin   String?
   instagram  String?
-  github     String?
   visivel    Boolean @default(true)
 
   trabalhoAtual TrabalhoAtual?
