@@ -80,6 +80,8 @@ export default function CriarContaEgresso(){
             const successData = await response.json();
             console.log("Egresso criado:", successData.egresso);
 
+            const novoEgressoId = successData.egresso.id; // Acessa o ID do egresso criado
+
             const codigo = gerarCodigo();
             const templateParams = {
                 to_email: email,
@@ -89,7 +91,7 @@ export default function CriarContaEgresso(){
             emailjs.send("service_rqwpj7q", "template_12nvjhg", templateParams, "Ygc6WQijXU3rWrMEV") //Envia código por e-mail
                 .then(() => {
                 //   alert("Código enviado por e-mail.");
-                router.push("/criarconta2_egresso");
+                router.push(`/criarconta2_egresso?id=${novoEgressoId}`);
                 })
                 .catch((error) => {
                     console.error("Erro ao enviar e-mail:", error);
