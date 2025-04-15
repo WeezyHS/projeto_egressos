@@ -34,7 +34,7 @@ export default function Login_Egresso() {
     router.push("/criarconta_egresso");
   }
 
-  const handleEntrar = async () => { //Direciona para app_aluno
+  const handleEntrar = async () => { //Direciona para app_egresso
     if (!camposVazios()) return;
 
     try{
@@ -50,7 +50,7 @@ export default function Login_Egresso() {
       }
       const userData = await res.json();
       console.log("Usuário logado:", userData.egresso);
-      router.push("/app_aluno");
+      router.push("/app_egresso");
     } catch (error){
       console.log("Erro ao conectar com o servidor:", error);
       alert("Erro ao conectar com o servidor!");
