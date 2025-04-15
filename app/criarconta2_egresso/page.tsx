@@ -1,8 +1,8 @@
 'use client';
 
 import styles from './criarconta2_egresso.module.css';
-import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { useEffect, useState } from 'react';
 
 export default function CriarContaEgresso2(){
     const [nomeEmpresa, setNomeEmpresa] = useState('');
@@ -12,14 +12,56 @@ export default function CriarContaEgresso2(){
     const [cargo, setCargo] = useState('');
     const [anoEntrada, setAnoEntrada] = useState('');
     const [visivel, setVisivel] = useState(true);
+    const [egressoId, setEgressoId] = useState<number | null>(null);
+    const searchParams = useSearchParams();
     const router = useRouter();
 
-    const handleFinalizar = () =>{
-        if (!nomeEmpresa || !cidadeEmpresa || !estadoEmpresa || !paisEmpresa || !cargo || !anoEntrada) {
+    useEffect(() =>{
+        const id = searchParams.get("id");
+        if (id){
+            setEgressoId(parseInt(id, 10));
+        } else{
+            alert("Erro: ID do egresso não encontrado.");
+            router.push("/criarconta_egresso");
+        }
+    }, [searchParams, router]);
+
+    const handleFinalizar = async () =>{
+        if (!nomeEmpresa || !cidadeEmpresa || !estadoEmpresa || !paisEmpresa || !cargo || !anoEntrada || !egressoId) {
             alert('Preencha todos os campos!');
             return;
         }
-        router.push("/app_aluno");
+        //===================================================================
+        try{
+            const response = await fetch('/api/egresso/criar_conta2', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: new URLSearchParams({
+                    id: egressoId.toString(),
+                    nomeEmpresa: nomeEmpresa,
+                    cidadeEmpresa: cidadeEmpresa,
+                    estadoEmpresa: estadoEmpresa,
+                    paisEmpresa: paisEmpresa,
+                    cargo: cargo,
+                    anoEntrada: anoEntrada,
+                    visivel: visivel.toString(),
+                  }),
+            });
+            if (response.ok) {
+                alert('Informações profissionais salvas com sucesso!');
+                router.push('/app_egresso');
+              } else {
+                const errorData = await response.json();
+                alert(`Erro ao salvar informações profissionais: ${errorData.error || 'Erro desconhecido'}`);
+              }
+        } catch (error){
+            console.log("Erro ao enviar dados de experiência:", error);
+            alert("Erro ao enviar dados de experiência.");
+        }
+        //===================================================================
+        router.push("/app_egresso");
     }
     return(
         <div className={styles.container}>
