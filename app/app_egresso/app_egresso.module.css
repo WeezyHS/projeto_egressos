@@ -39,6 +39,17 @@
     color: black;
 }
 
+.campo{
+    display: flex;
+}
+
+.labConsultEgressos{
+    margin-left: 50px;
+    margin-top: 40px;
+    font-weight: bold;
+    color: black;   
+}
+
 .lista{
     margin-top: 70px;
     color: black;
