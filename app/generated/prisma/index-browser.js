@@ -129,7 +129,6 @@ exports.Prisma.EgressoScalarFieldEnum = {
   fotoPerfil: 'fotoPerfil',
   linkedin: 'linkedin',
   instagram: 'instagram',
-  github: 'github',
   visivel: 'visivel'
 };
 
@@ -164,8 +163,7 @@ exports.Prisma.EgressoOrderByRelevanceFieldEnum = {
   pais: 'pais',
   fotoPerfil: 'fotoPerfil',
   linkedin: 'linkedin',
-  instagram: 'instagram',
-  github: 'github'
+  instagram: 'instagram'
 };
 
 exports.Prisma.TrabalhoAtualOrderByRelevanceFieldEnum = {

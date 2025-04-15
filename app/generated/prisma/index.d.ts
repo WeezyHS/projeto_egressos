@@ -976,7 +976,6 @@ export namespace Prisma {
     fotoPerfil: string | null
     linkedin: string | null
     instagram: string | null
-    github: string | null
     visivel: boolean | null
   }
 
@@ -992,7 +991,6 @@ export namespace Prisma {
     fotoPerfil: string | null
     linkedin: string | null
     instagram: string | null
-    github: string | null
     visivel: boolean | null
   }
 
@@ -1008,7 +1006,6 @@ export namespace Prisma {
     fotoPerfil: number
     linkedin: number
     instagram: number
-    github: number
     visivel: number
     _all: number
   }
@@ -1034,7 +1031,6 @@ export namespace Prisma {
     fotoPerfil?: true
     linkedin?: true
     instagram?: true
-    github?: true
     visivel?: true
   }
 
@@ -1050,7 +1046,6 @@ export namespace Prisma {
     fotoPerfil?: true
     linkedin?: true
     instagram?: true
-    github?: true
     visivel?: true
   }
 
@@ -1066,7 +1061,6 @@ export namespace Prisma {
     fotoPerfil?: true
     linkedin?: true
     instagram?: true
-    github?: true
     visivel?: true
     _all?: true
   }
@@ -1169,7 +1163,6 @@ export namespace Prisma {
     fotoPerfil: string | null
     linkedin: string | null
     instagram: string | null
-    github: string | null
     visivel: boolean
     _count: EgressoCountAggregateOutputType | null
     _avg: EgressoAvgAggregateOutputType | null
@@ -1204,7 +1197,6 @@ export namespace Prisma {
     fotoPerfil?: boolean
     linkedin?: boolean
     instagram?: boolean
-    github?: boolean
     visivel?: boolean
     trabalhoAtual?: boolean | Egresso$trabalhoAtualArgs<ExtArgs>
   }, ExtArgs["result"]["egresso"]>
@@ -1223,11 +1215,10 @@ export namespace Prisma {
     fotoPerfil?: boolean
     linkedin?: boolean
     instagram?: boolean
-    github?: boolean
     visivel?: boolean
   }
 
-  export type EgressoOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "cpf" | "senha" | "email" | "telefone" | "cidade" | "estado" | "pais" | "fotoPerfil" | "linkedin" | "instagram" | "github" | "visivel", ExtArgs["result"]["egresso"]>
+  export type EgressoOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "cpf" | "senha" | "email" | "telefone" | "cidade" | "estado" | "pais" | "fotoPerfil" | "linkedin" | "instagram" | "visivel", ExtArgs["result"]["egresso"]>
   export type EgressoInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     trabalhoAtual?: boolean | Egresso$trabalhoAtualArgs<ExtArgs>
   }
@@ -1249,7 +1240,6 @@ export namespace Prisma {
       fotoPerfil: string | null
       linkedin: string | null
       instagram: string | null
-      github: string | null
       visivel: boolean
     }, ExtArgs["result"]["egresso"]>
     composites: {}
@@ -1632,7 +1622,6 @@ export namespace Prisma {
     readonly fotoPerfil: FieldRef<"Egresso", 'String'>
     readonly linkedin: FieldRef<"Egresso", 'String'>
     readonly instagram: FieldRef<"Egresso", 'String'>
-    readonly github: FieldRef<"Egresso", 'String'>
     readonly visivel: FieldRef<"Egresso", 'Boolean'>
   }
     
@@ -3044,7 +3033,6 @@ export namespace Prisma {
     fotoPerfil: 'fotoPerfil',
     linkedin: 'linkedin',
     instagram: 'instagram',
-    github: 'github',
     visivel: 'visivel'
   };
 
@@ -3091,8 +3079,7 @@ export namespace Prisma {
     pais: 'pais',
     fotoPerfil: 'fotoPerfil',
     linkedin: 'linkedin',
-    instagram: 'instagram',
-    github: 'github'
+    instagram: 'instagram'
   };
 
   export type EgressoOrderByRelevanceFieldEnum = (typeof EgressoOrderByRelevanceFieldEnum)[keyof typeof EgressoOrderByRelevanceFieldEnum]
@@ -3160,7 +3147,6 @@ export namespace Prisma {
     fotoPerfil?: StringNullableFilter<"Egresso"> | string | null
     linkedin?: StringNullableFilter<"Egresso"> | string | null
     instagram?: StringNullableFilter<"Egresso"> | string | null
-    github?: StringNullableFilter<"Egresso"> | string | null
     visivel?: BoolFilter<"Egresso"> | boolean
     trabalhoAtual?: XOR<TrabalhoAtualNullableScalarRelationFilter, TrabalhoAtualWhereInput> | null
   }
@@ -3177,7 +3163,6 @@ export namespace Prisma {
     fotoPerfil?: SortOrderInput | SortOrder
     linkedin?: SortOrderInput | SortOrder
     instagram?: SortOrderInput | SortOrder
-    github?: SortOrderInput | SortOrder
     visivel?: SortOrder
     trabalhoAtual?: TrabalhoAtualOrderByWithRelationInput
     _relevance?: EgressoOrderByRelevanceInput
@@ -3198,7 +3183,6 @@ export namespace Prisma {
     fotoPerfil?: StringNullableFilter<"Egresso"> | string | null
     linkedin?: StringNullableFilter<"Egresso"> | string | null
     instagram?: StringNullableFilter<"Egresso"> | string | null
-    github?: StringNullableFilter<"Egresso"> | string | null
     visivel?: BoolFilter<"Egresso"> | boolean
     trabalhoAtual?: XOR<TrabalhoAtualNullableScalarRelationFilter, TrabalhoAtualWhereInput> | null
   }, "id" | "cpf" | "email">
@@ -3215,7 +3199,6 @@ export namespace Prisma {
     fotoPerfil?: SortOrderInput | SortOrder
     linkedin?: SortOrderInput | SortOrder
     instagram?: SortOrderInput | SortOrder
-    github?: SortOrderInput | SortOrder
     visivel?: SortOrder
     _count?: EgressoCountOrderByAggregateInput
     _avg?: EgressoAvgOrderByAggregateInput
@@ -3239,7 +3222,6 @@ export namespace Prisma {
     fotoPerfil?: StringNullableWithAggregatesFilter<"Egresso"> | string | null
     linkedin?: StringNullableWithAggregatesFilter<"Egresso"> | string | null
     instagram?: StringNullableWithAggregatesFilter<"Egresso"> | string | null
-    github?: StringNullableWithAggregatesFilter<"Egresso"> | string | null
     visivel?: BoolWithAggregatesFilter<"Egresso"> | boolean
   }
 
@@ -3327,7 +3309,6 @@ export namespace Prisma {
     fotoPerfil?: string | null
     linkedin?: string | null
     instagram?: string | null
-    github?: string | null
     visivel?: boolean
     trabalhoAtual?: TrabalhoAtualCreateNestedOneWithoutEgressoInput
   }
@@ -3344,7 +3325,6 @@ export namespace Prisma {
     fotoPerfil?: string | null
     linkedin?: string | null
     instagram?: string | null
-    github?: string | null
     visivel?: boolean
     trabalhoAtual?: TrabalhoAtualUncheckedCreateNestedOneWithoutEgressoInput
   }
@@ -3360,7 +3340,6 @@ export namespace Prisma {
     fotoPerfil?: NullableStringFieldUpdateOperationsInput | string | null
     linkedin?: NullableStringFieldUpdateOperationsInput | string | null
     instagram?: NullableStringFieldUpdateOperationsInput | string | null
-    github?: NullableStringFieldUpdateOperationsInput | string | null
     visivel?: BoolFieldUpdateOperationsInput | boolean
     trabalhoAtual?: TrabalhoAtualUpdateOneWithoutEgressoNestedInput
   }
@@ -3377,7 +3356,6 @@ export namespace Prisma {
     fotoPerfil?: NullableStringFieldUpdateOperationsInput | string | null
     linkedin?: NullableStringFieldUpdateOperationsInput | string | null
     instagram?: NullableStringFieldUpdateOperationsInput | string | null
-    github?: NullableStringFieldUpdateOperationsInput | string | null
     visivel?: BoolFieldUpdateOperationsInput | boolean
     trabalhoAtual?: TrabalhoAtualUncheckedUpdateOneWithoutEgressoNestedInput
   }
@@ -3394,7 +3372,6 @@ export namespace Prisma {
     fotoPerfil?: string | null
     linkedin?: string | null
     instagram?: string | null
-    github?: string | null
     visivel?: boolean
   }
 
@@ -3409,7 +3386,6 @@ export namespace Prisma {
     fotoPerfil?: NullableStringFieldUpdateOperationsInput | string | null
     linkedin?: NullableStringFieldUpdateOperationsInput | string | null
     instagram?: NullableStringFieldUpdateOperationsInput | string | null
-    github?: NullableStringFieldUpdateOperationsInput | string | null
     visivel?: BoolFieldUpdateOperationsInput | boolean
   }
 
@@ -3425,7 +3401,6 @@ export namespace Prisma {
     fotoPerfil?: NullableStringFieldUpdateOperationsInput | string | null
     linkedin?: NullableStringFieldUpdateOperationsInput | string | null
     instagram?: NullableStringFieldUpdateOperationsInput | string | null
-    github?: NullableStringFieldUpdateOperationsInput | string | null
     visivel?: BoolFieldUpdateOperationsInput | boolean
   }
 
@@ -3576,7 +3551,6 @@ export namespace Prisma {
     fotoPerfil?: SortOrder
     linkedin?: SortOrder
     instagram?: SortOrder
-    github?: SortOrder
     visivel?: SortOrder
   }
 
@@ -3596,7 +3570,6 @@ export namespace Prisma {
     fotoPerfil?: SortOrder
     linkedin?: SortOrder
     instagram?: SortOrder
-    github?: SortOrder
     visivel?: SortOrder
   }
 
@@ -3612,7 +3585,6 @@ export namespace Prisma {
     fotoPerfil?: SortOrder
     linkedin?: SortOrder
     instagram?: SortOrder
-    github?: SortOrder
     visivel?: SortOrder
   }
 
@@ -3995,7 +3967,6 @@ export namespace Prisma {
     fotoPerfil?: string | null
     linkedin?: string | null
     instagram?: string | null
-    github?: string | null
     visivel?: boolean
   }
 
@@ -4011,7 +3982,6 @@ export namespace Prisma {
     fotoPerfil?: string | null
     linkedin?: string | null
     instagram?: string | null
-    github?: string | null
     visivel?: boolean
   }
 
@@ -4042,7 +4012,6 @@ export namespace Prisma {
     fotoPerfil?: NullableStringFieldUpdateOperationsInput | string | null
     linkedin?: NullableStringFieldUpdateOperationsInput | string | null
     instagram?: NullableStringFieldUpdateOperationsInput | string | null
-    github?: NullableStringFieldUpdateOperationsInput | string | null
     visivel?: BoolFieldUpdateOperationsInput | boolean
   }
 
@@ -4058,7 +4027,6 @@ export namespace Prisma {
     fotoPerfil?: NullableStringFieldUpdateOperationsInput | string | null
     linkedin?: NullableStringFieldUpdateOperationsInput | string | null
     instagram?: NullableStringFieldUpdateOperationsInput | string | null
-    github?: NullableStringFieldUpdateOperationsInput | string | null
     visivel?: BoolFieldUpdateOperationsInput | boolean
   }
 
