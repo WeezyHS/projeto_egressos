@@ -38,10 +38,11 @@ export default function CriarContaInstituicao() {
     console.log('Email:', email, 'Senha:', senha);
     router.push("/criarconta_instituicao"); //Redireciona para perfilinstituicao
   }
-  const handleEntrar = async () =>{
+  
+  const handleEntrar = async () => {
     if (!camposVazios()) return;
 
-    try{
+    try {
       const response = await fetch('/api/instituicao/login', {
         method: 'POST',
         headers: {
@@ -51,24 +52,17 @@ export default function CriarContaInstituicao() {
       });
 
       if (response.ok) {
-        // const data = await response.json();
+        const data = await response.json();
+        alert(data.message || 'Login bem-sucedido!');
+        console.log('Login bem-sucedido:', data);
         // Aqui você pode redirecionar o usuário para a página principal da instituição
         router.push('/app_instituicao');
       } else {
-        console.log('Resposta de erro completa:', response);
-        try{
-          const errorData = await response.json();
+        const errorData = await response.json();
         alert(errorData.error || 'Erro ao fazer login.');
-        console.error('Dados de erro do login:', errorData);
-        const errorText = await response.text();
-        console.log('Texto da resposta de erro:', errorText);
-        } catch (syntaxError){
-          console.error('Erro ao parsear a resposta de erro:', syntaxError);
-          alert('Erro ao fazer login.');
-          console.error('Resposta de erro original:', await response.text());
-        }
+        console.error('Erro ao fazer login:', errorData);
       }
-    } catch (error){
+    } catch (error) {
       alert('Erro de conexão com o servidor.');
       console.error('Erro de conexão:', error);
     }
