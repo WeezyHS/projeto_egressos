@@ -23,6 +23,11 @@ export type Egresso = $Result.DefaultSelection<Prisma.$EgressoPayload>
  * 
  */
 export type TrabalhoAtual = $Result.DefaultSelection<Prisma.$TrabalhoAtualPayload>
+/**
+ * Model Instituicao
+ * 
+ */
+export type Instituicao = $Result.DefaultSelection<Prisma.$InstituicaoPayload>
 
 /**
  * ##  Prisma Client ʲˢ
@@ -168,6 +173,16 @@ export class PrismaClient<
     * ```
     */
   get trabalhoAtual(): Prisma.TrabalhoAtualDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.instituicao`: Exposes CRUD operations for the **Instituicao** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Instituicaos
+    * const instituicaos = await prisma.instituicao.findMany()
+    * ```
+    */
+  get instituicao(): Prisma.InstituicaoDelegate<ExtArgs, ClientOptions>;
 }
 
 export namespace Prisma {
@@ -609,7 +624,8 @@ export namespace Prisma {
 
   export const ModelName: {
     Egresso: 'Egresso',
-    TrabalhoAtual: 'TrabalhoAtual'
+    TrabalhoAtual: 'TrabalhoAtual',
+    Instituicao: 'Instituicao'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -628,7 +644,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "egresso" | "trabalhoAtual"
+      modelProps: "egresso" | "trabalhoAtual" | "instituicao"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -764,6 +780,72 @@ export namespace Prisma {
           }
         }
       }
+      Instituicao: {
+        payload: Prisma.$InstituicaoPayload<ExtArgs>
+        fields: Prisma.InstituicaoFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.InstituicaoFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$InstituicaoPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.InstituicaoFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$InstituicaoPayload>
+          }
+          findFirst: {
+            args: Prisma.InstituicaoFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$InstituicaoPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.InstituicaoFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$InstituicaoPayload>
+          }
+          findMany: {
+            args: Prisma.InstituicaoFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$InstituicaoPayload>[]
+          }
+          create: {
+            args: Prisma.InstituicaoCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$InstituicaoPayload>
+          }
+          createMany: {
+            args: Prisma.InstituicaoCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          delete: {
+            args: Prisma.InstituicaoDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$InstituicaoPayload>
+          }
+          update: {
+            args: Prisma.InstituicaoUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$InstituicaoPayload>
+          }
+          deleteMany: {
+            args: Prisma.InstituicaoDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.InstituicaoUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.InstituicaoUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$InstituicaoPayload>
+          }
+          aggregate: {
+            args: Prisma.InstituicaoAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateInstituicao>
+          }
+          groupBy: {
+            args: Prisma.InstituicaoGroupByArgs<ExtArgs>
+            result: $Utils.Optional<InstituicaoGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.InstituicaoCountArgs<ExtArgs>
+            result: $Utils.Optional<InstituicaoCountAggregateOutputType> | number
+          }
+        }
+      }
     }
   } & {
     other: {
@@ -850,6 +932,7 @@ export namespace Prisma {
   export type GlobalOmitConfig = {
     egresso?: EgressoOmit
     trabalhoAtual?: TrabalhoAtualOmit
+    instituicao?: InstituicaoOmit
   }
 
   /* Types for Logging */
@@ -3008,6 +3091,988 @@ export namespace Prisma {
 
 
   /**
+   * Model Instituicao
+   */
+
+  export type AggregateInstituicao = {
+    _count: InstituicaoCountAggregateOutputType | null
+    _avg: InstituicaoAvgAggregateOutputType | null
+    _sum: InstituicaoSumAggregateOutputType | null
+    _min: InstituicaoMinAggregateOutputType | null
+    _max: InstituicaoMaxAggregateOutputType | null
+  }
+
+  export type InstituicaoAvgAggregateOutputType = {
+    id: number | null
+  }
+
+  export type InstituicaoSumAggregateOutputType = {
+    id: number | null
+  }
+
+  export type InstituicaoMinAggregateOutputType = {
+    id: number | null
+    fotoPerfil: string | null
+    nomeCompleto: string | null
+    cnpj: string | null
+    telefone: string | null
+    endereco: string | null
+    cep: string | null
+    nomeRepresentante: string | null
+    cpfRepresentante: string | null
+    email: string | null
+    senha: string | null
+  }
+
+  export type InstituicaoMaxAggregateOutputType = {
+    id: number | null
+    fotoPerfil: string | null
+    nomeCompleto: string | null
+    cnpj: string | null
+    telefone: string | null
+    endereco: string | null
+    cep: string | null
+    nomeRepresentante: string | null
+    cpfRepresentante: string | null
+    email: string | null
+    senha: string | null
+  }
+
+  export type InstituicaoCountAggregateOutputType = {
+    id: number
+    fotoPerfil: number
+    nomeCompleto: number
+    cnpj: number
+    telefone: number
+    endereco: number
+    cep: number
+    nomeRepresentante: number
+    cpfRepresentante: number
+    email: number
+    senha: number
+    _all: number
+  }
+
+
+  export type InstituicaoAvgAggregateInputType = {
+    id?: true
+  }
+
+  export type InstituicaoSumAggregateInputType = {
+    id?: true
+  }
+
+  export type InstituicaoMinAggregateInputType = {
+    id?: true
+    fotoPerfil?: true
+    nomeCompleto?: true
+    cnpj?: true
+    telefone?: true
+    endereco?: true
+    cep?: true
+    nomeRepresentante?: true
+    cpfRepresentante?: true
+    email?: true
+    senha?: true
+  }
+
+  export type InstituicaoMaxAggregateInputType = {
+    id?: true
+    fotoPerfil?: true
+    nomeCompleto?: true
+    cnpj?: true
+    telefone?: true
+    endereco?: true
+    cep?: true
+    nomeRepresentante?: true
+    cpfRepresentante?: true
+    email?: true
+    senha?: true
+  }
+
+  export type InstituicaoCountAggregateInputType = {
+    id?: true
+    fotoPerfil?: true
+    nomeCompleto?: true
+    cnpj?: true
+    telefone?: true
+    endereco?: true
+    cep?: true
+    nomeRepresentante?: true
+    cpfRepresentante?: true
+    email?: true
+    senha?: true
+    _all?: true
+  }
+
+  export type InstituicaoAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Instituicao to aggregate.
+     */
+    where?: InstituicaoWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Instituicaos to fetch.
+     */
+    orderBy?: InstituicaoOrderByWithRelationInput | InstituicaoOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: InstituicaoWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Instituicaos from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Instituicaos.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned Instituicaos
+    **/
+    _count?: true | InstituicaoCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: InstituicaoAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: InstituicaoSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: InstituicaoMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: InstituicaoMaxAggregateInputType
+  }
+
+  export type GetInstituicaoAggregateType<T extends InstituicaoAggregateArgs> = {
+        [P in keyof T & keyof AggregateInstituicao]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateInstituicao[P]>
+      : GetScalarType<T[P], AggregateInstituicao[P]>
+  }
+
+
+
+
+  export type InstituicaoGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: InstituicaoWhereInput
+    orderBy?: InstituicaoOrderByWithAggregationInput | InstituicaoOrderByWithAggregationInput[]
+    by: InstituicaoScalarFieldEnum[] | InstituicaoScalarFieldEnum
+    having?: InstituicaoScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: InstituicaoCountAggregateInputType | true
+    _avg?: InstituicaoAvgAggregateInputType
+    _sum?: InstituicaoSumAggregateInputType
+    _min?: InstituicaoMinAggregateInputType
+    _max?: InstituicaoMaxAggregateInputType
+  }
+
+  export type InstituicaoGroupByOutputType = {
+    id: number
+    fotoPerfil: string | null
+    nomeCompleto: string
+    cnpj: string
+    telefone: string | null
+    endereco: string | null
+    cep: string | null
+    nomeRepresentante: string | null
+    cpfRepresentante: string | null
+    email: string
+    senha: string
+    _count: InstituicaoCountAggregateOutputType | null
+    _avg: InstituicaoAvgAggregateOutputType | null
+    _sum: InstituicaoSumAggregateOutputType | null
+    _min: InstituicaoMinAggregateOutputType | null
+    _max: InstituicaoMaxAggregateOutputType | null
+  }
+
+  type GetInstituicaoGroupByPayload<T extends InstituicaoGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<InstituicaoGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof InstituicaoGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], InstituicaoGroupByOutputType[P]>
+            : GetScalarType<T[P], InstituicaoGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type InstituicaoSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    fotoPerfil?: boolean
+    nomeCompleto?: boolean
+    cnpj?: boolean
+    telefone?: boolean
+    endereco?: boolean
+    cep?: boolean
+    nomeRepresentante?: boolean
+    cpfRepresentante?: boolean
+    email?: boolean
+    senha?: boolean
+  }, ExtArgs["result"]["instituicao"]>
+
+
+
+  export type InstituicaoSelectScalar = {
+    id?: boolean
+    fotoPerfil?: boolean
+    nomeCompleto?: boolean
+    cnpj?: boolean
+    telefone?: boolean
+    endereco?: boolean
+    cep?: boolean
+    nomeRepresentante?: boolean
+    cpfRepresentante?: boolean
+    email?: boolean
+    senha?: boolean
+  }
+
+  export type InstituicaoOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "fotoPerfil" | "nomeCompleto" | "cnpj" | "telefone" | "endereco" | "cep" | "nomeRepresentante" | "cpfRepresentante" | "email" | "senha", ExtArgs["result"]["instituicao"]>
+
+  export type $InstituicaoPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "Instituicao"
+    objects: {}
+    scalars: $Extensions.GetPayloadResult<{
+      id: number
+      fotoPerfil: string | null
+      nomeCompleto: string
+      cnpj: string
+      telefone: string | null
+      endereco: string | null
+      cep: string | null
+      nomeRepresentante: string | null
+      cpfRepresentante: string | null
+      email: string
+      senha: string
+    }, ExtArgs["result"]["instituicao"]>
+    composites: {}
+  }
+
+  type InstituicaoGetPayload<S extends boolean | null | undefined | InstituicaoDefaultArgs> = $Result.GetResult<Prisma.$InstituicaoPayload, S>
+
+  type InstituicaoCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<InstituicaoFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: InstituicaoCountAggregateInputType | true
+    }
+
+  export interface InstituicaoDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['Instituicao'], meta: { name: 'Instituicao' } }
+    /**
+     * Find zero or one Instituicao that matches the filter.
+     * @param {InstituicaoFindUniqueArgs} args - Arguments to find a Instituicao
+     * @example
+     * // Get one Instituicao
+     * const instituicao = await prisma.instituicao.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends InstituicaoFindUniqueArgs>(args: SelectSubset<T, InstituicaoFindUniqueArgs<ExtArgs>>): Prisma__InstituicaoClient<$Result.GetResult<Prisma.$InstituicaoPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one Instituicao that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {InstituicaoFindUniqueOrThrowArgs} args - Arguments to find a Instituicao
+     * @example
+     * // Get one Instituicao
+     * const instituicao = await prisma.instituicao.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends InstituicaoFindUniqueOrThrowArgs>(args: SelectSubset<T, InstituicaoFindUniqueOrThrowArgs<ExtArgs>>): Prisma__InstituicaoClient<$Result.GetResult<Prisma.$InstituicaoPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Instituicao that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {InstituicaoFindFirstArgs} args - Arguments to find a Instituicao
+     * @example
+     * // Get one Instituicao
+     * const instituicao = await prisma.instituicao.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends InstituicaoFindFirstArgs>(args?: SelectSubset<T, InstituicaoFindFirstArgs<ExtArgs>>): Prisma__InstituicaoClient<$Result.GetResult<Prisma.$InstituicaoPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Instituicao that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {InstituicaoFindFirstOrThrowArgs} args - Arguments to find a Instituicao
+     * @example
+     * // Get one Instituicao
+     * const instituicao = await prisma.instituicao.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends InstituicaoFindFirstOrThrowArgs>(args?: SelectSubset<T, InstituicaoFindFirstOrThrowArgs<ExtArgs>>): Prisma__InstituicaoClient<$Result.GetResult<Prisma.$InstituicaoPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more Instituicaos that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {InstituicaoFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all Instituicaos
+     * const instituicaos = await prisma.instituicao.findMany()
+     * 
+     * // Get first 10 Instituicaos
+     * const instituicaos = await prisma.instituicao.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const instituicaoWithIdOnly = await prisma.instituicao.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends InstituicaoFindManyArgs>(args?: SelectSubset<T, InstituicaoFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$InstituicaoPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a Instituicao.
+     * @param {InstituicaoCreateArgs} args - Arguments to create a Instituicao.
+     * @example
+     * // Create one Instituicao
+     * const Instituicao = await prisma.instituicao.create({
+     *   data: {
+     *     // ... data to create a Instituicao
+     *   }
+     * })
+     * 
+     */
+    create<T extends InstituicaoCreateArgs>(args: SelectSubset<T, InstituicaoCreateArgs<ExtArgs>>): Prisma__InstituicaoClient<$Result.GetResult<Prisma.$InstituicaoPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many Instituicaos.
+     * @param {InstituicaoCreateManyArgs} args - Arguments to create many Instituicaos.
+     * @example
+     * // Create many Instituicaos
+     * const instituicao = await prisma.instituicao.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends InstituicaoCreateManyArgs>(args?: SelectSubset<T, InstituicaoCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Delete a Instituicao.
+     * @param {InstituicaoDeleteArgs} args - Arguments to delete one Instituicao.
+     * @example
+     * // Delete one Instituicao
+     * const Instituicao = await prisma.instituicao.delete({
+     *   where: {
+     *     // ... filter to delete one Instituicao
+     *   }
+     * })
+     * 
+     */
+    delete<T extends InstituicaoDeleteArgs>(args: SelectSubset<T, InstituicaoDeleteArgs<ExtArgs>>): Prisma__InstituicaoClient<$Result.GetResult<Prisma.$InstituicaoPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one Instituicao.
+     * @param {InstituicaoUpdateArgs} args - Arguments to update one Instituicao.
+     * @example
+     * // Update one Instituicao
+     * const instituicao = await prisma.instituicao.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends InstituicaoUpdateArgs>(args: SelectSubset<T, InstituicaoUpdateArgs<ExtArgs>>): Prisma__InstituicaoClient<$Result.GetResult<Prisma.$InstituicaoPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more Instituicaos.
+     * @param {InstituicaoDeleteManyArgs} args - Arguments to filter Instituicaos to delete.
+     * @example
+     * // Delete a few Instituicaos
+     * const { count } = await prisma.instituicao.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends InstituicaoDeleteManyArgs>(args?: SelectSubset<T, InstituicaoDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Instituicaos.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {InstituicaoUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many Instituicaos
+     * const instituicao = await prisma.instituicao.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends InstituicaoUpdateManyArgs>(args: SelectSubset<T, InstituicaoUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one Instituicao.
+     * @param {InstituicaoUpsertArgs} args - Arguments to update or create a Instituicao.
+     * @example
+     * // Update or create a Instituicao
+     * const instituicao = await prisma.instituicao.upsert({
+     *   create: {
+     *     // ... data to create a Instituicao
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the Instituicao we want to update
+     *   }
+     * })
+     */
+    upsert<T extends InstituicaoUpsertArgs>(args: SelectSubset<T, InstituicaoUpsertArgs<ExtArgs>>): Prisma__InstituicaoClient<$Result.GetResult<Prisma.$InstituicaoPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of Instituicaos.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {InstituicaoCountArgs} args - Arguments to filter Instituicaos to count.
+     * @example
+     * // Count the number of Instituicaos
+     * const count = await prisma.instituicao.count({
+     *   where: {
+     *     // ... the filter for the Instituicaos we want to count
+     *   }
+     * })
+    **/
+    count<T extends InstituicaoCountArgs>(
+      args?: Subset<T, InstituicaoCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], InstituicaoCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a Instituicao.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {InstituicaoAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends InstituicaoAggregateArgs>(args: Subset<T, InstituicaoAggregateArgs>): Prisma.PrismaPromise<GetInstituicaoAggregateType<T>>
+
+    /**
+     * Group by Instituicao.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {InstituicaoGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends InstituicaoGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: InstituicaoGroupByArgs['orderBy'] }
+        : { orderBy?: InstituicaoGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, InstituicaoGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetInstituicaoGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the Instituicao model
+   */
+  readonly fields: InstituicaoFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for Instituicao.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__InstituicaoClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the Instituicao model
+   */
+  interface InstituicaoFieldRefs {
+    readonly id: FieldRef<"Instituicao", 'Int'>
+    readonly fotoPerfil: FieldRef<"Instituicao", 'String'>
+    readonly nomeCompleto: FieldRef<"Instituicao", 'String'>
+    readonly cnpj: FieldRef<"Instituicao", 'String'>
+    readonly telefone: FieldRef<"Instituicao", 'String'>
+    readonly endereco: FieldRef<"Instituicao", 'String'>
+    readonly cep: FieldRef<"Instituicao", 'String'>
+    readonly nomeRepresentante: FieldRef<"Instituicao", 'String'>
+    readonly cpfRepresentante: FieldRef<"Instituicao", 'String'>
+    readonly email: FieldRef<"Instituicao", 'String'>
+    readonly senha: FieldRef<"Instituicao", 'String'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * Instituicao findUnique
+   */
+  export type InstituicaoFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Instituicao
+     */
+    select?: InstituicaoSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Instituicao
+     */
+    omit?: InstituicaoOmit<ExtArgs> | null
+    /**
+     * Filter, which Instituicao to fetch.
+     */
+    where: InstituicaoWhereUniqueInput
+  }
+
+  /**
+   * Instituicao findUniqueOrThrow
+   */
+  export type InstituicaoFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Instituicao
+     */
+    select?: InstituicaoSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Instituicao
+     */
+    omit?: InstituicaoOmit<ExtArgs> | null
+    /**
+     * Filter, which Instituicao to fetch.
+     */
+    where: InstituicaoWhereUniqueInput
+  }
+
+  /**
+   * Instituicao findFirst
+   */
+  export type InstituicaoFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Instituicao
+     */
+    select?: InstituicaoSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Instituicao
+     */
+    omit?: InstituicaoOmit<ExtArgs> | null
+    /**
+     * Filter, which Instituicao to fetch.
+     */
+    where?: InstituicaoWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Instituicaos to fetch.
+     */
+    orderBy?: InstituicaoOrderByWithRelationInput | InstituicaoOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Instituicaos.
+     */
+    cursor?: InstituicaoWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Instituicaos from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Instituicaos.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Instituicaos.
+     */
+    distinct?: InstituicaoScalarFieldEnum | InstituicaoScalarFieldEnum[]
+  }
+
+  /**
+   * Instituicao findFirstOrThrow
+   */
+  export type InstituicaoFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Instituicao
+     */
+    select?: InstituicaoSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Instituicao
+     */
+    omit?: InstituicaoOmit<ExtArgs> | null
+    /**
+     * Filter, which Instituicao to fetch.
+     */
+    where?: InstituicaoWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Instituicaos to fetch.
+     */
+    orderBy?: InstituicaoOrderByWithRelationInput | InstituicaoOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Instituicaos.
+     */
+    cursor?: InstituicaoWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Instituicaos from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Instituicaos.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Instituicaos.
+     */
+    distinct?: InstituicaoScalarFieldEnum | InstituicaoScalarFieldEnum[]
+  }
+
+  /**
+   * Instituicao findMany
+   */
+  export type InstituicaoFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Instituicao
+     */
+    select?: InstituicaoSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Instituicao
+     */
+    omit?: InstituicaoOmit<ExtArgs> | null
+    /**
+     * Filter, which Instituicaos to fetch.
+     */
+    where?: InstituicaoWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Instituicaos to fetch.
+     */
+    orderBy?: InstituicaoOrderByWithRelationInput | InstituicaoOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing Instituicaos.
+     */
+    cursor?: InstituicaoWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Instituicaos from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Instituicaos.
+     */
+    skip?: number
+    distinct?: InstituicaoScalarFieldEnum | InstituicaoScalarFieldEnum[]
+  }
+
+  /**
+   * Instituicao create
+   */
+  export type InstituicaoCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Instituicao
+     */
+    select?: InstituicaoSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Instituicao
+     */
+    omit?: InstituicaoOmit<ExtArgs> | null
+    /**
+     * The data needed to create a Instituicao.
+     */
+    data: XOR<InstituicaoCreateInput, InstituicaoUncheckedCreateInput>
+  }
+
+  /**
+   * Instituicao createMany
+   */
+  export type InstituicaoCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many Instituicaos.
+     */
+    data: InstituicaoCreateManyInput | InstituicaoCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * Instituicao update
+   */
+  export type InstituicaoUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Instituicao
+     */
+    select?: InstituicaoSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Instituicao
+     */
+    omit?: InstituicaoOmit<ExtArgs> | null
+    /**
+     * The data needed to update a Instituicao.
+     */
+    data: XOR<InstituicaoUpdateInput, InstituicaoUncheckedUpdateInput>
+    /**
+     * Choose, which Instituicao to update.
+     */
+    where: InstituicaoWhereUniqueInput
+  }
+
+  /**
+   * Instituicao updateMany
+   */
+  export type InstituicaoUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update Instituicaos.
+     */
+    data: XOR<InstituicaoUpdateManyMutationInput, InstituicaoUncheckedUpdateManyInput>
+    /**
+     * Filter which Instituicaos to update
+     */
+    where?: InstituicaoWhereInput
+    /**
+     * Limit how many Instituicaos to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * Instituicao upsert
+   */
+  export type InstituicaoUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Instituicao
+     */
+    select?: InstituicaoSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Instituicao
+     */
+    omit?: InstituicaoOmit<ExtArgs> | null
+    /**
+     * The filter to search for the Instituicao to update in case it exists.
+     */
+    where: InstituicaoWhereUniqueInput
+    /**
+     * In case the Instituicao found by the `where` argument doesn't exist, create a new Instituicao with this data.
+     */
+    create: XOR<InstituicaoCreateInput, InstituicaoUncheckedCreateInput>
+    /**
+     * In case the Instituicao was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<InstituicaoUpdateInput, InstituicaoUncheckedUpdateInput>
+  }
+
+  /**
+   * Instituicao delete
+   */
+  export type InstituicaoDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Instituicao
+     */
+    select?: InstituicaoSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Instituicao
+     */
+    omit?: InstituicaoOmit<ExtArgs> | null
+    /**
+     * Filter which Instituicao to delete.
+     */
+    where: InstituicaoWhereUniqueInput
+  }
+
+  /**
+   * Instituicao deleteMany
+   */
+  export type InstituicaoDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Instituicaos to delete
+     */
+    where?: InstituicaoWhereInput
+    /**
+     * Limit how many Instituicaos to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * Instituicao without action
+   */
+  export type InstituicaoDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Instituicao
+     */
+    select?: InstituicaoSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Instituicao
+     */
+    omit?: InstituicaoOmit<ExtArgs> | null
+  }
+
+
+  /**
    * Enums
    */
 
@@ -3053,6 +4118,23 @@ export namespace Prisma {
   export type TrabalhoAtualScalarFieldEnum = (typeof TrabalhoAtualScalarFieldEnum)[keyof typeof TrabalhoAtualScalarFieldEnum]
 
 
+  export const InstituicaoScalarFieldEnum: {
+    id: 'id',
+    fotoPerfil: 'fotoPerfil',
+    nomeCompleto: 'nomeCompleto',
+    cnpj: 'cnpj',
+    telefone: 'telefone',
+    endereco: 'endereco',
+    cep: 'cep',
+    nomeRepresentante: 'nomeRepresentante',
+    cpfRepresentante: 'cpfRepresentante',
+    email: 'email',
+    senha: 'senha'
+  };
+
+  export type InstituicaoScalarFieldEnum = (typeof InstituicaoScalarFieldEnum)[keyof typeof InstituicaoScalarFieldEnum]
+
+
   export const SortOrder: {
     asc: 'asc',
     desc: 'desc'
@@ -3094,6 +4176,22 @@ export namespace Prisma {
   };
 
   export type TrabalhoAtualOrderByRelevanceFieldEnum = (typeof TrabalhoAtualOrderByRelevanceFieldEnum)[keyof typeof TrabalhoAtualOrderByRelevanceFieldEnum]
+
+
+  export const InstituicaoOrderByRelevanceFieldEnum: {
+    fotoPerfil: 'fotoPerfil',
+    nomeCompleto: 'nomeCompleto',
+    cnpj: 'cnpj',
+    telefone: 'telefone',
+    endereco: 'endereco',
+    cep: 'cep',
+    nomeRepresentante: 'nomeRepresentante',
+    cpfRepresentante: 'cpfRepresentante',
+    email: 'email',
+    senha: 'senha'
+  };
+
+  export type InstituicaoOrderByRelevanceFieldEnum = (typeof InstituicaoOrderByRelevanceFieldEnum)[keyof typeof InstituicaoOrderByRelevanceFieldEnum]
 
 
   /**
@@ -3298,6 +4396,91 @@ export namespace Prisma {
     egressoId?: IntWithAggregatesFilter<"TrabalhoAtual"> | number
   }
 
+  export type InstituicaoWhereInput = {
+    AND?: InstituicaoWhereInput | InstituicaoWhereInput[]
+    OR?: InstituicaoWhereInput[]
+    NOT?: InstituicaoWhereInput | InstituicaoWhereInput[]
+    id?: IntFilter<"Instituicao"> | number
+    fotoPerfil?: StringNullableFilter<"Instituicao"> | string | null
+    nomeCompleto?: StringFilter<"Instituicao"> | string
+    cnpj?: StringFilter<"Instituicao"> | string
+    telefone?: StringNullableFilter<"Instituicao"> | string | null
+    endereco?: StringNullableFilter<"Instituicao"> | string | null
+    cep?: StringNullableFilter<"Instituicao"> | string | null
+    nomeRepresentante?: StringNullableFilter<"Instituicao"> | string | null
+    cpfRepresentante?: StringNullableFilter<"Instituicao"> | string | null
+    email?: StringFilter<"Instituicao"> | string
+    senha?: StringFilter<"Instituicao"> | string
+  }
+
+  export type InstituicaoOrderByWithRelationInput = {
+    id?: SortOrder
+    fotoPerfil?: SortOrderInput | SortOrder
+    nomeCompleto?: SortOrder
+    cnpj?: SortOrder
+    telefone?: SortOrderInput | SortOrder
+    endereco?: SortOrderInput | SortOrder
+    cep?: SortOrderInput | SortOrder
+    nomeRepresentante?: SortOrderInput | SortOrder
+    cpfRepresentante?: SortOrderInput | SortOrder
+    email?: SortOrder
+    senha?: SortOrder
+    _relevance?: InstituicaoOrderByRelevanceInput
+  }
+
+  export type InstituicaoWhereUniqueInput = Prisma.AtLeast<{
+    id?: number
+    cnpj?: string
+    email?: string
+    AND?: InstituicaoWhereInput | InstituicaoWhereInput[]
+    OR?: InstituicaoWhereInput[]
+    NOT?: InstituicaoWhereInput | InstituicaoWhereInput[]
+    fotoPerfil?: StringNullableFilter<"Instituicao"> | string | null
+    nomeCompleto?: StringFilter<"Instituicao"> | string
+    telefone?: StringNullableFilter<"Instituicao"> | string | null
+    endereco?: StringNullableFilter<"Instituicao"> | string | null
+    cep?: StringNullableFilter<"Instituicao"> | string | null
+    nomeRepresentante?: StringNullableFilter<"Instituicao"> | string | null
+    cpfRepresentante?: StringNullableFilter<"Instituicao"> | string | null
+    senha?: StringFilter<"Instituicao"> | string
+  }, "id" | "cnpj" | "email">
+
+  export type InstituicaoOrderByWithAggregationInput = {
+    id?: SortOrder
+    fotoPerfil?: SortOrderInput | SortOrder
+    nomeCompleto?: SortOrder
+    cnpj?: SortOrder
+    telefone?: SortOrderInput | SortOrder
+    endereco?: SortOrderInput | SortOrder
+    cep?: SortOrderInput | SortOrder
+    nomeRepresentante?: SortOrderInput | SortOrder
+    cpfRepresentante?: SortOrderInput | SortOrder
+    email?: SortOrder
+    senha?: SortOrder
+    _count?: InstituicaoCountOrderByAggregateInput
+    _avg?: InstituicaoAvgOrderByAggregateInput
+    _max?: InstituicaoMaxOrderByAggregateInput
+    _min?: InstituicaoMinOrderByAggregateInput
+    _sum?: InstituicaoSumOrderByAggregateInput
+  }
+
+  export type InstituicaoScalarWhereWithAggregatesInput = {
+    AND?: InstituicaoScalarWhereWithAggregatesInput | InstituicaoScalarWhereWithAggregatesInput[]
+    OR?: InstituicaoScalarWhereWithAggregatesInput[]
+    NOT?: InstituicaoScalarWhereWithAggregatesInput | InstituicaoScalarWhereWithAggregatesInput[]
+    id?: IntWithAggregatesFilter<"Instituicao"> | number
+    fotoPerfil?: StringNullableWithAggregatesFilter<"Instituicao"> | string | null
+    nomeCompleto?: StringWithAggregatesFilter<"Instituicao"> | string
+    cnpj?: StringWithAggregatesFilter<"Instituicao"> | string
+    telefone?: StringNullableWithAggregatesFilter<"Instituicao"> | string | null
+    endereco?: StringNullableWithAggregatesFilter<"Instituicao"> | string | null
+    cep?: StringNullableWithAggregatesFilter<"Instituicao"> | string | null
+    nomeRepresentante?: StringNullableWithAggregatesFilter<"Instituicao"> | string | null
+    cpfRepresentante?: StringNullableWithAggregatesFilter<"Instituicao"> | string | null
+    email?: StringWithAggregatesFilter<"Instituicao"> | string
+    senha?: StringWithAggregatesFilter<"Instituicao"> | string
+  }
+
   export type EgressoCreateInput = {
     cpf: string
     senha: string
@@ -3475,6 +4658,101 @@ export namespace Prisma {
     cargo?: StringFieldUpdateOperationsInput | string
     anoEntrada?: IntFieldUpdateOperationsInput | number
     egressoId?: IntFieldUpdateOperationsInput | number
+  }
+
+  export type InstituicaoCreateInput = {
+    fotoPerfil?: string | null
+    nomeCompleto: string
+    cnpj: string
+    telefone?: string | null
+    endereco?: string | null
+    cep?: string | null
+    nomeRepresentante?: string | null
+    cpfRepresentante?: string | null
+    email: string
+    senha: string
+  }
+
+  export type InstituicaoUncheckedCreateInput = {
+    id?: number
+    fotoPerfil?: string | null
+    nomeCompleto: string
+    cnpj: string
+    telefone?: string | null
+    endereco?: string | null
+    cep?: string | null
+    nomeRepresentante?: string | null
+    cpfRepresentante?: string | null
+    email: string
+    senha: string
+  }
+
+  export type InstituicaoUpdateInput = {
+    fotoPerfil?: NullableStringFieldUpdateOperationsInput | string | null
+    nomeCompleto?: StringFieldUpdateOperationsInput | string
+    cnpj?: StringFieldUpdateOperationsInput | string
+    telefone?: NullableStringFieldUpdateOperationsInput | string | null
+    endereco?: NullableStringFieldUpdateOperationsInput | string | null
+    cep?: NullableStringFieldUpdateOperationsInput | string | null
+    nomeRepresentante?: NullableStringFieldUpdateOperationsInput | string | null
+    cpfRepresentante?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: StringFieldUpdateOperationsInput | string
+    senha?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type InstituicaoUncheckedUpdateInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    fotoPerfil?: NullableStringFieldUpdateOperationsInput | string | null
+    nomeCompleto?: StringFieldUpdateOperationsInput | string
+    cnpj?: StringFieldUpdateOperationsInput | string
+    telefone?: NullableStringFieldUpdateOperationsInput | string | null
+    endereco?: NullableStringFieldUpdateOperationsInput | string | null
+    cep?: NullableStringFieldUpdateOperationsInput | string | null
+    nomeRepresentante?: NullableStringFieldUpdateOperationsInput | string | null
+    cpfRepresentante?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: StringFieldUpdateOperationsInput | string
+    senha?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type InstituicaoCreateManyInput = {
+    id?: number
+    fotoPerfil?: string | null
+    nomeCompleto: string
+    cnpj: string
+    telefone?: string | null
+    endereco?: string | null
+    cep?: string | null
+    nomeRepresentante?: string | null
+    cpfRepresentante?: string | null
+    email: string
+    senha: string
+  }
+
+  export type InstituicaoUpdateManyMutationInput = {
+    fotoPerfil?: NullableStringFieldUpdateOperationsInput | string | null
+    nomeCompleto?: StringFieldUpdateOperationsInput | string
+    cnpj?: StringFieldUpdateOperationsInput | string
+    telefone?: NullableStringFieldUpdateOperationsInput | string | null
+    endereco?: NullableStringFieldUpdateOperationsInput | string | null
+    cep?: NullableStringFieldUpdateOperationsInput | string | null
+    nomeRepresentante?: NullableStringFieldUpdateOperationsInput | string | null
+    cpfRepresentante?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: StringFieldUpdateOperationsInput | string
+    senha?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type InstituicaoUncheckedUpdateManyInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    fotoPerfil?: NullableStringFieldUpdateOperationsInput | string | null
+    nomeCompleto?: StringFieldUpdateOperationsInput | string
+    cnpj?: StringFieldUpdateOperationsInput | string
+    telefone?: NullableStringFieldUpdateOperationsInput | string | null
+    endereco?: NullableStringFieldUpdateOperationsInput | string | null
+    cep?: NullableStringFieldUpdateOperationsInput | string | null
+    nomeRepresentante?: NullableStringFieldUpdateOperationsInput | string | null
+    cpfRepresentante?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: StringFieldUpdateOperationsInput | string
+    senha?: StringFieldUpdateOperationsInput | string
   }
 
   export type IntFilter<$PrismaModel = never> = {
@@ -3706,6 +4984,62 @@ export namespace Prisma {
     id?: SortOrder
     anoEntrada?: SortOrder
     egressoId?: SortOrder
+  }
+
+  export type InstituicaoOrderByRelevanceInput = {
+    fields: InstituicaoOrderByRelevanceFieldEnum | InstituicaoOrderByRelevanceFieldEnum[]
+    sort: SortOrder
+    search: string
+  }
+
+  export type InstituicaoCountOrderByAggregateInput = {
+    id?: SortOrder
+    fotoPerfil?: SortOrder
+    nomeCompleto?: SortOrder
+    cnpj?: SortOrder
+    telefone?: SortOrder
+    endereco?: SortOrder
+    cep?: SortOrder
+    nomeRepresentante?: SortOrder
+    cpfRepresentante?: SortOrder
+    email?: SortOrder
+    senha?: SortOrder
+  }
+
+  export type InstituicaoAvgOrderByAggregateInput = {
+    id?: SortOrder
+  }
+
+  export type InstituicaoMaxOrderByAggregateInput = {
+    id?: SortOrder
+    fotoPerfil?: SortOrder
+    nomeCompleto?: SortOrder
+    cnpj?: SortOrder
+    telefone?: SortOrder
+    endereco?: SortOrder
+    cep?: SortOrder
+    nomeRepresentante?: SortOrder
+    cpfRepresentante?: SortOrder
+    email?: SortOrder
+    senha?: SortOrder
+  }
+
+  export type InstituicaoMinOrderByAggregateInput = {
+    id?: SortOrder
+    fotoPerfil?: SortOrder
+    nomeCompleto?: SortOrder
+    cnpj?: SortOrder
+    telefone?: SortOrder
+    endereco?: SortOrder
+    cep?: SortOrder
+    nomeRepresentante?: SortOrder
+    cpfRepresentante?: SortOrder
+    email?: SortOrder
+    senha?: SortOrder
+  }
+
+  export type InstituicaoSumOrderByAggregateInput = {
+    id?: SortOrder
   }
 
   export type TrabalhoAtualCreateNestedOneWithoutEgressoInput = {
