@@ -143,6 +143,20 @@ exports.Prisma.TrabalhoAtualScalarFieldEnum = {
   egressoId: 'egressoId'
 };
 
+exports.Prisma.InstituicaoScalarFieldEnum = {
+  id: 'id',
+  fotoPerfil: 'fotoPerfil',
+  nomeCompleto: 'nomeCompleto',
+  cnpj: 'cnpj',
+  telefone: 'telefone',
+  endereco: 'endereco',
+  cep: 'cep',
+  nomeRepresentante: 'nomeRepresentante',
+  cpfRepresentante: 'cpfRepresentante',
+  email: 'email',
+  senha: 'senha'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -174,10 +188,24 @@ exports.Prisma.TrabalhoAtualOrderByRelevanceFieldEnum = {
   cargo: 'cargo'
 };
 
+exports.Prisma.InstituicaoOrderByRelevanceFieldEnum = {
+  fotoPerfil: 'fotoPerfil',
+  nomeCompleto: 'nomeCompleto',
+  cnpj: 'cnpj',
+  telefone: 'telefone',
+  endereco: 'endereco',
+  cep: 'cep',
+  nomeRepresentante: 'nomeRepresentante',
+  cpfRepresentante: 'cpfRepresentante',
+  email: 'email',
+  senha: 'senha'
+};
+
 
 exports.Prisma.ModelName = {
   Egresso: 'Egresso',
-  TrabalhoAtual: 'TrabalhoAtual'
+  TrabalhoAtual: 'TrabalhoAtual',
+  Instituicao: 'Instituicao'
 };
 
 /**

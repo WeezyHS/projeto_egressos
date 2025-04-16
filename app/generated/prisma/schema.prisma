@@ -43,3 +43,20 @@ model TrabalhoAtual {
   egressoId Int     @unique
   egresso   Egresso @relation(fields: [egressoId], references: [id])
 }
+
+model Instituicao {
+  id                Int     @id @default(autoincrement())
+  fotoPerfil        String? // Caminho para a imagem ou dados da imagem
+  nomeCompleto      String
+  cnpj              String  @unique
+  telefone          String?
+  endereco          String?
+  cep               String?
+  nomeRepresentante String?
+  cpfRepresentante  String?
+  email             String  @unique
+  senha             String
+  // Outros campos que você possa ter, como email e senha (se a autenticação for separada)
+
+  @@index([cnpj])
+}
