@@ -4,6 +4,7 @@ import styles from './login_instituicao.module.css';
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { ParseError } from 'papaparse';
 
 export default function CriarContaInstituicao() {
   const [email, setEmail] = useState("");
@@ -34,15 +35,44 @@ export default function CriarContaInstituicao() {
   };
 
   const handleCriarConta = () =>{
+    console.log('Email:', email, 'Senha:', senha);
+    router.push("/criarconta_instituicao"); //Redireciona para perfilinstituicao
+  }
+  const handleEntrar = async () =>{
     if (!camposVazios()) return;
 
-    console.log('Email:', email, 'Senha:', senha);
-    router.push("/perfil_instituicao"); //Redireciona para perfilinstituicao
-  }
-  const handleEntrar = () =>{
-    if (!camposVazios()) return;
-    router.push("/app_instituicao");
-  }
+    try{
+      const response = await fetch('/api/instituicao/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, senha }),
+      });
+
+      if (response.ok) {
+        // const data = await response.json();
+        // Aqui você pode redirecionar o usuário para a página principal da instituição
+        router.push('/app_instituicao');
+      } else {
+        console.log('Resposta de erro completa:', response);
+        try{
+          const errorData = await response.json();
+        alert(errorData.error || 'Erro ao fazer login.');
+        console.error('Dados de erro do login:', errorData);
+        const errorText = await response.text();
+        console.log('Texto da resposta de erro:', errorText);
+        } catch (syntaxError){
+          console.error('Erro ao parsear a resposta de erro:', syntaxError);
+          alert('Erro ao fazer login.');
+          console.error('Resposta de erro original:', await response.text());
+        }
+      }
+    } catch (error){
+      alert('Erro de conexão com o servidor.');
+      console.error('Erro de conexão:', error);
+    }
+  };
 
   return (
     <div className={styles.container}>
