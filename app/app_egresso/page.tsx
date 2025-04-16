@@ -8,6 +8,10 @@ interface Egresso{
     id: number;
     nome: string;
     cargoAtual: string;
+    // curso: string;
+    // pais: string;
+    // estado: string;
+    // cidade: string;
 }
 
 export default function App_Egresso(){
@@ -15,16 +19,22 @@ export default function App_Egresso(){
     const [filtroNome, setFiltroNome] = useState('');
     const [filtroCargo, setFiltroCargo] = useState('');
 
+    const [filtroPrimeiraLetra, setFiltroPrimeiraLetra] = useState('');
+    const [filtroCurso, setFiltroCurso] = useState('');
+    const [filtroPais, setFiltroPais] = useState('');
+    const [filtroEstado, setFiltroEstado] = useState('');
+    const [filtroCidade, setFiltroCidade] = useState('');
+
     const [consultEgressos, labConsultEgressos] = useState('');
 
-    useEffect(() =>{ //Simulação da lista de egressos com filtragem, ainda para desenvolver conectado ao banco de dados
-        const dadosSimulacao: Egresso[] = [
-            { id: 1, nome: 'João Silva', cargoAtual: 'Engenheiro de Software' },
-            { id: 2, nome: 'Maria Oliveira', cargoAtual: 'Analista de Dados' },
-            { id: 3, nome: 'Carlos Pereira', cargoAtual: 'Gerente de Projetos' }
-        ];
-        setEgressos(dadosSimulacao);
-    }, []);
+    // useEffect(() =>{ //Simulação da lista de egressos com filtragem, ainda para desenvolver conectado ao banco de dados
+    //     const dadosSimulacao: Egresso[] = [
+    //         { id: 1, nome: 'João Silva', cargoAtual: 'Engenheiro de Software' },
+    //         { id: 2, nome: 'Maria Oliveira', cargoAtual: 'Analista de Dados' },
+    //         { id: 3, nome: 'Carlos Pereira', cargoAtual: 'Gerente de Projetos' }
+    //     ];
+    //     setEgressos(dadosSimulacao);
+    // }, []);
 
     const egressosFiltrados = egressos.filter((egresso) =>
         egresso.nome.toLowerCase().includes(filtroNome.toLowerCase()) &&
