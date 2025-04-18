@@ -38,7 +38,7 @@ export default function CriarContaInstituicao() {
     console.log('Email:', email, 'Senha:', senha);
     router.push("/criarconta_instituicao"); //Redireciona para perfilinstituicao
   }
-  
+
   const handleEntrar = async () => {
     if (!camposVazios()) return;
 
@@ -53,8 +53,6 @@ export default function CriarContaInstituicao() {
 
       if (response.ok) {
         const data = await response.json();
-        alert(data.message || 'Login bem-sucedido!');
-        console.log('Login bem-sucedido:', data);
         // Aqui você pode redirecionar o usuário para a página principal da instituição
         router.push('/app_instituicao');
       } else {

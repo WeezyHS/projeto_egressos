@@ -16,7 +16,6 @@ export default function CriarContaEgresso(){
     const [pais, setPais] = useState('');
     const [redesSociais, setRedesSociais] = useState({ linkedin: '', instagram: '' });
 
-    const [erro, setErro] = useState('');
     const router = useRouter();
 
     const handleFotoChange = (e: React.ChangeEvent<HTMLInputElement>) =>{
