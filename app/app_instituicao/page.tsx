@@ -6,6 +6,8 @@ import React, { useEffect, useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import Papa, { ParseResult, ParseError } from 'papaparse';
 
+import { Curso as PrismaCurso, Matricula as PrismaMatricula } from '@/app/generated/prisma';
+
 interface AlunosCSVRow{ //Modelo (tipo) para garantir que os dados lidos do arquivo CSV tenham a estrutura correta ao serem processados.
     curso: string;
     nome: string;
@@ -37,6 +39,39 @@ export default function App_Instituicao(){
     const [cursos, setCursos] = useState<any[]>([]);
     const [alunos, setAlunos] = useState<any[]>([]);
 
+  //==============================================================
+
+    const salvarDadosNoBanco = async (cursosParaSalvar: { id: number; nome: string }[], pessoasParaSalvar: { id: number; nome: string; cpf: string; email: string }[], matriculasParaSalvar: Matricula[]) => {
+      try {
+        const response = await fetch('/api/instituicao/importar_csv', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ cursos: cursosParaSalvar, pessoas: pessoasParaSalvar, matriculas: matriculasParaSalvar }),
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          alert(data.message || 'Dados do CSV salvos no banco de dados com sucesso!');
+          console.log('Resposta do backend ao salvar:', data);
+          setCursos([]);
+          setPessoas([]);
+          setMatriculas([]);
+          setAlunos([]);
+          buscarAlunosDoBanco(); // Recarregar os dados do banco
+          exibirAlunos(); // Recarregar a lista exibida
+        } else {
+            alert(data.error || 'Erro ao salvar os dados do CSV no banco de dados.');
+            console.error('Erro ao salvar dados do CSV:', data);
+        }
+    } catch (error) {
+        alert('Erro de conexão com o servidor ao tentar salvar os dados.');
+        console.error('Erro de conexão ao salvar dados:', error);
+      }
+    };
+
     useEffect(() => { //Carrega os dados do perfil da Instituição armazenados no localStorage
         const dadosPerfil = localStorage.getItem("perfilInstituicao");
         if (dadosPerfil){
@@ -46,6 +81,13 @@ export default function App_Instituicao(){
     useEffect(() => { //Chama a função exibirAlunos() sempre que alguma das dependências listadas muda.
         exibirAlunos();
     }, [perfil, pessoas, matriculas, cursos, pagina, filtroCurso, filtroEntrada, filtroSaida, ordenacao]);
+    useEffect(() => {
+      const dadosPerfil = localStorage.getItem("perfilInstituicao");
+      if (dadosPerfil){
+        setPerfil(JSON.parse(dadosPerfil));
+      }
+      buscarAlunosDoBanco(); // Carregar os dados iniciais
+    }, []);
 
     function gerarCodigoAleatorio(){ //Gera um código quando uma pessoa é cadastrada
         const caracteres = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
@@ -203,14 +245,48 @@ const processarAlunos = async ( // Lógica específica para alunos
   setCursos(novosCursos);
   setPessoas(novasPessoas);
   setMatriculas(novasMatriculas);
+
+  await salvarDadosNoBanco(novosCursos, novasPessoas, novasMatriculas);
 };
 
+//=============================================================
+
+const buscarAlunosDoBanco = async () => {
+  try {
+    const response = await fetch('/api/instituicao/buscar_aluno');
+    if (response.ok) {
+      const data = await response.json();
+      setAlunos(data); // Atualize o estado 'alunos' com os dados do banco
+    } else {
+      console.error('Erro ao buscar alunos do banco:', response.status);
+    }
+  } catch (error) {
+    console.error('Erro de conexão ao buscar alunos:', error);
+  }
+};
+
+//==============================================================
+
     const exibirAlunos = () => { //Filtra, ordena, pagina e atualiza a lista de alunos exibida no sistema.
-        const alunosFiltrados = alunos
-            .filter(aluno => filtroCurso ? aluno.curso === filtroCurso : true)
-            .filter(aluno => filtroEntrada ? aluno.entrada.includes(filtroEntrada) : true)
-            .filter(aluno => filtroSaida ? aluno.saida?.includes(filtroSaida) : true)
-            .sort((a, b) => a[ordenacao].localeCompare(b[ordenacao]));
+      const alunosFiltrados = alunos
+      .filter(aluno => filtroCurso ? aluno.matriculas.some((mat: PrismaMatricula & { curso: PrismaCurso }) => mat.curso.nome === filtroCurso) : true)
+      .filter(aluno => filtroEntrada ? aluno.matriculas.some((mat: PrismaMatricula) => mat.anoSemestreEntrada?.includes(filtroEntrada)) : true)
+      .filter(aluno => filtroSaida ? aluno.matriculas.some((mat: PrismaMatricula) => mat.anoSemestreSaida?.includes(filtroSaida)) : true)
+      .sort((a, b) => {
+        const valorA = a[ordenacao];
+        const valorB = b[ordenacao];
+
+        if (valorA === undefined && valorB === undefined) {
+          return 0; // Ambos são undefined, ordem não importa
+        }
+        if (valorA === undefined) {
+          return 1; // b vem antes de a
+        }
+        if (valorB === undefined) {
+          return -1; // a vem antes de b
+        }
+        return valorA.localeCompare(valorB);
+      });
 
     const alunosPorPagina = 10; //Cada página exibe 10 alunos
     const totalPaginasCalculado = Math.ceil(alunosFiltrados.length / alunosPorPagina); //Divide a quantidade de alunos filtrados por 10
@@ -274,18 +350,16 @@ const processarAlunos = async ( // Lógica específica para alunos
                     </tr>
                 </thead>
                 <tbody>
-                    {alunosFiltrados.map((aluno, index) => {
-                        return(
-                            <tr key={index}>
-                                <td>{String(aluno.nome || "")}</td>
-                                <td>{String(aluno.cpf || "")}</td>
-                                <td>{String(aluno.email || "")}</td>
-                                <td>{String(aluno.curso || "")}</td>
-                                <td>{String(aluno.entrada || "")}</td>
-                                <td>{String(aluno.saida || "")}</td>
-                            </tr>
-                        );
-                    })}
+                  {alunosFiltrados.map((aluno, index) => (
+                    <tr key={index}>
+                      <td>{String(aluno.nome || "")}</td>
+                      <td>{String(aluno.cpf || "")}</td>
+                      <td>{String(aluno.email || "")}</td>
+                      <td>{aluno.matriculas && aluno.matriculas.length > 0 ? String(aluno.matriculas[0]?.curso?.nome || "N/A") : "N/A"}</td>
+                      <td>{aluno.matriculas && aluno.matriculas.length > 0 ? String(aluno.matriculas[0]?.anoSemestreEntrada || "N/A") : "N/A"}</td>
+                      <td>{aluno.matriculas && aluno.matriculas.length > 0 ? String(aluno.matriculas[0]?.anoSemestreSaida || "Em andamento") : "Em andamento"}</td>
+                    </tr>
+                  ))}
                 </tbody>
             </table>
             <div className={styles.paginacao}>
