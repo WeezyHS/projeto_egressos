@@ -43,14 +43,26 @@
     display: flex;
 }
 
-.labConsultEgressos{
+/* .labConsultEgressos{
     margin-left: 50px;
     margin-top: 40px;
     font-weight: bold;
-    color: black;   
-}
+    color: black;
+} */
 
 .lista{
     margin-top: 70px;
     color: black;
+}
+
+.consultEgressos{
+    background-color: green;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 16px;
+    margin-top: 30px;
+    border: 1px solid black;
 }
