@@ -8,10 +8,6 @@ interface Egresso{
     id: number;
     nome: string;
     cargoAtual: string;
-    // curso: string;
-    // pais: string;
-    // estado: string;
-    // cidade: string;
 }
 
 export default function App_Egresso(){
@@ -25,16 +21,11 @@ export default function App_Egresso(){
     const [filtroEstado, setFiltroEstado] = useState('');
     const [filtroCidade, setFiltroCidade] = useState('');
 
-    const [consultEgressos, labConsultEgressos] = useState('');
+    //const [consultEgressos, labConsultEgressos] = useState('');
 
-    // useEffect(() =>{ //Simulação da lista de egressos com filtragem, ainda para desenvolver conectado ao banco de dados
-    //     const dadosSimulacao: Egresso[] = [
-    //         { id: 1, nome: 'João Silva', cargoAtual: 'Engenheiro de Software' },
-    //         { id: 2, nome: 'Maria Oliveira', cargoAtual: 'Analista de Dados' },
-    //         { id: 3, nome: 'Carlos Pereira', cargoAtual: 'Gerente de Projetos' }
-    //     ];
-    //     setEgressos(dadosSimulacao);
-    // }, []);
+    const BotaoConsultEgressos = () =>{
+
+    }
 
     const egressosFiltrados = egressos.filter((egresso) =>
         egresso.nome.toLowerCase().includes(filtroNome.toLowerCase()) &&
@@ -51,7 +42,7 @@ export default function App_Egresso(){
               <input className={styles.filtroCargo} type="text" placeholder="Pesquisar por cargo..." value={filtroCargo} onChange={(e) => setFiltroCargo(e.target.value)}/>
             </div>
             <div className={styles.campo}>
-            <label className={styles.labConsultEgressos}>Consultar egressos:</label>
+            {/* <label className={styles.labConsultEgressos}>Consultar egressos:</label> */}
             </div>
             <ul className={styles.lista}>
               {egressosFiltrados.map((egresso) => (
@@ -60,6 +51,7 @@ export default function App_Egresso(){
                 </li>
               ))}
             </ul>
+            <button className={styles.consultEgressos} onClick={BotaoConsultEgressos}>Consultar Egressos</button>
         </div>
     );
 }
