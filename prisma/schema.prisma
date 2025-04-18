@@ -60,3 +60,34 @@ model Instituicao {
 
   @@index([cnpj])
 }
+
+model Curso {
+  id        Int        @id @default(autoincrement())
+  nome      String     @unique
+  createdAt DateTime   @default(now())
+
+  matriculas Matricula[]
+}
+
+model Pessoa {
+  id        Int        @id @default(autoincrement())
+  nome      String
+  cpf       String     @unique
+  email     String     @unique
+  createdAt DateTime   @default(now())
+
+  matriculas Matricula[]
+}
+
+model Matricula {
+  id               Int      @id @default(autoincrement())
+  cursoId          Int
+  pessoaId         Int
+  anoSemestreEntrada String
+  anoSemestreSaida   String?
+
+  curso   Curso   @relation(fields: [cursoId], references: [id])
+  pessoa  Pessoa  @relation(fields: [pessoaId], references: [id])
+
+  @@unique([cursoId, pessoaId]) // evitar duplicidade de matrícula
+}

@@ -157,6 +157,28 @@ exports.Prisma.InstituicaoScalarFieldEnum = {
   senha: 'senha'
 };
 
+exports.Prisma.CursoScalarFieldEnum = {
+  id: 'id',
+  nome: 'nome',
+  createdAt: 'createdAt'
+};
+
+exports.Prisma.PessoaScalarFieldEnum = {
+  id: 'id',
+  nome: 'nome',
+  cpf: 'cpf',
+  email: 'email',
+  createdAt: 'createdAt'
+};
+
+exports.Prisma.MatriculaScalarFieldEnum = {
+  id: 'id',
+  cursoId: 'cursoId',
+  pessoaId: 'pessoaId',
+  anoSemestreEntrada: 'anoSemestreEntrada',
+  anoSemestreSaida: 'anoSemestreSaida'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -201,11 +223,29 @@ exports.Prisma.InstituicaoOrderByRelevanceFieldEnum = {
   senha: 'senha'
 };
 
+exports.Prisma.CursoOrderByRelevanceFieldEnum = {
+  nome: 'nome'
+};
+
+exports.Prisma.PessoaOrderByRelevanceFieldEnum = {
+  nome: 'nome',
+  cpf: 'cpf',
+  email: 'email'
+};
+
+exports.Prisma.MatriculaOrderByRelevanceFieldEnum = {
+  anoSemestreEntrada: 'anoSemestreEntrada',
+  anoSemestreSaida: 'anoSemestreSaida'
+};
+
 
 exports.Prisma.ModelName = {
   Egresso: 'Egresso',
   TrabalhoAtual: 'TrabalhoAtual',
-  Instituicao: 'Instituicao'
+  Instituicao: 'Instituicao',
+  Curso: 'Curso',
+  Pessoa: 'Pessoa',
+  Matricula: 'Matricula'
 };
 
 /**
