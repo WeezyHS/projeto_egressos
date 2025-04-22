@@ -45,6 +45,24 @@ export type Pessoa = $Result.DefaultSelection<Prisma.$PessoaPayload>
 export type Matricula = $Result.DefaultSelection<Prisma.$MatriculaPayload>
 
 /**
+ * Enums
+ */
+export namespace $Enums {
+  export const PessoaStatus: {
+  ALUNO: 'ALUNO',
+  EGRESSO: 'EGRESSO',
+  OUTRO: 'OUTRO'
+};
+
+export type PessoaStatus = (typeof PessoaStatus)[keyof typeof PessoaStatus]
+
+}
+
+export type PessoaStatus = $Enums.PessoaStatus
+
+export const PessoaStatus: typeof $Enums.PessoaStatus
+
+/**
  * ##  Prisma Client ʲˢ
  *
  * Type-safe database client for TypeScript & Node.js
@@ -5375,6 +5393,8 @@ export namespace Prisma {
     cpf: string | null
     email: string | null
     createdAt: Date | null
+    status: $Enums.PessoaStatus | null
+    visivel: boolean | null
   }
 
   export type PessoaMaxAggregateOutputType = {
@@ -5383,6 +5403,8 @@ export namespace Prisma {
     cpf: string | null
     email: string | null
     createdAt: Date | null
+    status: $Enums.PessoaStatus | null
+    visivel: boolean | null
   }
 
   export type PessoaCountAggregateOutputType = {
@@ -5391,6 +5413,8 @@ export namespace Prisma {
     cpf: number
     email: number
     createdAt: number
+    status: number
+    visivel: number
     _all: number
   }
 
@@ -5409,6 +5433,8 @@ export namespace Prisma {
     cpf?: true
     email?: true
     createdAt?: true
+    status?: true
+    visivel?: true
   }
 
   export type PessoaMaxAggregateInputType = {
@@ -5417,6 +5443,8 @@ export namespace Prisma {
     cpf?: true
     email?: true
     createdAt?: true
+    status?: true
+    visivel?: true
   }
 
   export type PessoaCountAggregateInputType = {
@@ -5425,6 +5453,8 @@ export namespace Prisma {
     cpf?: true
     email?: true
     createdAt?: true
+    status?: true
+    visivel?: true
     _all?: true
   }
 
@@ -5520,6 +5550,8 @@ export namespace Prisma {
     cpf: string
     email: string
     createdAt: Date
+    status: $Enums.PessoaStatus
+    visivel: boolean
     _count: PessoaCountAggregateOutputType | null
     _avg: PessoaAvgAggregateOutputType | null
     _sum: PessoaSumAggregateOutputType | null
@@ -5547,6 +5579,8 @@ export namespace Prisma {
     cpf?: boolean
     email?: boolean
     createdAt?: boolean
+    status?: boolean
+    visivel?: boolean
     matriculas?: boolean | Pessoa$matriculasArgs<ExtArgs>
     _count?: boolean | PessoaCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["pessoa"]>
@@ -5559,9 +5593,11 @@ export namespace Prisma {
     cpf?: boolean
     email?: boolean
     createdAt?: boolean
+    status?: boolean
+    visivel?: boolean
   }
 
-  export type PessoaOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "nome" | "cpf" | "email" | "createdAt", ExtArgs["result"]["pessoa"]>
+  export type PessoaOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "nome" | "cpf" | "email" | "createdAt" | "status" | "visivel", ExtArgs["result"]["pessoa"]>
   export type PessoaInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     matriculas?: boolean | Pessoa$matriculasArgs<ExtArgs>
     _count?: boolean | PessoaCountOutputTypeDefaultArgs<ExtArgs>
@@ -5578,6 +5614,8 @@ export namespace Prisma {
       cpf: string
       email: string
       createdAt: Date
+      status: $Enums.PessoaStatus
+      visivel: boolean
     }, ExtArgs["result"]["pessoa"]>
     composites: {}
   }
@@ -5953,6 +5991,8 @@ export namespace Prisma {
     readonly cpf: FieldRef<"Pessoa", 'String'>
     readonly email: FieldRef<"Pessoa", 'String'>
     readonly createdAt: FieldRef<"Pessoa", 'DateTime'>
+    readonly status: FieldRef<"Pessoa", 'PessoaStatus'>
+    readonly visivel: FieldRef<"Pessoa", 'Boolean'>
   }
     
 
@@ -7390,7 +7430,9 @@ export namespace Prisma {
     nome: 'nome',
     cpf: 'cpf',
     email: 'email',
-    createdAt: 'createdAt'
+    createdAt: 'createdAt',
+    status: 'status',
+    visivel: 'visivel'
   };
 
   export type PessoaScalarFieldEnum = (typeof PessoaScalarFieldEnum)[keyof typeof PessoaScalarFieldEnum]
@@ -7520,6 +7562,13 @@ export namespace Prisma {
    * Reference to a field of type 'DateTime'
    */
   export type DateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DateTime'>
+    
+
+
+  /**
+   * Reference to a field of type 'PessoaStatus'
+   */
+  export type EnumPessoaStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'PessoaStatus'>
     
 
 
@@ -7841,6 +7890,8 @@ export namespace Prisma {
     cpf?: StringFilter<"Pessoa"> | string
     email?: StringFilter<"Pessoa"> | string
     createdAt?: DateTimeFilter<"Pessoa"> | Date | string
+    status?: EnumPessoaStatusFilter<"Pessoa"> | $Enums.PessoaStatus
+    visivel?: BoolFilter<"Pessoa"> | boolean
     matriculas?: MatriculaListRelationFilter
   }
 
@@ -7850,6 +7901,8 @@ export namespace Prisma {
     cpf?: SortOrder
     email?: SortOrder
     createdAt?: SortOrder
+    status?: SortOrder
+    visivel?: SortOrder
     matriculas?: MatriculaOrderByRelationAggregateInput
     _relevance?: PessoaOrderByRelevanceInput
   }
@@ -7863,6 +7916,8 @@ export namespace Prisma {
     NOT?: PessoaWhereInput | PessoaWhereInput[]
     nome?: StringFilter<"Pessoa"> | string
     createdAt?: DateTimeFilter<"Pessoa"> | Date | string
+    status?: EnumPessoaStatusFilter<"Pessoa"> | $Enums.PessoaStatus
+    visivel?: BoolFilter<"Pessoa"> | boolean
     matriculas?: MatriculaListRelationFilter
   }, "id" | "cpf" | "email">
 
@@ -7872,6 +7927,8 @@ export namespace Prisma {
     cpf?: SortOrder
     email?: SortOrder
     createdAt?: SortOrder
+    status?: SortOrder
+    visivel?: SortOrder
     _count?: PessoaCountOrderByAggregateInput
     _avg?: PessoaAvgOrderByAggregateInput
     _max?: PessoaMaxOrderByAggregateInput
@@ -7888,6 +7945,8 @@ export namespace Prisma {
     cpf?: StringWithAggregatesFilter<"Pessoa"> | string
     email?: StringWithAggregatesFilter<"Pessoa"> | string
     createdAt?: DateTimeWithAggregatesFilter<"Pessoa"> | Date | string
+    status?: EnumPessoaStatusWithAggregatesFilter<"Pessoa"> | $Enums.PessoaStatus
+    visivel?: BoolWithAggregatesFilter<"Pessoa"> | boolean
   }
 
   export type MatriculaWhereInput = {
@@ -8274,6 +8333,8 @@ export namespace Prisma {
     cpf: string
     email: string
     createdAt?: Date | string
+    status?: $Enums.PessoaStatus
+    visivel?: boolean
     matriculas?: MatriculaCreateNestedManyWithoutPessoaInput
   }
 
@@ -8283,6 +8344,8 @@ export namespace Prisma {
     cpf: string
     email: string
     createdAt?: Date | string
+    status?: $Enums.PessoaStatus
+    visivel?: boolean
     matriculas?: MatriculaUncheckedCreateNestedManyWithoutPessoaInput
   }
 
@@ -8291,6 +8354,8 @@ export namespace Prisma {
     cpf?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    status?: EnumPessoaStatusFieldUpdateOperationsInput | $Enums.PessoaStatus
+    visivel?: BoolFieldUpdateOperationsInput | boolean
     matriculas?: MatriculaUpdateManyWithoutPessoaNestedInput
   }
 
@@ -8300,6 +8365,8 @@ export namespace Prisma {
     cpf?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    status?: EnumPessoaStatusFieldUpdateOperationsInput | $Enums.PessoaStatus
+    visivel?: BoolFieldUpdateOperationsInput | boolean
     matriculas?: MatriculaUncheckedUpdateManyWithoutPessoaNestedInput
   }
 
@@ -8309,6 +8376,8 @@ export namespace Prisma {
     cpf: string
     email: string
     createdAt?: Date | string
+    status?: $Enums.PessoaStatus
+    visivel?: boolean
   }
 
   export type PessoaUpdateManyMutationInput = {
@@ -8316,6 +8385,8 @@ export namespace Prisma {
     cpf?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    status?: EnumPessoaStatusFieldUpdateOperationsInput | $Enums.PessoaStatus
+    visivel?: BoolFieldUpdateOperationsInput | boolean
   }
 
   export type PessoaUncheckedUpdateManyInput = {
@@ -8324,6 +8395,8 @@ export namespace Prisma {
     cpf?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    status?: EnumPessoaStatusFieldUpdateOperationsInput | $Enums.PessoaStatus
+    visivel?: BoolFieldUpdateOperationsInput | boolean
   }
 
   export type MatriculaCreateInput = {
@@ -8731,6 +8804,13 @@ export namespace Prisma {
     _max?: NestedDateTimeFilter<$PrismaModel>
   }
 
+  export type EnumPessoaStatusFilter<$PrismaModel = never> = {
+    equals?: $Enums.PessoaStatus | EnumPessoaStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.PessoaStatus[]
+    notIn?: $Enums.PessoaStatus[]
+    not?: NestedEnumPessoaStatusFilter<$PrismaModel> | $Enums.PessoaStatus
+  }
+
   export type PessoaOrderByRelevanceInput = {
     fields: PessoaOrderByRelevanceFieldEnum | PessoaOrderByRelevanceFieldEnum[]
     sort: SortOrder
@@ -8743,6 +8823,8 @@ export namespace Prisma {
     cpf?: SortOrder
     email?: SortOrder
     createdAt?: SortOrder
+    status?: SortOrder
+    visivel?: SortOrder
   }
 
   export type PessoaAvgOrderByAggregateInput = {
@@ -8755,6 +8837,8 @@ export namespace Prisma {
     cpf?: SortOrder
     email?: SortOrder
     createdAt?: SortOrder
+    status?: SortOrder
+    visivel?: SortOrder
   }
 
   export type PessoaMinOrderByAggregateInput = {
@@ -8763,10 +8847,22 @@ export namespace Prisma {
     cpf?: SortOrder
     email?: SortOrder
     createdAt?: SortOrder
+    status?: SortOrder
+    visivel?: SortOrder
   }
 
   export type PessoaSumOrderByAggregateInput = {
     id?: SortOrder
+  }
+
+  export type EnumPessoaStatusWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.PessoaStatus | EnumPessoaStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.PessoaStatus[]
+    notIn?: $Enums.PessoaStatus[]
+    not?: NestedEnumPessoaStatusWithAggregatesFilter<$PrismaModel> | $Enums.PessoaStatus
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumPessoaStatusFilter<$PrismaModel>
+    _max?: NestedEnumPessoaStatusFilter<$PrismaModel>
   }
 
   export type CursoScalarRelationFilter = {
@@ -8950,6 +9046,10 @@ export namespace Prisma {
     connectOrCreate?: MatriculaCreateOrConnectWithoutPessoaInput | MatriculaCreateOrConnectWithoutPessoaInput[]
     createMany?: MatriculaCreateManyPessoaInputEnvelope
     connect?: MatriculaWhereUniqueInput | MatriculaWhereUniqueInput[]
+  }
+
+  export type EnumPessoaStatusFieldUpdateOperationsInput = {
+    set?: $Enums.PessoaStatus
   }
 
   export type MatriculaUpdateManyWithoutPessoaNestedInput = {
@@ -9159,6 +9259,23 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedDateTimeFilter<$PrismaModel>
     _max?: NestedDateTimeFilter<$PrismaModel>
+  }
+
+  export type NestedEnumPessoaStatusFilter<$PrismaModel = never> = {
+    equals?: $Enums.PessoaStatus | EnumPessoaStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.PessoaStatus[]
+    notIn?: $Enums.PessoaStatus[]
+    not?: NestedEnumPessoaStatusFilter<$PrismaModel> | $Enums.PessoaStatus
+  }
+
+  export type NestedEnumPessoaStatusWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.PessoaStatus | EnumPessoaStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.PessoaStatus[]
+    notIn?: $Enums.PessoaStatus[]
+    not?: NestedEnumPessoaStatusWithAggregatesFilter<$PrismaModel> | $Enums.PessoaStatus
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumPessoaStatusFilter<$PrismaModel>
+    _max?: NestedEnumPessoaStatusFilter<$PrismaModel>
   }
 
   export type TrabalhoAtualCreateWithoutEgressoInput = {
@@ -9399,6 +9516,8 @@ export namespace Prisma {
     cpf: string
     email: string
     createdAt?: Date | string
+    status?: $Enums.PessoaStatus
+    visivel?: boolean
   }
 
   export type PessoaUncheckedCreateWithoutMatriculasInput = {
@@ -9407,6 +9526,8 @@ export namespace Prisma {
     cpf: string
     email: string
     createdAt?: Date | string
+    status?: $Enums.PessoaStatus
+    visivel?: boolean
   }
 
   export type PessoaCreateOrConnectWithoutMatriculasInput = {
@@ -9452,6 +9573,8 @@ export namespace Prisma {
     cpf?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    status?: EnumPessoaStatusFieldUpdateOperationsInput | $Enums.PessoaStatus
+    visivel?: BoolFieldUpdateOperationsInput | boolean
   }
 
   export type PessoaUncheckedUpdateWithoutMatriculasInput = {
@@ -9460,6 +9583,8 @@ export namespace Prisma {
     cpf?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    status?: EnumPessoaStatusFieldUpdateOperationsInput | $Enums.PessoaStatus
+    visivel?: BoolFieldUpdateOperationsInput | boolean
   }
 
   export type MatriculaCreateManyCursoInput = {

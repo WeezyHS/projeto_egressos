@@ -168,7 +168,9 @@ exports.Prisma.PessoaScalarFieldEnum = {
   nome: 'nome',
   cpf: 'cpf',
   email: 'email',
-  createdAt: 'createdAt'
+  createdAt: 'createdAt',
+  status: 'status',
+  visivel: 'visivel'
 };
 
 exports.Prisma.MatriculaScalarFieldEnum = {
@@ -237,7 +239,11 @@ exports.Prisma.MatriculaOrderByRelevanceFieldEnum = {
   anoSemestreEntrada: 'anoSemestreEntrada',
   anoSemestreSaida: 'anoSemestreSaida'
 };
-
+exports.PessoaStatus = exports.$Enums.PessoaStatus = {
+  ALUNO: 'ALUNO',
+  EGRESSO: 'EGRESSO',
+  OUTRO: 'OUTRO'
+};
 
 exports.Prisma.ModelName = {
   Egresso: 'Egresso',

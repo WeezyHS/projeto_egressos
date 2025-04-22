@@ -69,12 +69,20 @@ model Curso {
   matriculas Matricula[]
 }
 
+enum PessoaStatus {
+  ALUNO
+  EGRESSO
+  OUTRO
+}
+
 model Pessoa {
   id        Int        @id @default(autoincrement())
   nome      String
   cpf       String     @unique
   email     String     @unique
   createdAt DateTime   @default(now())
+  status    PessoaStatus  @default(ALUNO)
+  visivel   Boolean    @default(false)
 
   matriculas Matricula[]
 }
