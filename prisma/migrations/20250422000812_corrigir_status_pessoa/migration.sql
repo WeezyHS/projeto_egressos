@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE `pessoa` ADD COLUMN `status` ENUM('ALUNO', 'EGRESSO', 'OUTRO') NOT NULL DEFAULT 'ALUNO',
+    ADD COLUMN `visivel` BOOLEAN NOT NULL DEFAULT false;
