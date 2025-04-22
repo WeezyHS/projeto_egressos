@@ -70,7 +70,6 @@ export default function App_Egresso(){
         (!filtroPrimeiraLetra || egresso.nome?.toLowerCase().startsWith(filtroPrimeiraLetra.toLowerCase()))
       );
     });
-    
 
     useEffect(() => {
       console.log("Estado atualizado de egressos:", egressos);
