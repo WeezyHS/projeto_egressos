@@ -10,6 +10,12 @@
     margin-bottom: 60px;
 }
 
+.listaFiltro{
+    margin-top: 60px;
+    font-weight: bold;
+    color: black;
+}
+
 .labFiltroNome{
     font-weight: bold;
     color: black;
