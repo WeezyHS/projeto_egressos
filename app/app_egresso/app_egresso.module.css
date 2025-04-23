@@ -30,6 +30,34 @@
     color: black;
 }
 
+.labFiltroPrimeiraLetra{
+    font-weight: bold;
+    color: black;
+}
+
+.filtroPrimeiraLetra{
+    margin-left: 5px;
+    border: 2px solid black;
+    border-radius: 3px;
+    width: 200px;
+    background-color: white;
+    color: black;
+}
+
+.labFiltroCurso{
+    font-weight: bold;
+    color: black;
+}
+
+.filtroCurso{
+    margin-left: 5px;
+    border: 2px solid black;
+    border-radius: 3px;
+    width: 200px;
+    background-color: white;
+    color: black;
+}
+
 .labFiltroCargo{
     margin-left: 50px;
     font-weight: bold;
@@ -45,16 +73,53 @@
     color: black;
 }
 
-.campo{
-    display: flex;
-}
-
-/* .labConsultEgressos{
-    margin-left: 50px;
-    margin-top: 40px;
+.labFiltroPais{
     font-weight: bold;
     color: black;
-} */
+}
+
+.filtroPais{
+    margin-left: 5px;
+    border: 2px solid black;
+    border-radius: 3px;
+    width: 200px;
+    background-color: white;
+    color: black;
+}
+
+.labFiltroEstado{
+    font-weight: bold;
+    color: black;
+}
+
+.filtroEstado{
+    margin-left: 5px;
+    border: 2px solid black;
+    border-radius: 3px;
+    width: 200px;
+    background-color: white;
+    color: black;
+}
+
+.labFiltroCidade{
+    font-weight: bold;
+    color: black;
+}
+
+.filtroCidade{
+    margin-left: 5px;
+    border: 2px solid black;
+    border-radius: 3px;
+    width: 200px;
+    background-color: white;
+    color: black;
+}
+
+.subtitulo{
+    margin-top: 20px;
+    font-weight: bold;
+    color: black;
+}
 
 .lista{
     margin-top: 70px;
