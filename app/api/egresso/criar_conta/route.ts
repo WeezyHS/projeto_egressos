@@ -25,7 +25,6 @@ export async function POST(request: NextRequest) {
     const pais = formData.get('pais') as string | null;
     const linkedin = formData.get('linkedin') as string | null;
     const instagram = formData.get('instagram') as string | null;
-    // const fotoPerfil = formData.get('fotoPerfil'); // Se você não estiver lidando com upload agora
 
     console.log('Dados recebidos do formulário:', { cpf, email, telefone, senha, cidade, estado, pais, linkedin, instagram });
 
@@ -36,29 +35,34 @@ export async function POST(request: NextRequest) {
     const senhaHash = await bcrypt.hash(senha, 10);
     const prisma = new PrismaClient();
 
-    const novoEgresso = await prisma.egresso.create({
-      data: {
-        cpf,
-        senha: senhaHash,
-        telefone,
-        email,
-        cidade,
-        estado,
-        pais,
-        linkedin,
-        instagram,
-        // fotoPerfil: null, // Se você não estiver lidando com upload agora
-      },
-    });
+    try {
+      // Criar o registro de Egresso
+      const novoEgresso = await prisma.egresso.create({
+        data: {
+          cpf: cpf!,
+          senha: senhaHash,
+          telefone: telefone!,
+          email: email!,
+          cidade: cidade!,
+          estado: estado!,
+          pais: pais!,
+          linkedin,
+          instagram,
+          // fotoPerfil: null, // Se você não estiver lidando com upload agora
+        },
+      });
 
-    await prisma.$disconnect();
+      await prisma.$disconnect();
+      return NextResponse.json({ message: 'Egresso criado com sucesso!', egresso: novoEgresso }, { status: 201 });
 
-    return NextResponse.json({ message: 'Egresso criado com sucesso!', egresso: novoEgresso }, { status: 201 });
+    } catch (error: any) {
+      console.error('Erro ao criar egresso:', error);
+      await prisma.$disconnect();
+      return NextResponse.json({ error: 'Erro ao criar egresso.' }, { status: 500 });
+    }
 
   } catch (error) {
-    console.error('Erro ao criar egresso:', error);
-    return NextResponse.json({ error: 'Erro ao criar egresso.' }, { status: 500 });
+    console.error('Erro geral:', error);
+    return NextResponse.json({ error: 'Erro geral no servidor.' }, { status: 500 });
   }
 }
-
-// O Next.js processa o body por padrão agora, então a configuração bodyParser: false não é estritamente necessária para este caso simples.
