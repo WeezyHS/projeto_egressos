@@ -15,56 +15,56 @@ datasource db {
 }
 
 model Egresso {
-  id              Int     @id @default(autoincrement())
-  cpf             String  @unique
-  senha           String
-  email           String  @unique
-  telefone        String
-  cidade          String
-  estado          String
-  pais            String
-  fotoPerfil      String?
-  linkedin        String?
-  instagram       String?
-  visivel         Boolean @default(true)
+  id            Int      @id @default(autoincrement())
+  cpf           String   @unique
+  senha         String
+  email         String   @unique
+  telefone      String
+  cidade        String
+  estado        String
+  pais          String
+  fotoPerfil    String?
+  linkedin      String?
+  instagram     String?
+  visivel       Boolean @default(true)
 
-  trabalhoAtual   TrabalhoAtual?
+  trabalhoAtual TrabalhoAtual?
 }
 
 model TrabalhoAtual {
-  id           Int    @id @default(autoincrement())
-  empresa      String
-  cidade       String
-  estado       String
-  pais         String
-  cargo        String
-  anoEntrada   Int
+  id        Int      @id @default(autoincrement())
+  empresa   String
+  cidade    String
+  estado    String
+  pais      String
+  cargo     String
+  anoEntrada Int
 
-  egressoId      Int    @unique
-  egresso        Egresso  @relation(fields: [egressoId], references: [id])
+  egressoId Int     @unique
+  egresso   Egresso @relation(fields: [egressoId], references: [id])
 }
 
 model Instituicao {
-  id               Int     @id @default(autoincrement())
-  fotoPerfil       String? // Caminho para a imagem ou dados da imagem
-  nomeCompleto     String
-  cnpj             String  @unique
-  telefone         String?
-  endereco         String?
-  cep              String?
+  id              Int     @id @default(autoincrement())
+  fotoPerfil      String? // Caminho para a imagem ou dados da imagem
+  nomeCompleto    String
+  cnpj            String  @unique
+  telefone        String?
+  endereco        String?
+  cep             String?
   nomeRepresentante String?
   cpfRepresentante  String?
-  email            String @unique
-  senha            String
+  email           String  @unique
+  senha           String
   // Outros campos que você possa ter, como email e senha (se a autenticação for separada)
 
   @@index([cnpj])
 }
 
 model Curso {
-  id        Int        @id @default(autoincrement())
-  nome      String     @unique
-  createdAt DateTime   @default(now())
+  id        Int      @id @default(autoincrement())
+  nome      String   @unique
+  createdAt DateTime @default(now())
 
   matriculas Matricula[]
 }
@@ -76,26 +76,26 @@ enum PessoaStatus {
 }
 
 model Pessoa {
-  id        Int        @id @default(autoincrement())
-  nome      String
-  cpf       String     @unique
-  email     String     @unique
-  createdAt DateTime   @default(now())
-  status    PessoaStatus  @default(ALUNO)
-  visivel   Boolean    @default(false)
+  id         Int      @id @default(autoincrement())
+  nome       String
+  cpf        String   @unique
+  email      String   @unique
+  createdAt  DateTime @default(now())
+  status     PessoaStatus @default(ALUNO)
+  visivel    Boolean  @default(false)
 
   matriculas Matricula[]
 }
 
 model Matricula {
-  id               Int      @id @default(autoincrement())
-  cursoId          Int
-  pessoaId         Int
+  id                Int     @id @default(autoincrement())
+  cursoId           Int
+  pessoaId          Int
   anoSemestreEntrada String
-  anoSemestreSaida   String?
+  anoSemestreSaida    String?
 
-  curso   Curso   @relation(fields: [cursoId], references: [id])
-  pessoa  Pessoa  @relation(fields: [pessoaId], references: [id])
+  curso  Curso  @relation(fields: [cursoId], references: [id])
+  pessoa Pessoa @relation(fields: [pessoaId], references: [id])
 
   @@unique([cursoId, pessoaId]) // evitar duplicidade de matrícula
 }
