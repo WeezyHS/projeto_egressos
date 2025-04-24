@@ -126,22 +126,14 @@ export default function App_Egresso() {
 
       <button className={styles.consultEgressos} onClick={BotaoConsultEgressos}>Consultar Egressos</button>
 
-      <h2 className={styles.subtitulo}>Pessoas</h2>
+      <h2 className={styles.subtitulo}>Planilha de Alunos</h2>
       <ul className={styles.lista}>
         {pessoasFiltradas.map((pessoa) => (
           <li key={pessoa.id} className={styles.item}>
-            <strong>{pessoa.nome}</strong> — {pessoa.email}
-            <br />
-            <strong>CPF:</strong> {pessoa.cpf}
-            <br />
-            <strong>Cursos:</strong>
-            <ul>
-              {pessoa.cursos.map((curso, index) => (
-                <li key={index}>
-                  {curso.nomeCurso} — {curso.anoEntrada} até {curso.anoSaida || 'Atual'}
-                </li>
-              ))}
-            </ul>
+            <strong>Nome: {pessoa.nome}</strong><br/>
+            <strong>E-mail:</strong>{pessoa.email}<br/>
+            <strong>CPF:</strong> {pessoa.cpf}<br/>
+            <strong>Curso:</strong><ul>{pessoa.cursos.map((curso, index) => (<li key={index}>{curso.nomeCurso} — {curso.anoEntrada} até {curso.anoSaida || 'Atualmente'}</li>))}</ul><br/>
           </li>
         ))}
       </ul>
@@ -154,7 +146,7 @@ export default function App_Egresso() {
             <strong>Email:</strong> {egresso.email}<br />
             <strong>Cargo:</strong> {egresso.cargoAtual || 'Não informado'}<br />
             <strong>Empresa:</strong> {egresso.empresaAtual || 'Não informado'}<br />
-            <strong>Local:</strong> {`${egresso.cidade}, ${egresso.estado}, ${egresso.pais}`}<br />
+            <strong>Local:</strong> {`${egresso.cidade}, ${egresso.estado}, ${egresso.pais}`}<br/>
             {egresso.linkedin && <div><strong>LinkedIn:</strong> {egresso.linkedin}</div>}
             {egresso.instagram && <div><strong>Instagram:</strong> {egresso.instagram}</div>}
           </li>
