@@ -19,6 +19,7 @@
 .labFiltroNome{
     font-weight: bold;
     color: black;
+    margin-left: 5px;
 }
 
 .filtroNome{
@@ -33,6 +34,7 @@
 .labFiltroPrimeiraLetra{
     font-weight: bold;
     color: black;
+    margin-left: 5px;
 }
 
 .filtroPrimeiraLetra{
@@ -47,6 +49,7 @@
 .labFiltroCurso{
     font-weight: bold;
     color: black;
+    margin-left: 5px;
 }
 
 .filtroCurso{
@@ -62,6 +65,7 @@
     margin-left: 50px;
     font-weight: bold;
     color: black;
+    margin-left: 5px;
 }
 
 .filtroCargo{
@@ -76,6 +80,7 @@
 .labFiltroPais{
     font-weight: bold;
     color: black;
+    margin-left: 5px;
 }
 
 .filtroPais{
@@ -90,6 +95,7 @@
 .labFiltroEstado{
     font-weight: bold;
     color: black;
+    margin-left: 5px;
 }
 
 .filtroEstado{
@@ -104,6 +110,7 @@
 .labFiltroCidade{
     font-weight: bold;
     color: black;
+    margin-left: 5px;
 }
 
 .filtroCidade{
@@ -115,8 +122,19 @@
     color: black;
 }
 
+.divisao{
+    display: flex;
+    margin-top: 60px;
+    justify-content: space-between;
+}
+
+.coluna{
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
 .subtitulo{
-    margin-top: 20px;
     font-weight: bold;
     color: black;
 }

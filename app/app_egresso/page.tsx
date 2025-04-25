@@ -100,58 +100,64 @@ export default function App_Egresso() {
   return (
     <div className={styles.container}>
       <h1 className={styles.titulo}>Consulta de Egressos</h1>
+      <div className={styles.divisao}>
+        <div className={styles.coluna}>
+          <label className={styles.labFiltroNome}>Nome:</label>
+          <input className={styles.filtroNome} type="text" placeholder="Pesquisar por nome" value={filtroNome} onChange={(e) => setFiltroNome(e.target.value)}/>
 
-      <div className={styles.filtros}>
-        <label className={styles.labFiltroNome}>Nome:</label>
-        <input className={styles.filtroNome} type="text" placeholder="Pesquisar por nome" value={filtroNome} onChange={(e) => setFiltroNome(e.target.value)}/>
+          <label className={styles.labFiltroPrimeiraLetra}>Primeira letra do nome:</label>
+          <input className={styles.filtroPrimeiraLetra} type="text" placeholder="Ex: A" value={filtroPrimeiraLetra} onChange={(e) => setFiltroPrimeiraLetra(e.target.value)}/>
 
-        <label className={styles.labFiltroPrimeiraLetra}>Primeira letra do nome:</label>
-        <input className={styles.filtroPrimeiraLetra} type="text" placeholder="Ex: A" value={filtroPrimeiraLetra} onChange={(e) => setFiltroPrimeiraLetra(e.target.value)}/>
+          <label className={styles.labFiltroCurso}>Curso:</label>
+          <input className={styles.filtroCurso} type="text" placeholder="Filtrar por curso" value={filtroCurso} onChange={(e) => setFiltroCurso(e.target.value)}/>
 
-        <label className={styles.labFiltroCurso}>Curso:</label>
-        <input className={styles.filtroCurso} type="text" placeholder="Filtrar por curso" value={filtroCurso} onChange={(e) => setFiltroCurso(e.target.value)}/>
+          <label className={styles.labFiltroCargo}>Cargo Atual:</label>
+          <input className={styles.filtroCargo} type="text" placeholder="Filtrar por cargo" value={filtroCargo} onChange={(e) => setFiltroCargo(e.target.value)}/>
+        </div>
+        <div className={styles.coluna}>
+          <label className={styles.labFiltroPais}>País:</label>
+          <input className={styles.filtroPais} type="text" placeholder="Filtrar por país" value={filtroPais} onChange={(e) => setFiltroPais(e.target.value)}/>
 
-        <label className={styles.labFiltroCargo}>Cargo Atual:</label>
-        <input className={styles.filtroCargo} type="text" placeholder="Filtrar por cargo" value={filtroCargo} onChange={(e) => setFiltroCargo(e.target.value)}/>
+          <label className={styles.labFiltroEstado}>Estado:</label>
+          <input className={styles.filtroEstado} type="text" placeholder="Filtrar por estado" value={filtroEstado} onChange={(e) => setFiltroEstado(e.target.value)}/>
 
-        <label className={styles.labFiltroPais}>País:</label>
-        <input className={styles.filtroPais} type="text" placeholder="Filtrar por país" value={filtroPais} onChange={(e) => setFiltroPais(e.target.value)}/>
-
-        <label className={styles.labFiltroEstado}>Estado:</label>
-        <input className={styles.filtroEstado} type="text" placeholder="Filtrar por estado" value={filtroEstado} onChange={(e) => setFiltroEstado(e.target.value)}/>
-
-        <label className={styles.labFiltroCidade}>Cidade:</label>
-        <input className={styles.filtroCidade} type="text" placeholder="Filtrar por cidade" value={filtroCidade} onChange={(e) => setFiltroCidade(e.target.value)}/>
+          <label className={styles.labFiltroCidade}>Cidade:</label>
+          <input className={styles.filtroCidade} type="text" placeholder="Filtrar por cidade" value={filtroCidade} onChange={(e) => setFiltroCidade(e.target.value)}/>
+        </div>
       </div>
 
       <button className={styles.consultEgressos} onClick={BotaoConsultEgressos}>Consultar Egressos</button>
-
-      <h2 className={styles.subtitulo}>Planilha de Alunos</h2>
-      <ul className={styles.lista}>
-        {pessoasFiltradas.map((pessoa) => (
-          <li key={pessoa.id} className={styles.item}>
-            <strong>Nome: {pessoa.nome}</strong><br/>
-            <strong>E-mail:</strong>{pessoa.email}<br/>
-            <strong>CPF:</strong> {pessoa.cpf}<br/>
-            <strong>Curso:</strong><ul>{pessoa.cursos.map((curso, index) => (<li key={index}>{curso.nomeCurso} — {curso.anoEntrada} até {curso.anoSaida || 'Atualmente'}</li>))}</ul><br/>
-          </li>
-        ))}
-      </ul>
-
-      <h2 className={styles.subtitulo}>Egressos</h2>
-      <ul className={styles.lista}>
-        {egressosFiltrados.map((egresso) => (
-          <li key={egresso.id} className={styles.item}>
-            <strong>CPF:</strong> {egresso.cpf}<br />
-            <strong>Email:</strong> {egresso.email}<br />
-            <strong>Cargo:</strong> {egresso.cargoAtual || 'Não informado'}<br />
-            <strong>Empresa:</strong> {egresso.empresaAtual || 'Não informado'}<br />
-            <strong>Local:</strong> {`${egresso.cidade}, ${egresso.estado}, ${egresso.pais}`}<br/>
-            {egresso.linkedin && <div><strong>LinkedIn:</strong> {egresso.linkedin}</div>}
-            {egresso.instagram && <div><strong>Instagram:</strong> {egresso.instagram}</div>}
-          </li>
-        ))}
-      </ul>
+      <div className={styles.divisao}>
+        <div className={styles.coluna}>
+          <h2 className={styles.subtitulo}>Planilha de Alunos e Cursos</h2>
+          <ul className={styles.lista}>
+            {pessoasFiltradas.map((pessoa) => (
+              <li key={pessoa.id} className={styles.item}>
+                <strong>Nome: {pessoa.nome}</strong><br/>
+                <strong>E-mail:</strong>{pessoa.email}<br/>
+                <strong>CPF:</strong> {pessoa.cpf}<br/>
+                <strong>Curso:</strong><ul>{pessoa.cursos.map((curso, index) => (<li key={index}>{curso.nomeCurso} — {curso.anoEntrada} até {curso.anoSaida || <strong>ATUALMENTE</strong>}</li>))}</ul><br/>
+              </li>
+            ))}
+          </ul>
+        </div>
+        <div className={styles.coluna}>
+          <h2 className={styles.subtitulo}>Egressos</h2>
+          <ul className={styles.lista}>
+            {egressosFiltrados.map((egresso) => (
+              <li key={egresso.id} className={styles.item}>
+                <strong>CPF:</strong> {egresso.cpf}<br/>
+                <strong>Email:</strong> {egresso.email}<br/>
+                <strong>Cargo:</strong> {egresso.cargoAtual || 'Não informado'}<br/>
+                <strong>Empresa:</strong> {egresso.empresaAtual || 'Não informado'}<br />
+                <strong>Local:</strong> {`${egresso.cidade}, ${egresso.estado}, ${egresso.pais}`}<br/>
+                {egresso.linkedin && <div><strong>LinkedIn:</strong> {egresso.linkedin}</div>}
+                {egresso.instagram && <div><strong>Instagram:</strong> {egresso.instagram}</div>}
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
     </div>
   );
 }
