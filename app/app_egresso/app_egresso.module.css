@@ -77,6 +77,38 @@
     color: black;
 }
 
+.labFiltroAnoEntrada{
+    margin-left: 50px;
+    font-weight: bold;
+    color: black;
+    margin-left: 5px;
+}
+
+.filtroAnoEntrada{
+    margin-left: 5px;
+    border: 2px solid black;
+    border-radius: 3px;
+    width: 200px;
+    background-color: white;
+    color: black;
+}
+
+.labFiltroAnoSaida{
+    margin-left: 50px;
+    font-weight: bold;
+    color: black;
+    margin-left: 5px;
+}
+
+.filtroAnoSaida{
+    margin-left: 5px;
+    border: 2px solid black;
+    border-radius: 3px;
+    width: 200px;
+    background-color: white;
+    color: black;
+}
+
 .labFiltroPais{
     font-weight: bold;
     color: black;
