@@ -162,7 +162,7 @@ export default function App_Egresso() {
           <label className={styles.labFiltroCurso}>Curso:</label>
           <input className={styles.filtroCurso} type="text" placeholder="Filtrar por curso" value={filtroCurso} onChange={(e) => setFiltroCurso(e.target.value)} />
 
-          <label className={styles.labFiltroCargo}>Cargo Atual:</label>
+          <label className={styles.labFiltroCargo}>Cargo:</label>
           <input className={styles.filtroCargo} type="text" placeholder="Filtrar por cargo" value={filtroCargo} onChange={(e) => setFiltroCargo(e.target.value)} />
 
           <label className={styles.labFiltroAnoEntrada}>Ano/Semestre de Entrada:</label>
