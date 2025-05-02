@@ -23,7 +23,7 @@ interface PerfilEgressoData {
   fotoPerfil?: string;
   linkedin?: string;
   instagram?: string;
-  nomeCompleto?: string;
+  nome?: string;
   trabalhoAtual: TrabalhoAtualData | null;
 }
 
@@ -57,7 +57,7 @@ export default async function PerfilEgressoPage({ params }: { params: Promise<{ 
         </div>
 
         <div className={styles.profileRight}>
-          <h2 className={styles.titulo}>{perfil.nomeCompleto || 'Nome não informado'}</h2>
+          <h2 className={styles.titulo}>{perfil.nome || 'Nome não informado'}</h2>
 
           <div className={styles.secao}>
             <p><span className={styles.labEmail}>Email:</span> <span className={styles.email}>{perfil.email}</span></p>
