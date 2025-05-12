@@ -53,7 +53,8 @@ export default function CriarContaInstituicao() {
 
       if (response.ok) {
         const data = await response.json();
-        // Aqui você pode redirecionar o usuário para a página principal da instituição
+        localStorage.removeItem("perfilInstituicao"); // Remove o antigo, se houver
+        localStorage.setItem("perfilInstituicao", JSON.stringify(data)); // Salva os novos dados
         router.push('/app_instituicao');
       } else {
         const errorData = await response.json();
