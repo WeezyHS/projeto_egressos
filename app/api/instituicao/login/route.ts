@@ -34,10 +34,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Credenciais inválidas.' }, { status: 401 });
     }
 
-    // Se as credenciais são válidas, você pode retornar informações sobre a instituição
-    // e possivelmente um token de autenticação (para manter a sessão).
-    // Por enquanto, vamos apenas retornar uma mensagem de sucesso e o ID da instituição.
-    return NextResponse.json({ message: 'Login bem-sucedido!', instituicaoId: instituicao.id }, { status: 200 });
+    return NextResponse.json(instituicao, { status: 200 });
 
   } catch (error: any) {
     console.error('Erro ao fazer login da instituição:', error);
