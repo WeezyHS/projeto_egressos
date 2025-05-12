@@ -17,11 +17,11 @@ interface AlunosCSVRow{ //Modelo (tipo) para garantir que os dados lidos do arqu
     saida?: string | null;
 }
 interface Matricula{
-  cursoId: number;
-  pessoaId: number;
-  entrada: string;
-  saida: string | null;
-  matricula: string;
+    cursoId: number;
+    pessoaId: number;
+    entrada: string;
+    saida: string | null;
+    matricula: string;
 }
 
 export default function App_Instituicao(){
@@ -39,54 +39,68 @@ export default function App_Instituicao(){
     const [cursos, setCursos] = useState<any[]>([]);
     const [alunos, setAlunos] = useState<any[]>([]);
 
-  //==============================================================
-
     const salvarDadosNoBanco = async (cursosParaSalvar: { id: number; nome: string }[], pessoasParaSalvar: { id: number; nome: string; cpf: string; email: string }[], matriculasParaSalvar: Matricula[]) => {
-      try {
-        const response = await fetch('/api/instituicao/importar_csv', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ cursos: cursosParaSalvar, pessoas: pessoasParaSalvar, matriculas: matriculasParaSalvar }),
-        });
+        try {
+            const response = await fetch('/api/instituicao/importar_csv', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ cursos: cursosParaSalvar, pessoas: pessoasParaSalvar, matriculas: matriculasParaSalvar }),
+            });
 
-        const data = await response.json();
+            const data = await response.json();
 
-        if (response.ok) {
-          alert(data.message || 'Dados do CSV salvos no banco de dados com sucesso!');
-          console.log('Resposta do backend ao salvar:', data);
-          setCursos([]);
-          setPessoas([]);
-          setMatriculas([]);
-          setAlunos([]);
-          buscarAlunosDoBanco(); // Recarregar os dados do banco
-          exibirAlunos(); // Recarregar a lista exibida
-        } else {
-            alert(data.error || 'Erro ao salvar os dados do CSV no banco de dados.');
-            console.error('Erro ao salvar dados do CSV:', data);
+            if (response.ok) {
+                alert(data.message || 'Dados do CSV salvos no banco de dados com sucesso!');
+                console.log('Resposta do backend ao salvar:', data);
+                setCursos([]);
+                setPessoas([]);
+                setMatriculas([]);
+                setAlunos([]);
+                buscarAlunosDoBanco(); // Recarregar os dados do banco
+                exibirAlunos(); // Recarregar a lista exibida
+            } else {
+                alert(data.error || 'Erro ao salvar os dados do CSV no banco de dados.');
+                console.error('Erro ao salvar dados do CSV:', data);
+            }
+        } catch (error) {
+            alert('Erro de conexão com o servidor ao tentar salvar os dados.');
+            console.error('Erro de conexão ao salvar dados:', error);
         }
-    } catch (error) {
-        alert('Erro de conexão com o servidor ao tentar salvar os dados.');
-        console.error('Erro de conexão ao salvar dados:', error);
-      }
     };
 
     useEffect(() => { //Carrega os dados do perfil da Instituição armazenados no localStorage
         const dadosPerfil = localStorage.getItem("perfilInstituicao");
         if (dadosPerfil){
             setPerfil(JSON.parse(dadosPerfil));
+        } else {
+            // Se não houver no localStorage, tente buscar do backend
+            buscarPerfilInstituicao();
         }
     }, []);
+
+    const buscarPerfilInstituicao = async () => {
+        try {
+            const response = await fetch(`/api/instituicao/perfil_instituicao`);
+            if (response.ok) {
+                const data = await response.json();
+                setPerfil(data);
+                localStorage.setItem("perfilInstituicao", JSON.stringify(data));
+            } else {
+                console.error('Erro ao buscar perfil da instituição:', response.status);
+            }
+        } catch (error) {
+            console.error('Erro de conexão ao buscar perfil da instituição:', error);
+        }
+    };
+
     useEffect(() => { //Chama a função exibirAlunos() sempre que alguma das dependências listadas muda.
         exibirAlunos();
     }, [perfil, pessoas, matriculas, cursos, pagina, filtroCurso, filtroEntrada, filtroSaida, ordenacao]);
+
     useEffect(() => {
-      const dadosPerfil = localStorage.getItem("perfilInstituicao");
-      if (dadosPerfil){
-        setPerfil(JSON.parse(dadosPerfil));
-      }
-      buscarAlunosDoBanco(); // Carregar os dados iniciais
+        buscarAlunosDoBanco(); // Carregar os dados iniciais
     }, []);
 
     function gerarCodigoAleatorio(){ //Gera um código quando uma pessoa é cadastrada
@@ -98,203 +112,199 @@ export default function App_Instituicao(){
         return codigo;
     }
     async function enviarEmail(email: string, codigo: string): Promise<boolean>{ //Envia o código gerado por e-mail
-      const templateParams = {
-        to_email: email,
-        codigo: codigo,
-      };
+        const templateParams = {
+            to_email: email,
+            codigo: codigo,
+        };
 
-      try {
-        const response = await emailjs.send(
-          "service_rqwpj7q",
-          "template_12nvjhg",
-          templateParams,
-        "Ygc6WQijXU3rWrMEV"
-      );
-      console.log(`E-mail para ${email} enviado! Status:`, response.status);
-      return true;
+        try {
+            const response = await emailjs.send(
+                "service_rqwpj7q",
+                "template_12nvjhg",
+                templateParams,
+            "Ygc6WQijXU3rWrMEV"
+        );
+        console.log(`E-mail para ${email} enviado! Status:`, response.status);
+        return true;
     } catch (error){
-      console.error(`Falha ao enviar para ${email}:`, error);
-      return false;
+        console.error(`Falha ao enviar para ${email}:`, error);
+        return false;
     }
     };
     const processarCSV = async (file: File, tipo: "cursos" | "alunos"): Promise<void> => {
-      return new Promise<void>((resolve, reject) => {
-      const reader = new FileReader();
-      const emailsEnviados = new Set<string>();
+        return new Promise<void>((resolve, reject) => {
+        const reader = new FileReader();
+        const emailsEnviados = new Set<string>();
 
     reader.onload = async (e: ProgressEvent<FileReader>) => { // Handlers para eventos do FileReader
-      if (!e.target?.result) {
-        reject(new Error("Falha ao ler o arquivo"));
-        return;
-      }
-      try {
-        await processarDadosCSV(e.target.result as string, tipo, emailsEnviados);
-        resolve();
-      } catch (error) {
-        reject(error);
-      }
+        if (!e.target?.result) {
+            reject(new Error("Falha ao ler o arquivo"));
+            return;
+        }
+        try {
+            await processarDadosCSV(e.target.result as string, tipo, emailsEnviados);
+            resolve();
+        } catch (error) {
+            reject(error);
+        }
     };
 
     reader.onerror = () => {
-      reject(new Error("Erro na leitura do arquivo"));
+        reject(new Error("Erro na leitura do arquivo"));
     };
 
     reader.readAsText(file);
-  });
-};
-
-const processarDadosCSV = async ( // Função separada para processamento lógico
-  csvData: string,
-  tipo: "cursos" | "alunos",
-  emailsEnviados: Set<string>
-): Promise<void> => {
-  return new Promise((resolve, reject) => {
-    Papa.parse<AlunosCSVRow>(csvData, {
-      header: true,
-      skipEmptyLines: true,
-      complete: (result: ParseResult<AlunosCSVRow>) => {
-        try {
-          if (tipo === "alunos") {
-            (async () => {
-              await processarAlunos(result.data, emailsEnviados);
-              resolve();
-            })();
-          } else{
-            resolve();
-          }
-        } catch (error) {
-          reject(error);
-        }
-      },
-      error: (err: Error) => {
-        reject(new Error(`Erro ao parsear CSV: ${err.message}`));
-      },
-    });
-  });
-};
-
-const processarAlunos = async ( // Lógica específica para alunos
-  dados: AlunosCSVRow[],
-  emailsEnviados: Set<string>
-): Promise<void> => {
-  const CPFDuplicado = new Map<string, AlunosCSVRow>();
-  const novosCursos: { id: number; nome: string }[] = [];
-  const novasPessoas: { id: number; nome: string; cpf: string; email: string }[] = [];
-  const novasMatriculas: Matricula[] = [];
-
-  dados.forEach((row) => {
-    const cpf = String(row.cpf || "").trim();
-    if (!CPFDuplicado.has(cpf)) {
-      CPFDuplicado.set(cpf, {
-        curso: String(row.curso || ""),
-        nome: String(row.nome || ""),
-        cpf,
-        email: String(row.email || ""),
-        entrada: String(row.entrada || ""),
-        saida: !row.saida || row.saida.trim() === "" ? "Em andamento" : row.saida
-      });
-    }
-  });
-
-  const dadosFiltrados = Array.from(CPFDuplicado.values());
-  const cursoMap = new Map<string, number>();
-  const pessoaMap = new Map<string, number>();
-  let cursoIdCounter = 1;
-  let pessoaIdCounter = 1;
-
-  for (const aluno of dadosFiltrados) { // Processamento assíncrono serializado
-    const cursoNome = aluno.curso.trim();
-    const cpf = aluno.cpf.trim();
-
-    if (!cursoMap.has(cursoNome)) { // Processar cursos
-      cursoMap.set(cursoNome, cursoIdCounter++);
-      novosCursos.push({ id: cursoMap.get(cursoNome)!, nome: cursoNome });
-    }
-
-    if (!pessoaMap.has(cpf) && !emailsEnviados.has(aluno.email)) { // Processar pessoas (com controle de e-mails únicos)
-      const codigo = gerarCodigoAleatorio();
-      const enviado = await enviarEmail(aluno.email, codigo);
-      
-      if (enviado) {
-        emailsEnviados.add(aluno.email);
-        pessoaMap.set(cpf, pessoaIdCounter++);
-        novasPessoas.push({
-            id: pessoaMap.get(cpf)!,
-            nome: aluno.nome,
-            cpf: aluno.cpf,
-            email: aluno.email,
         });
-    } else{
-      console.error(`Cadastro incompleto para ${aluno.nome} - email falhou`);
-      continue;
+    };
+
+    const processarDadosCSV = async ( // Função separada para processamento lógico
+        csvData: string,
+        tipo: "cursos" | "alunos",
+        emailsEnviados: Set<string>
+    ): Promise<void> => {
+        return new Promise((resolve, reject) => {
+        Papa.parse<AlunosCSVRow>(csvData, {
+            header: true,
+            skipEmptyLines: true,
+            complete: (result: ParseResult<AlunosCSVRow>) => {
+                try {
+                    if (tipo === "alunos") {
+                        (async () => {
+                            await processarAlunos(result.data, emailsEnviados);
+                            resolve();
+                        })();
+                    } else{
+                        resolve();
+                    }
+                } catch (error) {
+                    reject(error);
+                }
+            },
+            error: (err: Error) => {
+                reject(new Error(`Erro ao parsear CSV: ${err.message}`));
+                },
+            });
+        });
+    };
+
+    const processarAlunos = async ( // Lógica específica para alunos
+        dados: AlunosCSVRow[],
+        emailsEnviados: Set<string>
+    ): Promise<void> => {
+        const CPFDuplicado = new Map<string, AlunosCSVRow>();
+        const novosCursos: { id: number; nome: string }[] = [];
+        const novasPessoas: { id: number; nome: string; cpf: string; email: string }[] = [];
+        const novasMatriculas: Matricula[] = [];
+
+        dados.forEach((row) => {
+            const cpf = String(row.cpf || "").trim();
+            if (!CPFDuplicado.has(cpf)) {
+                CPFDuplicado.set(cpf, {
+                    curso: String(row.curso || ""),
+                    nome: String(row.nome || ""),
+                    cpf,
+                    email: String(row.email || ""),
+                    entrada: String(row.entrada || ""),
+                    saida: !row.saida || row.saida.trim() === "" ? "Em andamento" : row.saida
+                });
+            }
+        });
+
+        const dadosFiltrados = Array.from(CPFDuplicado.values());
+        const cursoMap = new Map<string, number>();
+        const pessoaMap = new Map<string, number>();
+        let cursoIdCounter = 1;
+        let pessoaIdCounter = 1;
+
+        for (const aluno of dadosFiltrados) { // Processamento assíncrono serializado
+            const cursoNome = aluno.curso.trim();
+            const cpf = aluno.cpf.trim();
+
+            if (!cursoMap.has(cursoNome)) { // Processar cursos
+                cursoMap.set(cursoNome, cursoIdCounter++);
+                novosCursos.push({ id: cursoMap.get(cursoNome)!, nome: cursoNome });
+            }
+
+            if (!pessoaMap.has(cpf) && !emailsEnviados.has(aluno.email)) { // Processar pessoas (com controle de e-mails únicos)
+                const codigo = gerarCodigoAleatorio();
+                const enviado = await enviarEmail(aluno.email, codigo);
+                
+                if (enviado) {
+                    emailsEnviados.add(aluno.email);
+                    pessoaMap.set(cpf, pessoaIdCounter++);
+                    novasPessoas.push({
+                        id: pessoaMap.get(cpf)!,
+                        nome: aluno.nome,
+                        cpf: aluno.cpf,
+                        email: aluno.email,
+                    });
+            } else{
+                console.error(`Cadastro incompleto para ${aluno.nome} - email falhou`);
+                continue;
+            }
+
+            const cursoId = cursoMap.get(cursoNome)!; // Matrículas
+            const pessoaId = pessoaMap.get(cpf)!;
+            const saidaTratada = aluno.saida === "Em andamento" ? null : aluno.saida || null;
+            novasMatriculas.push({
+                cursoId,
+                pessoaId,
+                entrada: aluno.entrada,
+                saida: saidaTratada,
+                matricula: `<span class="math-inline">\{cursoId\}\-</span>{pessoaId}-<span class="math-inline">\{aluno\.entrada\}\-</span>{aluno.saida || "Em andamento"}`,
+            });
+        }
     }
+        setAlunos(dadosFiltrados); // Atualização de estado (batch)
+        setCursos(novosCursos);
+        setPessoas(novasPessoas);
+        setMatriculas(novasMatriculas);
 
-    const cursoId = cursoMap.get(cursoNome)!; // Matrículas
-    const pessoaId = pessoaMap.get(cpf)!;
-    const saidaTratada = aluno.saida === "Em andamento" ? null : aluno.saida || null;
-    novasMatriculas.push({
-      cursoId,
-      pessoaId,
-      entrada: aluno.entrada,
-      saida: saidaTratada,
-      matricula: `${cursoId}-${pessoaId}-${aluno.entrada}-${aluno.saida || "Em andamento"}`,
-    });
-  }
-}
-  setAlunos(dadosFiltrados); // Atualização de estado (batch)
-  setCursos(novosCursos);
-  setPessoas(novasPessoas);
-  setMatriculas(novasMatriculas);
+        await salvarDadosNoBanco(novosCursos, novasPessoas, novasMatriculas);
+    };
 
-  await salvarDadosNoBanco(novosCursos, novasPessoas, novasMatriculas);
-};
-
-//=============================================================
-
-const buscarAlunosDoBanco = async () => {
-  try {
-    const response = await fetch('/api/instituicao/buscar_aluno');
-    if (response.ok) {
-      const data = await response.json();
-      setAlunos(data); // Atualize o estado 'alunos' com os dados do banco
-    } else {
-      console.error('Erro ao buscar alunos do banco:', response.status);
-    }
-  } catch (error) {
-    console.error('Erro de conexão ao buscar alunos:', error);
-  }
-};
-
-//==============================================================
+    const buscarAlunosDoBanco = async () => {
+        try {
+            const response = await fetch('/api/instituicao/buscar_aluno');
+            if (response.ok) {
+                const data = await response.json();
+                setAlunos(data); // Atualize o estado 'alunos' com os dados do banco
+            } else {
+                console.error('Erro ao buscar alunos do banco:', response.status);
+            }
+        } catch (error) {
+            console.error('Erro de conexão ao buscar alunos:', error);
+        }
+    };
 
     const exibirAlunos = () => { //Filtra, ordena, pagina e atualiza a lista de alunos exibida no sistema.
-      const alunosFiltrados = alunos
-      .filter(aluno => filtroCurso ? aluno.matriculas.some((mat: PrismaMatricula & { curso: PrismaCurso }) => mat.curso.nome === filtroCurso) : true)
-      .filter(aluno => filtroEntrada ? aluno.matriculas.some((mat: PrismaMatricula) => mat.anoSemestreEntrada?.includes(filtroEntrada)) : true)
-      .filter(aluno => filtroSaida ? aluno.matriculas.some((mat: PrismaMatricula) => mat.anoSemestreSaida?.includes(filtroSaida)) : true)
-      .sort((a, b) => {
-        const valorA = a[ordenacao];
-        const valorB = b[ordenacao];
+        const alunosFiltrados = alunos
+        .filter(aluno => filtroCurso ? aluno.matriculas.some((mat: PrismaMatricula & { curso: PrismaCurso }) => mat.curso.nome === filtroCurso) : true)
+        .filter(aluno => filtroEntrada ? aluno.matriculas.some((mat: PrismaMatricula) => mat.anoSemestreEntrada?.includes(filtroEntrada)) : true)
+        .filter(aluno => filtroSaida ? aluno.matriculas.some((mat: PrismaMatricula) => mat.anoSemestreSaida?.includes(filtroSaida)) : true)
+        .sort((a, b) => {
+            const valorA = a[ordenacao];
+            const valorB = b[ordenacao];
 
-        if (valorA === undefined && valorB === undefined) {
-          return 0; // Ambos são undefined, ordem não importa
-        }
-        if (valorA === undefined) {
-          return 1; // b vem antes de a
-        }
-        if (valorB === undefined) {
-          return -1; // a vem antes de b
-        }
-        return valorA.localeCompare(valorB);
-      });
+            if (valorA === undefined && valorB === undefined) {
+                return 0; // Ambos são undefined, ordem não importa
+            }
+            if (valorA === undefined) {
+                return 1; // b vem antes de a
+            }
+            if (valorB === undefined) {
+                return -1; // a vem antes de b
+            }
+            return valorA.localeCompare(valorB);
+        });
 
-    const alunosPorPagina = 10; //Cada página exibe 10 alunos
-    const totalPaginasCalculado = Math.ceil(alunosFiltrados.length / alunosPorPagina); //Divide a quantidade de alunos filtrados por 10
-    setTotalPaginas(totalPaginasCalculado);
+        const alunosPorPagina = 10; //Cada página exibe 10 alunos
+        const totalPaginasCalculado = Math.ceil(alunosFiltrados.length / alunosPorPagina); //Divide a quantidade de alunos filtrados por 10
+        setTotalPaginas(totalPaginasCalculado);
 
-    const alunosPagina = alunosFiltrados.slice((pagina - 1) * alunosPorPagina, pagina * alunosPorPagina); //Determina os alunos que devem ser exibidos. "slice" pega apenas os alunos da página atual
-    
-    setAlunosFiltrados(alunosPagina); //Exibe apenas alunos da página atual
+        const alunosPagina = alunosFiltrados.slice((pagina - 1) * alunosPorPagina, pagina * alunosPorPagina); //Determina os alunos que devem ser exibidos. "slice" pega apenas os alunos da página atual
+
+        setAlunosFiltrados(alunosPagina); //Exibe apenas alunos da página atual
     };
 
     const handleAnterior = () => { //Controla a navegação entre páginas na tabela de alunos.
@@ -311,7 +321,9 @@ const buscarAlunosDoBanco = async () => {
     return(
         <div className={styles.container}>
             <h1 className={styles.tituloPrincipal}>Perfil da Instituição</h1>
-            {perfil.fotoPerfil && (<img src={perfil.fotoPerfil} alt="Foto de Perfil" className={styles.fotoPerfil}/>)}
+            <div className={styles.profileLeft}> {/* Adicione um container similar ao perfil do egresso (opcional para estilização) */}
+                {perfil?.fotoPerfil && (<img src={perfil.fotoPerfil} alt="Foto da Instituição" className="w-32 h-32 rounded-full object-cover"/>)}
+            </div>
             <ul>{cursos.map((curso, index) => (<li key={index}>{curso.nome}</li>))}</ul>
             <div className={styles.filtros}>
                 <label className={styles.filtroCurso} htmlFor="filtroCurso">Curso:</label>
@@ -350,16 +362,16 @@ const buscarAlunosDoBanco = async () => {
                     </tr>
                 </thead>
                 <tbody>
-                  {alunosFiltrados.map((aluno, index) => (
-                    <tr key={index}>
-                      <td>{String(aluno.nome || "")}</td>
-                      <td>{String(aluno.cpf || "")}</td>
-                      <td>{String(aluno.email || "")}</td>
-                      <td>{aluno.matriculas && aluno.matriculas.length > 0 ? String(aluno.matriculas[0]?.curso?.nome || "N/A") : "N/A"}</td>
-                      <td>{aluno.matriculas && aluno.matriculas.length > 0 ? String(aluno.matriculas[0]?.anoSemestreEntrada || "N/A") : "N/A"}</td>
-                      <td>{aluno.matriculas && aluno.matriculas.length > 0 ? String(aluno.matriculas[0]?.anoSemestreSaida || "Em andamento") : "Em andamento"}</td>
-                    </tr>
-                  ))}
+                    {alunosFiltrados.map((aluno, index) => (
+                        <tr key={index}>
+                            <td>{String(aluno.nome || "")}</td>
+                            <td>{String(aluno.cpf || "")}</td>
+                            <td>{String(aluno.email || "")}</td>
+                            <td>{aluno.matriculas && aluno.matriculas.length > 0 ? String(aluno.matriculas[0]?.curso?.nome || "N/A") : "N/A"}</td>
+                            <td>{aluno.matriculas && aluno.matriculas.length > 0 ? String(aluno.matriculas[0]?.anoSemestreEntrada || "N/A") : "N/A"}</td>
+                            <td>{aluno.matriculas && aluno.matriculas.length > 0 ? String(aluno.matriculas[0]?.anoSemestreSaida || "Em andamento") : "Em andamento"}</td>
+                        </tr>
+                    ))}
                 </tbody>
             </table>
             <div className={styles.paginacao}>
