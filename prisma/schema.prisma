@@ -56,7 +56,6 @@ model Instituicao {
   cpfRepresentante  String?
   email           String  @unique
   senha           String
-  // Outros campos que você possa ter, como email e senha (se a autenticação for separada)
 
   @@index([cnpj])
 }
