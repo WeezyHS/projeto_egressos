@@ -3,10 +3,10 @@
 import { useRouter } from "next/navigation";
 import styles from "./perfil_instituicao.module.css";
 import { useState } from 'react';
-import { read } from "fs";
 
 export default function CriarContaInstituicao() {
   const [fotoPerfil, setFotoPerfil] = useState<File | null>(null);
+  const [fotoPreview, setFotoPreview] = useState<string | null>(null);
   const [nomeCompleto, setNomeCompleto] = useState('');
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
@@ -19,18 +19,21 @@ export default function CriarContaInstituicao() {
 
   const router = useRouter();
 
-  const camposVazios = () =>{
-    if (!fotoPerfil || !nomeCompleto.trim() || !email?.trim() || !senha?.trim() || !cnpj.trim() || !telefone.trim() || !endereco.trim() || !cep.trim() || !nomeRepresentante.trim() || !cpfRepresentante.trim()){
+  const camposVazios = () => {
+    if (
+      !fotoPerfil || !nomeCompleto.trim() || !email.trim() || !senha.trim() ||
+      !cnpj.trim() || !telefone.trim() || !endereco.trim() || !cep.trim() ||
+      !nomeRepresentante.trim() || !cpfRepresentante.trim()
+    ) {
       alert("Preencha todos os campos antes de continuar!");
       return false;
     }
     return true;
-  }
+  };
 
   const handleSubmit = (event: React.FormEvent) => {
     if (!camposVazios()) return;
     event.preventDefault();
-    // Adicionar a lógica para enviar os dados para o backend
     console.log(
       'Foto do Perfil:', fotoPerfil,
       'Nome Completo:', nomeCompleto,
@@ -46,24 +49,18 @@ export default function CriarContaInstituicao() {
   };
 
   const handleFotoPerfilChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    // if (!camposVazios()) return;
     if (event.target.files && event.target.files[0]) {
-      setFotoPerfil(event.target.files[0]);
+      const file = event.target.files[0];
+      setFotoPerfil(file);
+      setFotoPreview(URL.createObjectURL(file));
     }
   };
 
   const handleSalvarPerfil = async () => {
     if (!camposVazios()) return;
 
-    if (!fotoPerfil){
-      alert("Escolha uma foto de perfil!");
-      return;
-    }
-
-    console.log("Imagem convertida com sucesso!");
-
     const formData = new FormData();
-    formData.append('fotoPerfil', fotoPerfil);
+    formData.append('fotoPerfil', fotoPerfil!);
     formData.append('nomeCompleto', nomeCompleto.trim());
     formData.append('email', email.trim());
     formData.append('senha', senha.trim());
@@ -75,9 +72,9 @@ export default function CriarContaInstituicao() {
     formData.append('cpfRepresentante', cpfRepresentante.trim());
 
     console.log("Redirecionando para /app_instituicao...");
-    router.push("/app_instituicao"); //Direciona para a página do perfil pronto
+    router.push("/app_instituicao");
 
-    try{
+    try {
       const response = await fetch('/api/instituicao/criar_conta', {
         method: 'POST',
         body: formData,
@@ -87,8 +84,8 @@ export default function CriarContaInstituicao() {
         const data = await response.json();
         alert(data.message || "Perfil da instituição salvo com sucesso!");
         console.log("Resposta do backend:", data);
-        router.push('/app_instituicao'); //Redireciona com sucesso
-      } else{
+        router.push('/app_instituicao');
+      } else {
         const errorData = await response.json();
         alert(errorData.error || "Erro ao salvar o perfil da instituição.");
         console.error("Erro ao salvar o perfil:", errorData);
@@ -105,6 +102,12 @@ export default function CriarContaInstituicao() {
       <form onSubmit={handleSubmit} className={styles.form}>
         <label htmlFor="fotoPerfil" className={styles.labPerfil}>Foto do Perfil:</label>
         <input type="file" id="fotoPerfil" accept="image/*" onChange={handleFotoPerfilChange} />
+
+        {fotoPreview && (
+          <div style={{ marginBottom: '1rem' }}>
+            <img src={fotoPreview} alt="Pré-visualização" width={150} height={150} style={{ borderRadius: '8px', objectFit: 'cover' }} />
+          </div>
+        )}
 
         <label className={styles.labelPadrao} htmlFor="nomeCompleto">Nome Completo:</label>
         <input className={styles.inputPadrao} type="text" id="nomeCompleto" value={nomeCompleto} onChange={(e) => setNomeCompleto(e.target.value)} />
