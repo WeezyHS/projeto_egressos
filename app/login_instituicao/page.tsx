@@ -11,13 +11,12 @@ export default function CriarContaInstituicao() {
   const [senha, setSenha] = useState("");
   const router = useRouter();
 
-  //Validação do formato de email
-  const validacaoEmail = (email: string) => {
+  const validacaoEmail = (email: string) => { //Validação do formato de email
     const regex = /^[^\s@]+@(gmail\.com|outlook\.com)$/;
     return regex.test(email);
   }
-  //Caso os campos não sejam preenchidos e caso o e-mail seja inválido
-  const camposVazios = () =>{
+
+  const camposVazios = () =>{ //Caso os campos não sejam preenchidos e caso o e-mail seja inválido
     if (!email || !senha){
       alert("Preencha todos os campos antes de continuar!");
       return false;
@@ -35,7 +34,6 @@ export default function CriarContaInstituicao() {
   };
 
   const handleCriarConta = () =>{
-    console.log('Email:', email, 'Senha:', senha);
     router.push("/criarconta_instituicao"); //Redireciona para perfilinstituicao
   }
 
@@ -53,17 +51,15 @@ export default function CriarContaInstituicao() {
 
       if (response.ok) {
         const data = await response.json();
-        localStorage.removeItem("perfilInstituicao"); // Remove o antigo, se houver
-        localStorage.setItem("perfilInstituicao", JSON.stringify(data)); // Salva os novos dados
+        localStorage.removeItem("perfilInstituicao"); //Remove o antigo, se houver
+        localStorage.setItem("perfilInstituicao", JSON.stringify(data)); //Salva os novos dados
         router.push('/app_instituicao');
       } else {
         const errorData = await response.json();
         alert(errorData.error || 'Erro ao fazer login.');
-        console.error('Erro ao fazer login:', errorData);
       }
     } catch (error) {
       alert('Erro de conexão com o servidor.');
-      console.error('Erro de conexão:', error);
     }
   };
 
