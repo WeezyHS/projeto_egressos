@@ -15,7 +15,6 @@ export async function POST(req: Request) {
         id: true,
         nomeCompleto: true,
         fotoPerfil: true,
-        // outros campos se quiser
       },
     });
 
