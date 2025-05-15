@@ -53,20 +53,17 @@ export default function App_Instituicao(){
 
             if (response.ok) {
                 alert(data.message || 'Dados do CSV salvos no banco de dados com sucesso!');
-                console.log('Resposta do backend ao salvar:', data);
                 setCursos([]);
                 setPessoas([]);
                 setMatriculas([]);
                 setAlunos([]);
-                buscarAlunosDoBanco(); // Recarregar os dados do banco
-                exibirAlunos(); // Recarregar a lista exibida
+                buscarAlunosDoBanco(); //Recarregar os dados do banco
+                exibirAlunos(); //Recarregar a lista exibida
             } else {
                 alert(data.error || 'Erro ao salvar os dados do CSV no banco de dados.');
-                console.error('Erro ao salvar dados do CSV:', data);
             }
         } catch (error) {
             alert('Erro de conexão com o servidor ao tentar salvar os dados.');
-            console.error('Erro de conexão ao salvar dados:', error);
         }
     };
 
@@ -87,12 +84,8 @@ export default function App_Instituicao(){
                 const data = await response.json();
                 setPerfil(data);
                 localStorage.setItem("perfilInstituicao", JSON.stringify(data));
-            } else {
-                console.error('Erro ao buscar perfil da instituição:', response.status);
-            }
-        } catch (error) {
-            console.error('Erro de conexão ao buscar perfil da instituição:', error);
-        }
+            } else {}
+        } catch (error) {}
     };
 
     useEffect(() => { //Chama a função exibirAlunos() sempre que alguma das dependências listadas muda.
@@ -100,7 +93,7 @@ export default function App_Instituicao(){
     }, [perfil, pessoas, matriculas, cursos, pagina, filtroCurso, filtroEntrada, filtroSaida, ordenacao]);
 
     useEffect(() => {
-        buscarAlunosDoBanco(); // Carregar os dados iniciais
+        buscarAlunosDoBanco(); //Carrega os dados iniciais
     }, []);
 
     function gerarCodigoAleatorio(){ //Gera um código quando uma pessoa é cadastrada
@@ -124,10 +117,8 @@ export default function App_Instituicao(){
                 templateParams,
             "Ygc6WQijXU3rWrMEV"
         );
-        console.log(`E-mail para ${email} enviado! Status:`, response.status);
         return true;
     } catch (error){
-        console.error(`Falha ao enviar para ${email}:`, error);
         return false;
     }
     };
@@ -136,7 +127,7 @@ export default function App_Instituicao(){
         const reader = new FileReader();
         const emailsEnviados = new Set<string>();
 
-    reader.onload = async (e: ProgressEvent<FileReader>) => { // Handlers para eventos do FileReader
+    reader.onload = async (e: ProgressEvent<FileReader>) => { //Handlers para eventos do FileReader
         if (!e.target?.result) {
             reject(new Error("Falha ao ler o arquivo"));
             return;
@@ -157,7 +148,7 @@ export default function App_Instituicao(){
         });
     };
 
-    const processarDadosCSV = async ( // Função separada para processamento lógico
+    const processarDadosCSV = async ( //Função separada para processamento lógico
         csvData: string,
         tipo: "cursos" | "alunos",
         emailsEnviados: Set<string>
@@ -187,7 +178,7 @@ export default function App_Instituicao(){
         });
     };
 
-    const processarAlunos = async ( // Lógica específica para alunos
+    const processarAlunos = async ( //Lógica específica para alunos
         dados: AlunosCSVRow[],
         emailsEnviados: Set<string>
     ): Promise<void> => {
@@ -216,19 +207,19 @@ export default function App_Instituicao(){
         let cursoIdCounter = 1;
         let pessoaIdCounter = 1;
 
-        for (const aluno of dadosFiltrados) { // Processamento assíncrono serializado
+        for (const aluno of dadosFiltrados) { //Processamento assíncrono serializado
             const cursoNome = aluno.curso.trim();
             const cpf = aluno.cpf.trim();
 
-            if (!cursoMap.has(cursoNome)) { // Processar cursos
+            if (!cursoMap.has(cursoNome)) { //Processar cursos
                 cursoMap.set(cursoNome, cursoIdCounter++);
                 novosCursos.push({ id: cursoMap.get(cursoNome)!, nome: cursoNome });
             }
 
-            if (!pessoaMap.has(cpf) && !emailsEnviados.has(aluno.email)) { // Processar pessoas (com controle de e-mails únicos)
+            if (!pessoaMap.has(cpf) && !emailsEnviados.has(aluno.email)) { //Processar pessoas (com controle de e-mails únicos)
                 const codigo = gerarCodigoAleatorio();
                 const enviado = await enviarEmail(aluno.email, codigo);
-                
+
                 if (enviado) {
                     emailsEnviados.add(aluno.email);
                     pessoaMap.set(cpf, pessoaIdCounter++);
@@ -239,11 +230,9 @@ export default function App_Instituicao(){
                         email: aluno.email,
                     });
             } else{
-                console.error(`Cadastro incompleto para ${aluno.nome} - email falhou`);
                 continue;
             }
-
-            const cursoId = cursoMap.get(cursoNome)!; // Matrículas
+            const cursoId = cursoMap.get(cursoNome)!; //Matrículas
             const pessoaId = pessoaMap.get(cpf)!;
             const saidaTratada = aluno.saida === "Em andamento" ? null : aluno.saida || null;
             novasMatriculas.push({
@@ -255,7 +244,7 @@ export default function App_Instituicao(){
             });
         }
     }
-        setAlunos(dadosFiltrados); // Atualização de estado (batch)
+        setAlunos(dadosFiltrados); //Atualização de estado (batch)
         setCursos(novosCursos);
         setPessoas(novasPessoas);
         setMatriculas(novasMatriculas);
@@ -268,44 +257,84 @@ export default function App_Instituicao(){
             const response = await fetch('/api/instituicao/buscar_aluno');
             if (response.ok) {
                 const data = await response.json();
-                setAlunos(data); // Atualize o estado 'alunos' com os dados do banco
-            } else {
-                console.error('Erro ao buscar alunos do banco:', response.status);
-            }
-        } catch (error) {
-            console.error('Erro de conexão ao buscar alunos:', error);
-        }
+                setAlunos(data); //Atualiza o estado 'alunos' com os dados do banco
+            } else {}
+        } catch (error) {}
     };
 
-    const exibirAlunos = () => { //Filtra, ordena, pagina e atualiza a lista de alunos exibida no sistema.
+    const exibirAlunos = () => {
         const alunosFiltrados = alunos
-        .filter(aluno => filtroCurso ? aluno.matriculas.some((mat: PrismaMatricula & { curso: PrismaCurso }) => mat.curso.nome === filtroCurso) : true)
-        .filter(aluno => filtroEntrada ? aluno.matriculas.some((mat: PrismaMatricula) => mat.anoSemestreEntrada?.includes(filtroEntrada)) : true)
-        .filter(aluno => filtroSaida ? aluno.matriculas.some((mat: PrismaMatricula) => mat.anoSemestreSaida?.includes(filtroSaida)) : true)
-        .sort((a, b) => {
-            const valorA = a[ordenacao];
-            const valorB = b[ordenacao];
+            .filter(aluno =>
+                filtroCurso
+                    ? aluno.matriculas.some((mat: PrismaMatricula & { curso: PrismaCurso }) =>
+                        mat.curso.nome === filtroCurso
+                    )
+                    : true
+            )
+            .filter(aluno =>
+                filtroEntrada
+                    ? aluno.matriculas.some((mat: PrismaMatricula) => {
+                        const entrada = mat.anoSemestreEntrada?.toLowerCase() || '';
+                        return entrada.includes(filtroEntrada.toLowerCase());
+                    })
+                    : true
+            )
+            .filter(aluno =>
+                filtroSaida
+                    ? aluno.matriculas.some((mat: PrismaMatricula) => {
+                        const saida = mat.anoSemestreSaida?.toLowerCase() || '';
+                        return saida.includes(filtroSaida.toLowerCase());
+                    })
+                    : true
+            )
+            .sort((a, b) => {
+                if (ordenacao === 'nome') {
+                    return a.nome.localeCompare(b.nome);
+                }
 
-            if (valorA === undefined && valorB === undefined) {
-                return 0; // Ambos são undefined, ordem não importa
-            }
-            if (valorA === undefined) {
-                return 1; // b vem antes de a
-            }
-            if (valorB === undefined) {
-                return -1; // a vem antes de b
-            }
-            return valorA.localeCompare(valorB);
-        });
+                const getValorEntrada = (aluno: typeof a) => {
+                    const entradasValidas = aluno.matriculas
+                        .map((m: PrismaMatricula) => m.anoSemestreEntrada)
+                        .filter((s: string | null | undefined): s is string => !!s)
+                        .map((data: string) => {
+                            const [ano, semestre] = data.split('/');
+                            return parseInt(ano) * 10 + parseInt(semestre);
+                        });
+                
+                    return entradasValidas.length > 0 ? Math.min(...entradasValidas) : Number.MAX_SAFE_INTEGER;
+                };
 
-        const alunosPorPagina = 10; //Cada página exibe 10 alunos
-        const totalPaginasCalculado = Math.ceil(alunosFiltrados.length / alunosPorPagina); //Divide a quantidade de alunos filtrados por 10
+                if (ordenacao === 'anoSemestreEntrada') {
+                    return getValorEntrada(a) - getValorEntrada(b);
+                }
+
+                const getValorSaida = (aluno: typeof a) => {
+                    const saidasValidas = aluno.matriculas
+                        .map((m: PrismaMatricula) => m.anoSemestreSaida)
+                        .filter((s: string | null | undefined): s is string => !!s && !s.toLowerCase().includes('andamento'))
+                        .map((data: string) => {
+                            const [ano, semestre] = data.split('/');
+                            return parseInt(ano) * 10 + parseInt(semestre);
+                        });
+                
+                    return saidasValidas.length > 0 ? Math.min(...saidasValidas) : Number.MAX_SAFE_INTEGER;
+                };
+
+                if (ordenacao === 'anoSemestreSaida') {
+                    return getValorSaida(a) - getValorSaida(b);
+                }
+
+                return 0;
+            });
+
+        const alunosPorPagina = 10;
+        const totalPaginasCalculado = Math.ceil(alunosFiltrados.length / alunosPorPagina);
         setTotalPaginas(totalPaginasCalculado);
 
-        const alunosPagina = alunosFiltrados.slice((pagina - 1) * alunosPorPagina, pagina * alunosPorPagina); //Determina os alunos que devem ser exibidos. "slice" pega apenas os alunos da página atual
-
-        setAlunosFiltrados(alunosPagina); //Exibe apenas alunos da página atual
+        const alunosPagina = alunosFiltrados.slice((pagina - 1) * alunosPorPagina, pagina * alunosPorPagina);
+        setAlunosFiltrados(alunosPagina);
     };
+
 
     const handleAnterior = () => { //Controla a navegação entre páginas na tabela de alunos.
         setPagina(prevPagina => Math.max(prevPagina - 1, 1));
@@ -318,38 +347,111 @@ export default function App_Instituicao(){
         return <p>Carregando perfil...</p>;
     }
 
-    return(
+    return (
         <div className={styles.container}>
             <h1 className={styles.tituloPrincipal}>Perfil da Instituição</h1>
-            <div className={styles.profileLeft}> {/* Adicione um container similar ao perfil do egresso (opcional para estilização) */}
-                {perfil?.fotoPerfil && (<img src={perfil.fotoPerfil} alt="Foto da Instituição" className="w-32 h-32 rounded-full object-cover"/>)}
+    
+            <div className={styles.profileLeft}>
+                {perfil?.fotoPerfil && (
+                    <img
+                        src={perfil.fotoPerfil}
+                        alt="Foto da Instituição"
+                        className="w-32 h-32 rounded-full object-cover"
+                    />
+                )}
             </div>
-            <ul>{cursos.map((curso, index) => (<li key={index}>{curso.nome}</li>))}</ul>
+    
+            <ul>
+                {cursos.map((curso, index) => (
+                    <li key={index}>{curso.nome}</li>
+                ))}
+            </ul>
+    
             <div className={styles.filtros}>
                 <label className={styles.filtroCurso} htmlFor="filtroCurso">Curso:</label>
-                <select className={styles.select} value={filtroCurso} onChange={(e) => setFiltroCurso(e.target.value)} id="filtroCurso">
+                <select
+                    className={styles.select}
+                    value={filtroCurso}
+                    onChange={(e) => setFiltroCurso(e.target.value)}
+                    id="filtroCurso"
+                >
                     <option value="">Todos</option>
-                    {cursos.map((curso, index) => (<option key={index} value={curso.nome}>{curso.nome}</option>))}
+                    {cursos.map((curso, index) => (
+                        <option key={index} value={curso.nome}>{curso.nome}</option>
+                    ))}
                 </select>
-                <label className={styles.AnoSemestre} htmlFor="filtroEntrada">Ano/Semestre de Entrada:</label>
-                <input className={styles.input} type="text" placeholder="Ano/Semestre Entrada" id="filtroEntrada" value={filtroEntrada} onChange={(e) => setFiltroEntrada(e.target.value)}/>
-
-                <label className={styles.AnoSemestre} htmlFor="filtroSaida">Ano/Semestre de Saída:</label>
-                <input className={styles.input} type="text" placeholder="Ano/Semestre Saída" id="filtroSaida" value={filtroSaida} onChange={(e) => setFiltroSaida(e.target.value)}/>
-                
-                <select onChange={(e) => setOrdenacao(e.target.value)}>
-                    <option value="nome">Nome</option>
-                    <option value="entrada">Ano/Semestre Entrada</option>
-                    <option value="saida">Ano/Semestre Saída</option>
+    
+                <div className={styles.anoSemestreContainer}>
+                    <div>
+                        <label className={styles.AnoSemestre} htmlFor="filtroEntrada">Ano/Semestre de Entrada:</label>
+                        <input
+                            className={styles.input}
+                            type="text"
+                            placeholder="Ano/Semestre Entrada"
+                            id="filtroEntrada"
+                            value={filtroEntrada}
+                            onChange={(e) => setFiltroEntrada(e.target.value)}
+                        />
+                    </div>
+                    <div>
+                        <label className={styles.AnoSemestre} htmlFor="filtroSaida">Ano/Semestre de Saída:</label>
+                        <input
+                            className={styles.input}
+                            type="text"
+                            placeholder="Ano/Semestre Saída"
+                            id="filtroSaida"
+                            value={filtroSaida}
+                            onChange={(e) => setFiltroSaida(e.target.value)}
+                        />
+                    </div>
+                </div>
+    
+                <select
+                    className={styles.select}
+                    value={ordenacao}
+                    onChange={(e) => setOrdenacao(e.target.value)}
+                >
+                    <option className={styles.opcoes} value="nome">Nome</option>
+                    <option className={styles.opcoes} value="anoSemestreEntrada">Ano/Semestre Entrada</option>
+                    <option className={styles.opcoes} value="anoSemestreSaida">Ano/Semestre Saída</option>
                 </select>
             </div>
+    
             <div className={styles.ordenacao}>
-                <label className={styles.label} htmlFor="ordenacao">Arquivo de Alunos:</label>
-                <input type="file" accept=".csv" onChange={(e) => e.target.files && processarCSV(e.target.files[0], "alunos")} />
-                <label className={styles.label}>Arquivo de Cursos</label>
-                <input type="file" accept=".csv" onChange={(e) => e.target.files && processarCSV(e.target.files[0], "cursos")} />
+                <label className={styles.label} htmlFor="inputAlunos">Arquivo de Alunos:</label>
+                <input
+                    id="inputAlunos"
+                    type="file"
+                    accept=".csv"
+                    onChange={(e) => e.target.files && processarCSV(e.target.files[0], "alunos")}
+                    style={{ display: 'none' }}
+                />
+                <button
+                    type="button"
+                    className={styles.botaoUpload}
+                    onClick={() => document.getElementById('inputAlunos')?.click()}
+                >
+                    Selecionar Arquivo
+                </button>
+    
+                <label className={styles.label} htmlFor="inputCursos">Arquivo de Cursos:</label>
+                <input
+                    id="inputCursos"
+                    type="file"
+                    accept=".csv"
+                    onChange={(e) => e.target.files && processarCSV(e.target.files[0], "cursos")}
+                    style={{ display: 'none' }}
+                />
+                <button
+                    type="button"
+                    className={styles.botaoUpload}
+                    onClick={() => document.getElementById('inputCursos')?.click()}
+                >
+                    Selecionar Arquivo
+                </button>
             </div>
-            {/*Tabela para filtrar os dados das planilhas CSV*/}
+    
+            {/*Tabela com os dados filtrados e ordenados*/}
             <table>
                 <thead>
                     <tr>
@@ -364,20 +466,33 @@ export default function App_Instituicao(){
                 <tbody>
                     {alunosFiltrados.map((aluno, index) => (
                         <tr key={index}>
-                            <td>{String(aluno.nome || "")}</td>
-                            <td>{String(aluno.cpf || "")}</td>
-                            <td>{String(aluno.email || "")}</td>
-                            <td>{aluno.matriculas && aluno.matriculas.length > 0 ? String(aluno.matriculas[0]?.curso?.nome || "N/A") : "N/A"}</td>
-                            <td>{aluno.matriculas && aluno.matriculas.length > 0 ? String(aluno.matriculas[0]?.anoSemestreEntrada || "N/A") : "N/A"}</td>
-                            <td>{aluno.matriculas && aluno.matriculas.length > 0 ? String(aluno.matriculas[0]?.anoSemestreSaida || "Em andamento") : "Em andamento"}</td>
+                            <td>{aluno.nome || ""}</td>
+                            <td>{aluno.cpf || ""}</td>
+                            <td>{aluno.email || ""}</td>
+                            <td>{aluno.matriculas[0]?.curso?.nome || "N/A"}</td>
+                            <td>{aluno.matriculas[0]?.anoSemestreEntrada || "N/A"}</td>
+                            <td>{aluno.matriculas[0]?.anoSemestreSaida || "Em andamento"}</td>
                         </tr>
                     ))}
                 </tbody>
             </table>
+    
             <div className={styles.paginacao}>
-                <button className={styles.button} id="anterior" onClick={handleAnterior} disabled={pagina === 1}>Anterior</button>
+                <button
+                    className={styles.button}
+                    onClick={handleAnterior}
+                    disabled={pagina === 1}
+                >
+                    Anterior
+                </button>
                 <span>{pagina} / {totalPaginas}</span>
-                <button className={styles.button} id="proximo" onClick={handleProximo} disabled={pagina === totalPaginas}>Próximo</button>
+                <button
+                    className={styles.button}
+                    onClick={handleProximo}
+                    disabled={pagina === totalPaginas}
+                >
+                    Próximo
+                </button>
             </div>
         </div>
     );

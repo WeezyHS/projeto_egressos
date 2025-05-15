@@ -49,10 +49,8 @@ export default function Login_Egresso() {
         return;
       }
       const userData = await res.json();
-      console.log("Usuário logado:", userData.egresso);
       router.push("/app_egresso");
     } catch (error){
-      console.log("Erro ao conectar com o servidor:", error);
       alert("Erro ao conectar com o servidor!");
     }
 }

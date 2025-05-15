@@ -71,28 +71,23 @@ export default function CriarContaInstituicao() {
     formData.append('nomeRepresentante', nomeRepresentante.trim());
     formData.append('cpfRepresentante', cpfRepresentante.trim());
 
-    console.log("Redirecionando para /app_instituicao...");
-    router.push("/app_instituicao");
-
     try {
       const response = await fetch('/api/instituicao/criar_conta', {
         method: 'POST',
         body: formData,
       });
 
-      if (response.ok) {
-        const data = await response.json();
-        alert(data.message || "Perfil da instituição salvo com sucesso!");
-        console.log("Resposta do backend:", data);
-        router.push('/app_instituicao');
-      } else {
-        const errorData = await response.json();
-        alert(errorData.error || "Erro ao salvar o perfil da instituição.");
-        console.error("Erro ao salvar o perfil:", errorData);
+      const data = await response.json();
+
+      if (!response.ok) {
+        alert(data?.error || "Erro ao salvar o perfil da instituição.");
+        return;
       }
-    } catch (error) {
+
+      alert(data.message || "Perfil da instituição salvo com sucesso!");
+      router.push('/app_instituicao');
+    } catch (error: any) {
       alert("Erro de conexão com o servidor!");
-      console.error("Erro de conexão", error);
     }
   };
 
@@ -101,7 +96,7 @@ export default function CriarContaInstituicao() {
       <h1>Perfil da Instituição</h1>
       <form onSubmit={handleSubmit} className={styles.form}>
         <label htmlFor="fotoPerfil" className={styles.labPerfil}>Foto do Perfil:</label>
-        <input type="file" id="fotoPerfil" accept="image/*" onChange={handleFotoPerfilChange} />
+        <input type="file" id="fotoPerfil" accept="image/*" onChange={handleFotoPerfilChange}/>
 
         {fotoPreview && (
           <div style={{ marginBottom: '1rem' }}>
