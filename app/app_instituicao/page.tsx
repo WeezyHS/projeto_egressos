@@ -347,153 +347,176 @@ export default function App_Instituicao(){
         return <p>Carregando perfil...</p>;
     }
 
-    return (
-        <div className={styles.container}>
-            <h1 className={styles.tituloPrincipal}>Perfil da Instituição</h1>
-    
-            <div className={styles.profileLeft}>
-                {perfil?.fotoPerfil && (
-                    <img
-                        src={perfil.fotoPerfil}
-                        alt="Foto da Instituição"
-                        className="w-32 h-32 rounded-full object-cover"
-                    />
-                )}
+  return (
+    <div className="min-h-screen bg-gray-100 text-gray-900">
+      {/* Header */}
+      <header className="bg-white shadow p-4 sticky top-0 z-10">
+        <h1 className="text-2xl font-bold">Perfil da Instituição</h1>
+      </header>
+  
+      <div className="max-w-7xl mx-auto px-4 py-6 grid grid-cols-1 lg:grid-cols-4 gap-6">
+        {/* Coluna da esquerda - Perfil */}
+        <aside className="col-span-1 bg-white rounded-2xl shadow p-4 flex flex-col items-center">
+          {perfil?.fotoPerfil && (
+            <img
+              src={perfil.fotoPerfil}
+              alt="Foto da Instituição"
+              className="w-32 h-32 rounded-full object-cover border-4 border-primary mb-4"
+            />
+          )}
+  
+          <ul className="w-full text-sm text-gray-700 space-y-1">
+            {cursos.map((curso, index) => (
+              <li key={index} className="px-2 py-1 rounded hover:bg-gray-100">{curso.nome}</li>
+            ))}
+          </ul>
+        </aside>
+  
+        {/* Coluna central - Filtros + Tabela */}
+        <main className="col-span-3 space-y-6">
+          {/* Filtros */}
+          <div className="bg-white rounded-2xl shadow p-6 space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div>
+                <label htmlFor="filtroCurso" className="block text-sm font-medium">Curso:</label>
+                <select
+                  id="filtroCurso"
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary/50"
+                  value={filtroCurso}
+                  onChange={(e) => setFiltroCurso(e.target.value)}
+                >
+                  <option value="">Todos</option>
+                  {cursos.map((curso, index) => (
+                    <option key={index} value={curso.nome}>{curso.nome}</option>
+                  ))}
+                </select>
+              </div>
+  
+              <div>
+                <label htmlFor="filtroEntrada" className="block text-sm font-medium">Ano/Semestre de Entrada:</label>
+                <input
+                  type="text"
+                  id="filtroEntrada"
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary/50"
+                  value={filtroEntrada}
+                  onChange={(e) => setFiltroEntrada(e.target.value)}
+                />
+              </div>
+  
+              <div>
+                <label htmlFor="filtroSaida" className="block text-sm font-medium">Ano/Semestre de Saída:</label>
+                <input
+                  type="text"
+                  id="filtroSaida"
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary/50"
+                  value={filtroSaida}
+                  onChange={(e) => setFiltroSaida(e.target.value)}
+                />
+              </div>
             </div>
-    
-            <ul>
-                {cursos.map((curso, index) => (
-                    <li key={index}>{curso.nome}</li>
+  
+            <div className="mt-4">
+              <label className="block text-sm font-medium">Ordenar por:</label>
+              <select
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary/50"
+                value={ordenacao}
+                onChange={(e) => setOrdenacao(e.target.value)}
+              >
+                <option value="nome">Nome</option>
+                <option value="anoSemestreEntrada">Ano/Semestre Entrada</option>
+                <option value="anoSemestreSaida">Ano/Semestre Saída</option>
+              </select>
+            </div>
+          </div>
+
+          {/* Uploads */}
+          <div className="bg-white rounded-2xl shadow p-6 space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label htmlFor="inputAlunos" className="block text-sm font-medium">Arquivo de Alunos:</label>
+                <input
+                  id="inputAlunos"
+                  type="file"
+                  accept=".csv"
+                  onChange={(e) => e.target.files && processarCSV(e.target.files[0], "alunos")}
+                  className="hidden"
+                />
+                <button
+                  type="button"
+                  onClick={() => document.getElementById('inputAlunos')?.click()}
+                  className="mt-2 inline-flex items-center px-4 py-2 bg-primary text-white rounded-md hover:bg-primary/90"
+                >
+                  Selecionar Arquivo
+                </button>
+              </div>
+  
+              <div>
+                <label htmlFor="inputCursos" className="block text-sm font-medium">Arquivo de Cursos:</label>
+                <input
+                  id="inputCursos"
+                  type="file"
+                  accept=".csv"
+                  onChange={(e) => e.target.files && processarCSV(e.target.files[0], "cursos")}
+                  className="hidden"
+                />
+                <button
+                  type="button"
+                  onClick={() => document.getElementById('inputCursos')?.click()}
+                  className="mt-2 inline-flex items-center px-4 py-2 bg-primary text-white rounded-md hover:bg-primary/90"
+                >
+                  Selecionar Arquivo
+                </button>
+              </div>
+            </div>
+          </div>
+          {/* Tabela */}
+          <div className="bg-white rounded-2xl shadow p-6 overflow-x-auto">
+            <table className="min-w-full divide-y divide-gray-200">
+              <thead>
+                <tr>
+                  <th className="text-left text-sm font-medium text-gray-600 py-2">Nome</th>
+                  <th className="text-left text-sm font-medium text-gray-600 py-2">CPF</th>
+                  <th className="text-left text-sm font-medium text-gray-600 py-2">Email</th>
+                  <th className="text-left text-sm font-medium text-gray-600 py-2">Curso</th>
+                  <th className="text-left text-sm font-medium text-gray-600 py-2">Ano/Sem. Entrada</th>
+                  <th className="text-left text-sm font-medium text-gray-600 py-2">Ano/Sem. Saída</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-100">
+                {alunosFiltrados.map((aluno, index) => (
+                  <tr key={index} className="hover:bg-gray-50">
+                    <td className="py-2 whitespace-nowrap">{aluno.nome || ""}</td>
+                    <td className="py-2 whitespace-nowrap">{aluno.cpf || ""}</td>
+                    <td className="py-2 whitespace-nowrap">{aluno.email || ""}</td>
+                    <td className="py-2 whitespace-nowrap">{aluno.matriculas[0]?.curso?.nome || "N/A"}</td>
+                    <td className="py-2 whitespace-nowrap">{aluno.matriculas[0]?.anoSemestreEntrada || "N/A"}</td>
+                    <td className="py-2 whitespace-nowrap">{aluno.matriculas[0]?.anoSemestreSaida || "Em andamento"}</td>
+                  </tr>
                 ))}
-            </ul>
-    
-            <div className={styles.filtros}>
-                <label className={styles.filtroCurso} htmlFor="filtroCurso">Curso:</label>
-                <select
-                    className={styles.select}
-                    value={filtroCurso}
-                    onChange={(e) => setFiltroCurso(e.target.value)}
-                    id="filtroCurso"
-                >
-                    <option value="">Todos</option>
-                    {cursos.map((curso, index) => (
-                        <option key={index} value={curso.nome}>{curso.nome}</option>
-                    ))}
-                </select>
-    
-                <div className={styles.anoSemestreContainer}>
-                    <div>
-                        <label className={styles.AnoSemestre} htmlFor="filtroEntrada">Ano/Semestre de Entrada:</label>
-                        <input
-                            className={styles.input}
-                            type="text"
-                            placeholder="Ano/Semestre Entrada"
-                            id="filtroEntrada"
-                            value={filtroEntrada}
-                            onChange={(e) => setFiltroEntrada(e.target.value)}
-                        />
-                    </div>
-                    <div>
-                        <label className={styles.AnoSemestre} htmlFor="filtroSaida">Ano/Semestre de Saída:</label>
-                        <input
-                            className={styles.input}
-                            type="text"
-                            placeholder="Ano/Semestre Saída"
-                            id="filtroSaida"
-                            value={filtroSaida}
-                            onChange={(e) => setFiltroSaida(e.target.value)}
-                        />
-                    </div>
-                </div>
-    
-                <select
-                    className={styles.select}
-                    value={ordenacao}
-                    onChange={(e) => setOrdenacao(e.target.value)}
-                >
-                    <option className={styles.opcoes} value="nome">Nome</option>
-                    <option className={styles.opcoes} value="anoSemestreEntrada">Ano/Semestre Entrada</option>
-                    <option className={styles.opcoes} value="anoSemestreSaida">Ano/Semestre Saída</option>
-                </select>
-            </div>
-    
-            <div className={styles.ordenacao}>
-                <label className={styles.label} htmlFor="inputAlunos">Arquivo de Alunos:</label>
-                <input
-                    id="inputAlunos"
-                    type="file"
-                    accept=".csv"
-                    onChange={(e) => e.target.files && processarCSV(e.target.files[0], "alunos")}
-                    style={{ display: 'none' }}
-                />
-                <button
-                    type="button"
-                    className={styles.botaoUpload}
-                    onClick={() => document.getElementById('inputAlunos')?.click()}
-                >
-                    Selecionar Arquivo
-                </button>
-    
-                <label className={styles.label} htmlFor="inputCursos">Arquivo de Cursos:</label>
-                <input
-                    id="inputCursos"
-                    type="file"
-                    accept=".csv"
-                    onChange={(e) => e.target.files && processarCSV(e.target.files[0], "cursos")}
-                    style={{ display: 'none' }}
-                />
-                <button
-                    type="button"
-                    className={styles.botaoUpload}
-                    onClick={() => document.getElementById('inputCursos')?.click()}
-                >
-                    Selecionar Arquivo
-                </button>
-            </div>
-    
-            {/*Tabela com os dados filtrados e ordenados*/}
-            <table>
-                <thead>
-                    <tr>
-                        <th>Nome</th>
-                        <th>CPF</th>
-                        <th>Email</th>
-                        <th>Curso</th>
-                        <th>Ano/Semestre Entrada</th>
-                        <th>Ano/Semestre Saída</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {alunosFiltrados.map((aluno, index) => (
-                        <tr key={index}>
-                            <td>{aluno.nome || ""}</td>
-                            <td>{aluno.cpf || ""}</td>
-                            <td>{aluno.email || ""}</td>
-                            <td>{aluno.matriculas[0]?.curso?.nome || "N/A"}</td>
-                            <td>{aluno.matriculas[0]?.anoSemestreEntrada || "N/A"}</td>
-                            <td>{aluno.matriculas[0]?.anoSemestreSaida || "Em andamento"}</td>
-                        </tr>
-                    ))}
-                </tbody>
+              </tbody>
             </table>
-    
-            <div className={styles.paginacao}>
-                <button
-                    className={styles.button}
-                    onClick={handleAnterior}
-                    disabled={pagina === 1}
-                >
-                    Anterior
-                </button>
-                <span>{pagina} / {totalPaginas}</span>
-                <button
-                    className={styles.button}
-                    onClick={handleProximo}
-                    disabled={pagina === totalPaginas}
-                >
-                    Próximo
-                </button>
-            </div>
-        </div>
-    );
+          </div>
+
+          {/* Paginação */}
+          <div className="flex justify-between items-center bg-white rounded-2xl shadow p-4">
+            <button
+              onClick={handleAnterior}
+              disabled={pagina === 1}
+              className="px-4 py-2 rounded-md bg-gray-200 hover:bg-gray-300 disabled:opacity-50"
+            >
+              Anterior
+            </button>
+            <span className="text-sm">{pagina} / {totalPaginas}</span>
+            <button
+              onClick={handleProximo}
+              disabled={pagina === totalPaginas}
+              className="px-4 py-2 rounded-md bg-gray-200 hover:bg-gray-300 disabled:opacity-50"
+            >
+              Próximo
+            </button>
+          </div>
+        </main>
+      </div>
+    </div>
+  );
 }

@@ -1,40 +1,41 @@
-'use client';
+'use client'
 
-import styles from './login_instituicao.module.css';
+import { useState } from 'react'
+import { useRouter } from 'next/navigation'
+import { Input } from "@/components/ui/input"
+import { Button } from "@/components/ui/button"
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { ParseError } from 'papaparse';
+export default function LoginInstituicao() {
+  const [email, setEmail] = useState("")
+  const [senha, setSenha] = useState("")
+  const router = useRouter()
 
-export default function CriarContaInstituicao() {
-  const [email, setEmail] = useState("");
-  const [senha, setSenha] = useState("");
-  const router = useRouter();
-
-  const validacaoEmail = (email: string) => { //Validação do formato de email
+  const validacaoEmail = (email: string) => {
     const regex = /^[^\s@]+@(gmail\.com|outlook\.com)$/;
     return regex.test(email);
   }
 
-  const camposVazios = () =>{ //Caso os campos não sejam preenchidos e caso o e-mail seja inválido
-    if (!email || !senha){
+  const camposVazios = () => {
+    if (!email || !senha) {
       alert("Preencha todos os campos antes de continuar!");
       return false;
     }
 
-    if (!validacaoEmail(email)){
+    if (!validacaoEmail(email)) {
       alert("Insira um e-mail válido!");
       return false;
     }
-    if (senha.length < 8){
+
+    if (senha.length < 8) {
       alert("A senha deve ter no mínimo 8 caracteres!");
       return false;
     }
-    return true;
-  };
 
-  const handleCriarConta = () =>{
-    router.push("/criarconta_instituicao"); //Redireciona para perfilinstituicao
+    return true;
+  }
+
+  const handleCriarConta = () => {
+    router.push("/criarconta_instituicao");
   }
 
   const handleEntrar = async () => {
@@ -43,16 +44,14 @@ export default function CriarContaInstituicao() {
     try {
       const response = await fetch('/api/instituicao/login', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, senha }),
       });
 
       if (response.ok) {
         const data = await response.json();
-        localStorage.removeItem("perfilInstituicao"); //Remove o antigo, se houver
-        localStorage.setItem("perfilInstituicao", JSON.stringify(data)); //Salva os novos dados
+        localStorage.removeItem("perfilInstituicao");
+        localStorage.setItem("perfilInstituicao", JSON.stringify(data));
         router.push('/app_instituicao');
       } else {
         const errorData = await response.json();
@@ -61,19 +60,52 @@ export default function CriarContaInstituicao() {
     } catch (error) {
       alert('Erro de conexão com o servidor.');
     }
-  };
+  }
 
   return (
-    <div className={styles.container}>
-      <h1 className={styles.titulo}>Conta de Instituição</h1>
+    <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
+      <div className="bg-white p-8 rounded-2xl shadow-xl w-full max-w-md">
+        <h1 className="text-3xl font-bold text-center text-gray-800 mb-6">
+          Conta da Instituição
+        </h1>
 
-      <label className={styles.labEmail} htmlFor="email">Email:</label>
-      <input className={styles.email} type="email" value={email} onChange={(e) => setEmail(e.target.value)}/>
-      <label className={styles.labSenha} htmlFor="senha">Senha:</label>
-      <input className={styles.senha} type="password" value={senha} onChange={(e) => setSenha(e.target.value)}/>
+        <div className="mb-4">
+          <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+            Email:
+          </label>
+          <Input
+            id="email"
+            type="email"
+            placeholder="exemplo@instituicao.com"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className="w-full"
+          />
+        </div>
 
-      <button className={styles.CriarConta} onClick={handleCriarConta}>Criar Conta</button><br/>
-      <button className={styles.Entrar} onClick={handleEntrar}>Entrar</button>
+        <div className="mb-6">
+          <label htmlFor="senha" className="block text-sm font-medium text-gray-700 mb-1">
+            Senha:
+          </label>
+          <Input
+            id="senha"
+            type="password"
+            placeholder="********"
+            value={senha}
+            onChange={(e) => setSenha(e.target.value)}
+            className="w-full"
+          />
+        </div>
+
+        <div className="flex flex-col gap-3">
+          <Button onClick={handleCriarConta} className="w-full bg-blue-600 hover:bg-blue-700">
+            Criar Conta
+          </Button>
+          <Button onClick={handleEntrar} variant="outline" className="w-full">
+            Entrar
+          </Button>
+        </div>
+      </div>
     </div>
   );
 }
