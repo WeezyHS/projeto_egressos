@@ -1,6 +1,5 @@
 'use client';
 
-import styles from "./app_instituicao.module.css";
 import emailjs from '@emailjs/browser';
 import React, { useEffect, useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
@@ -335,7 +334,6 @@ export default function App_Instituicao(){
         setAlunosFiltrados(alunosPagina);
     };
 
-
     const handleAnterior = () => { //Controla a navegação entre páginas na tabela de alunos.
         setPagina(prevPagina => Math.max(prevPagina - 1, 1));
     }
@@ -353,25 +351,16 @@ export default function App_Instituicao(){
       <header className="bg-white shadow p-4 sticky top-0 z-10">
         <h1 className="text-2xl font-bold">Perfil da Instituição</h1>
       </header>
-  
+
       <div className="max-w-7xl mx-auto px-4 py-6 grid grid-cols-1 lg:grid-cols-4 gap-6">
         {/* Coluna da esquerda - Perfil */}
         <aside className="col-span-1 bg-white rounded-2xl shadow p-4 flex flex-col items-center">
-          {perfil?.fotoPerfil && (
-            <img
-              src={perfil.fotoPerfil}
-              alt="Foto da Instituição"
-              className="w-32 h-32 rounded-full object-cover border-4 border-primary mb-4"
-            />
-          )}
-  
+          {perfil?.fotoPerfil && (<img src={perfil.fotoPerfil} alt="Foto da Instituição" className="w-32 h-32 rounded-full object-cover border-4 border-primary mb-4"/>)}
+
           <ul className="w-full text-sm text-gray-700 space-y-1">
-            {cursos.map((curso, index) => (
-              <li key={index} className="px-2 py-1 rounded hover:bg-gray-100">{curso.nome}</li>
-            ))}
+            {cursos.map((curso, index) => (<li key={index} className="px-2 py-1 rounded hover:bg-gray-100">{curso.nome}</li>))}
           </ul>
         </aside>
-  
         {/* Coluna central - Filtros + Tabela */}
         <main className="col-span-3 space-y-6">
           {/* Filtros */}
@@ -379,93 +368,42 @@ export default function App_Instituicao(){
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
                 <label htmlFor="filtroCurso" className="block text-sm font-medium">Curso:</label>
-                <select
-                  id="filtroCurso"
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary/50"
-                  value={filtroCurso}
-                  onChange={(e) => setFiltroCurso(e.target.value)}
-                >
+                <select id="filtroCurso" className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary/50" value={filtroCurso} onChange={(e) => setFiltroCurso(e.target.value)}>
                   <option value="">Todos</option>
-                  {cursos.map((curso, index) => (
-                    <option key={index} value={curso.nome}>{curso.nome}</option>
-                  ))}
+                  {cursos.map((curso, index) => (<option key={index} value={curso.nome}>{curso.nome}</option>))}
                 </select>
               </div>
-  
               <div>
                 <label htmlFor="filtroEntrada" className="block text-sm font-medium">Ano/Semestre de Entrada:</label>
-                <input
-                  type="text"
-                  id="filtroEntrada"
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary/50"
-                  value={filtroEntrada}
-                  onChange={(e) => setFiltroEntrada(e.target.value)}
-                />
+                <input type="text" id="filtroEntrada" className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary/50" value={filtroEntrada} onChange={(e) => setFiltroEntrada(e.target.value)}/>
               </div>
-  
               <div>
                 <label htmlFor="filtroSaida" className="block text-sm font-medium">Ano/Semestre de Saída:</label>
-                <input
-                  type="text"
-                  id="filtroSaida"
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary/50"
-                  value={filtroSaida}
-                  onChange={(e) => setFiltroSaida(e.target.value)}
-                />
+                <input type="text" id="filtroSaida" className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary/50" value={filtroSaida} onChange={(e) => setFiltroSaida(e.target.value)}/>
               </div>
             </div>
-  
+
             <div className="mt-4">
               <label className="block text-sm font-medium">Ordenar por:</label>
-              <select
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary/50"
-                value={ordenacao}
-                onChange={(e) => setOrdenacao(e.target.value)}
-              >
+              <select className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary/50" value={ordenacao} onChange={(e) => setOrdenacao(e.target.value)}>
                 <option value="nome">Nome</option>
                 <option value="anoSemestreEntrada">Ano/Semestre Entrada</option>
                 <option value="anoSemestreSaida">Ano/Semestre Saída</option>
               </select>
             </div>
           </div>
-
           {/* Uploads */}
           <div className="bg-white rounded-2xl shadow p-6 space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label htmlFor="inputAlunos" className="block text-sm font-medium">Arquivo de Alunos:</label>
-                <input
-                  id="inputAlunos"
-                  type="file"
-                  accept=".csv"
-                  onChange={(e) => e.target.files && processarCSV(e.target.files[0], "alunos")}
-                  className="hidden"
-                />
-                <button
-                  type="button"
-                  onClick={() => document.getElementById('inputAlunos')?.click()}
-                  className="mt-2 inline-flex items-center px-4 py-2 bg-primary text-white rounded-md hover:bg-primary/90"
-                >
-                  Selecionar Arquivo
-                </button>
+                <input id="inputAlunos" type="file" accept=".csv" onChange={(e) => e.target.files && processarCSV(e.target.files[0], "alunos")} className="hidden"/>
+                <button type="button" onClick={() => document.getElementById('inputAlunos')?.click()} className="mt-2 inline-flex items-center px-4 py-2 bg-primary text-white rounded-md hover:bg-primary/90">Selecionar Arquivo</button>
               </div>
-  
               <div>
                 <label htmlFor="inputCursos" className="block text-sm font-medium">Arquivo de Cursos:</label>
-                <input
-                  id="inputCursos"
-                  type="file"
-                  accept=".csv"
-                  onChange={(e) => e.target.files && processarCSV(e.target.files[0], "cursos")}
-                  className="hidden"
-                />
-                <button
-                  type="button"
-                  onClick={() => document.getElementById('inputCursos')?.click()}
-                  className="mt-2 inline-flex items-center px-4 py-2 bg-primary text-white rounded-md hover:bg-primary/90"
-                >
-                  Selecionar Arquivo
-                </button>
+                <input id="inputCursos" type="file" accept=".csv" onChange={(e) => e.target.files && processarCSV(e.target.files[0], "cursos")} className="hidden"/>
+                <button type="button" onClick={() => document.getElementById('inputCursos')?.click()} className="mt-2 inline-flex items-center px-4 py-2 bg-primary text-white rounded-md hover:bg-primary/90">Selecionar Arquivo</button>
               </div>
             </div>
           </div>
@@ -474,46 +412,33 @@ export default function App_Instituicao(){
             <table className="min-w-full divide-y divide-gray-200">
               <thead>
                 <tr>
-                  <th className="text-left text-sm font-medium text-gray-600 py-2">Nome</th>
-                  <th className="text-left text-sm font-medium text-gray-600 py-2">CPF</th>
-                  <th className="text-left text-sm font-medium text-gray-600 py-2">Email</th>
-                  <th className="text-left text-sm font-medium text-gray-600 py-2">Curso</th>
-                  <th className="text-left text-sm font-medium text-gray-600 py-2">Ano/Sem. Entrada</th>
-                  <th className="text-left text-sm font-medium text-gray-600 py-2">Ano/Sem. Saída</th>
+                  <th className="text-left text-sm font-medium text-gray-600 py-2 px-4">Nome</th>
+                  <th className="text-left text-sm font-medium text-gray-600 py-2 px-4">CPF</th>
+                  <th className="text-left text-sm font-medium text-gray-600 py-2 px-4">Email</th>
+                  <th className="text-left text-sm font-medium text-gray-600 py-2 px-4">Curso</th>
+                  <th className="text-left text-sm font-medium text-gray-600 py-2 px-4">Ano/Sem. Entrada</th>
+                  <th className="text-left text-sm font-medium text-gray-600 py-2 px-4">Ano/Sem. Saída</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100">
                 {alunosFiltrados.map((aluno, index) => (
                   <tr key={index} className="hover:bg-gray-50">
-                    <td className="py-2 whitespace-nowrap">{aluno.nome || ""}</td>
-                    <td className="py-2 whitespace-nowrap">{aluno.cpf || ""}</td>
-                    <td className="py-2 whitespace-nowrap">{aluno.email || ""}</td>
-                    <td className="py-2 whitespace-nowrap">{aluno.matriculas[0]?.curso?.nome || "N/A"}</td>
-                    <td className="py-2 whitespace-nowrap">{aluno.matriculas[0]?.anoSemestreEntrada || "N/A"}</td>
-                    <td className="py-2 whitespace-nowrap">{aluno.matriculas[0]?.anoSemestreSaida || "Em andamento"}</td>
+                    <td className="py-2 px-4 whitespace-nowrap">{aluno.nome || ""}</td>
+                    <td className="py-2 px-4 whitespace-nowrap">{aluno.cpf || ""}</td>
+                    <td className="py-2 px-4 whitespace-nowrap">{aluno.email || ""}</td>
+                    <td className="py-2 px-4 whitespace-nowrap">{aluno.matriculas[0]?.curso?.nome || "N/A"}</td>
+                    <td className="py-2 px-4 whitespace-nowrap">{aluno.matriculas[0]?.anoSemestreEntrada || "N/A"}</td>
+                    <td className="py-2 px-4 whitespace-nowrap">{aluno.matriculas[0]?.anoSemestreSaida || "Em andamento"}</td>
                   </tr>
                 ))}
               </tbody>
             </table>
           </div>
-
           {/* Paginação */}
           <div className="flex justify-between items-center bg-white rounded-2xl shadow p-4">
-            <button
-              onClick={handleAnterior}
-              disabled={pagina === 1}
-              className="px-4 py-2 rounded-md bg-gray-200 hover:bg-gray-300 disabled:opacity-50"
-            >
-              Anterior
-            </button>
+            <button onClick={handleAnterior} disabled={pagina === 1} className="px-4 py-2 rounded-md bg-gray-200 hover:bg-gray-300 disabled:opacity-50">Anterior</button>
             <span className="text-sm">{pagina} / {totalPaginas}</span>
-            <button
-              onClick={handleProximo}
-              disabled={pagina === totalPaginas}
-              className="px-4 py-2 rounded-md bg-gray-200 hover:bg-gray-300 disabled:opacity-50"
-            >
-              Próximo
-            </button>
+            <button onClick={handleProximo} disabled={pagina === totalPaginas} className="px-4 py-2 rounded-md bg-gray-200 hover:bg-gray-300 disabled:opacity-50">Próximo</button>
           </div>
         </main>
       </div>
