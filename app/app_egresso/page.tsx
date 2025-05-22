@@ -1,7 +1,6 @@
 'use client';
 
-import styles from './app_egresso.module.css';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from "@/components/ui/button";
 
@@ -24,7 +23,6 @@ export default function App_Egresso() {
   const [filtroCurso, setFiltroCurso] = useState('');
   const [filtroAnoEntrada, setFiltroAnoEntrada] = useState('');
   const [filtroAnoSaida, setFiltroAnoSaida] = useState('');
-
   const router = useRouter(); // INSTANCIANDO O ROUTER
 
   const buscarEgressos = async () => {
@@ -109,54 +107,56 @@ export default function App_Egresso() {
   });
 
   return (
-    <div className={styles.container}>
-      <h1 className={styles.titulo}>Consulta de Alunos/Egressos</h1>
+    <div className="p-6 sm:p-10 max-w-6xl mx-auto">
+      <h1 className="text-3xl font-bold text-gray-800 mb-8">Consulta de Alunos/Egressos</h1>
 
-      <div className={styles.divisao}>
-        <div className={styles.coluna}>
-          <label className={styles.labFiltroNome}>Nome:</label>
-          <input className={styles.filtroNome} type="text" placeholder="Pesquisar por nome" value={filtroNome} onChange={(e) => setFiltroNome(e.target.value)} />
-
-          <label className={styles.labFiltroPrimeiraLetra}>Primeira letra do nome:</label>
-          <input className={styles.filtroPrimeiraLetra} type="text" placeholder="Ex: A" value={filtroPrimeiraLetra} onChange={(e) => setFiltroPrimeiraLetra(e.target.value)} />
-
-          <label className={styles.labFiltroCurso}>Curso:</label>
-          <input className={styles.filtroCurso} type="text" placeholder="Filtrar por curso" value={filtroCurso} onChange={(e) => setFiltroCurso(e.target.value)} />
-
-          <label className={styles.labFiltroAnoEntrada}>Ano/Semestre de Entrada:</label>
-          <input className={styles.filtroAnoEntrada} type="text" placeholder="Ex: 2024 ou 2024/1" value={filtroAnoEntrada} onChange={(e) => setFiltroAnoEntrada(e.target.value)} />
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+        <div className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700">Nome:</label>
+            <input type="text" placeholder="Pesquisar por nome" value={filtroNome} onChange={(e) => setFiltroNome(e.target.value)} className="w-full px-4 py-2 border border-gray-500 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"/>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700">Primeira letra do nome:</label>
+            <input type="text" placeholder="Ex: A" value={filtroPrimeiraLetra} onChange={(e) => setFiltroPrimeiraLetra(e.target.value)} className="w-full px-4 py-2 border border-gray-500 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"/>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700">Curso:</label>
+            <input type="text" placeholder="Filtrar por curso" value={filtroCurso} onChange={(e) => setFiltroCurso(e.target.value)} className="w-full px-4 py-2 border border-gray-500 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"/>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700">Ano/Semestre de Entrada:</label>
+            <input type="text" placeholder="Ex: 2024 ou 2024/1" value={filtroAnoEntrada} onChange={(e) => setFiltroAnoEntrada(e.target.value)} className="w-full px-4 py-2 border border-gray-500 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"/>
+          </div>
         </div>
-
-        <div className={styles.coluna}>
-          <label className={styles.labFiltroAnoSaida}>Ano/Semestre de Saída:</label>
-          <input className={styles.filtroAnoSaida} type="text" placeholder="Ex: 2027 ou 2027/2" value={filtroAnoSaida} onChange={(e) => setFiltroAnoSaida(e.target.value)} />
+        <div className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700">Ano/Semestre de Saída:</label>
+            <input type="text" placeholder="Ex: 2027 ou 2027/2" value={filtroAnoSaida} onChange={(e) => setFiltroAnoSaida(e.target.value)} className="w-full px-4 py-2 border border-gray-500 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"/>
+          </div>
         </div>
       </div>
-
-      <button className={styles.consultEgressos} onClick={BotaoConsultEgressos}>Consultar Egressos</button>
-      <Button variant="default" className="rounded-xl px-6 py-3 text-base font-semibold shadow-md" onClick={handleConsultarEgresso}>Consultar Egressos [teste]</Button>
-
-      <div className={styles.divisao}>
-        <div className={styles.coluna}>
-          <h2 className={styles.subtitulo}>Planilha de Alunos e Cursos</h2>
-          <ul className={styles.lista}>
-            {pessoasFiltradas.map((pessoa) => (
-              <li key={pessoa.id} className={styles.item}>
-                <strong>Nome: {pessoa.nome}</strong><br />
-                <strong>E-mail:</strong> {pessoa.email}<br />
-                <strong>CPF:</strong> {pessoa.cpf}<br />
-                <strong>Curso:</strong>
-                <ul>
-                  {pessoa.cursos.map((curso, index) => (
-                    <li key={index}>
-                      {curso.nomeCurso} — {curso.anoEntrada} até {curso.anoSaida || <strong>ATUALMENTE</strong>}
-                    </li>
-                  ))}
-                </ul><br/>
-              </li>
-            ))}
-          </ul>
-        </div>
+      <div className="flex flex-wrap gap-4 mb-10">
+        <Button className="rounded-xl px-6 py-3 text-base font-semibold shadow-md" onClick={BotaoConsultEgressos}>Consultar Pessoas</Button>
+        <Button className="rounded-xl px-6 py-3 text-base font-semibold shadow-md" onClick={handleConsultarEgresso}>Consultar Egressos</Button>
+      </div>
+      <div className="bg-white p-6 rounded-xl shadow-md">
+        <h2 className="text-xl font-semibold text-gray-800 mb-4">Planilha de Alunos e Cursos</h2>
+        <ul className="space-y-6">
+          {pessoasFiltradas.map((pessoa) => (
+            <li key={pessoa.id} className="border-b pb-4">
+              <p className="text-lg font-semibold text-gray-800">{pessoa.nome}</p>
+              <p className="text-sm text-gray-600">E-mail: {pessoa.email}</p>
+              <p className="text-sm text-gray-600">CPF: {pessoa.cpf}</p>
+              <div className="mt-2">
+                <p className="font-medium text-sm text-gray-700">Curso(s):</p>
+                <ul className="ml-4 list-disc text-sm text-gray-600">
+                  {pessoa.cursos.map((curso, index) => (<li key={index}>{curso.nomeCurso} — {curso.anoEntrada} até {curso.anoSaida || <strong>ATUALMENTE</strong>}</li>))}
+                </ul>
+              </div>
+            </li>
+          ))}
+        </ul>
       </div>
     </div>
   );

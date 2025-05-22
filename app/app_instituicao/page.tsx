@@ -263,24 +263,18 @@ export default function App_Instituicao(){
 
     const exibirAlunos = () => {
         const alunosFiltrados = alunos
-            .filter(aluno =>
-                filtroCurso
-                    ? aluno.matriculas.some((mat: PrismaMatricula & { curso: PrismaCurso }) =>
+            .filter(aluno => filtroCurso ? aluno.matriculas.some((mat: PrismaMatricula & { curso: PrismaCurso }) =>
                         mat.curso.nome === filtroCurso
                     )
                     : true
             )
-            .filter(aluno =>
-                filtroEntrada
-                    ? aluno.matriculas.some((mat: PrismaMatricula) => {
+            .filter(aluno => filtroEntrada ? aluno.matriculas.some((mat: PrismaMatricula) => {
                         const entrada = mat.anoSemestreEntrada?.toLowerCase() || '';
                         return entrada.includes(filtroEntrada.toLowerCase());
                     })
                     : true
             )
-            .filter(aluno =>
-                filtroSaida
-                    ? aluno.matriculas.some((mat: PrismaMatricula) => {
+            .filter(aluno => filtroSaida ? aluno.matriculas.some((mat: PrismaMatricula) => {
                         const saida = mat.anoSemestreSaida?.toLowerCase() || '';
                         return saida.includes(filtroSaida.toLowerCase());
                     })
@@ -322,7 +316,6 @@ export default function App_Instituicao(){
                 if (ordenacao === 'anoSemestreSaida') {
                     return getValorSaida(a) - getValorSaida(b);
                 }
-
                 return 0;
             });
 
