@@ -70,44 +70,46 @@ export default function Consultar_Egresso() {
   });
 
   return (
-    <div className="p-6 space-y-6">
-      <h1 className="text-3xl font-bold">Consulta de Egressos</h1>
+    <div className="min-h-screen bg-no-repeat bg-cover bg-center" style={{ backgroundImage: "url('/formatura.jpg')" }}>
+      <div className="p-6 sm:p-10 max-w-6xl mx-auto bg-white bg-opacity-90 rounded-xl shadow-lg">
+        <div className="p-6 space-y-6">
+          <h1 className="text-3xl font-bold">Consulta de Egressos</h1>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div className="space-y-2">
-          <label>Cargo:</label>
-          <input className="w-full border border-gray-300 rounded px-3 py-2" type="text" value={filtroCargo} onChange={e => setFiltroCargo(e.target.value)}/>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <label className="block text-[16px] font-medium text-gray-700">Cargo:</label>
+              <input className="w-full px-4 py-2 border border-gray-500 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-400" type="text" value={filtroCargo} onChange={e => setFiltroCargo(e.target.value)}/>
 
-          <label>País:</label>
-          <input className="w-full border border-gray-300 rounded px-3 py-2" type="text" value={filtroPais} onChange={e => setFiltroPais(e.target.value)}/>
+              <label className="block text-[16px] font-medium text-gray-700">País:</label>
+              <input className="w-full px-4 py-2 border border-gray-500 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-400" type="text" value={filtroPais} onChange={e => setFiltroPais(e.target.value)}/>
 
-          <label>Estado:</label>
-          <input className="w-full border border-gray-300 rounded px-3 py-2" type="text" value={filtroEstado} onChange={e => setFiltroEstado(e.target.value)}/>
+              <label className="block text-[16px] font-medium text-gray-700">Estado:</label>
+              <input className="w-full px-4 py-2 border border-gray-500 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-400" type="text" value={filtroEstado} onChange={e => setFiltroEstado(e.target.value)}/>
 
-          <label>Cidade:</label>
-          <input className="w-full border border-gray-300 rounded px-3 py-2" type="text" value={filtroCidade} onChange={e => setFiltroCidade(e.target.value)}/>
-        </div>
-      </div>
+              <label className="block text-[16px] font-medium text-gray-700">Cidade:</label>
+              <input className="w-full px-4 py-2 border border-gray-500 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-400" type="text" value={filtroCidade} onChange={e => setFiltroCidade(e.target.value)}/>
+            </div>
+          </div>
 
-      <Button onClick={buscarEgressos} variant="default" className="rounded-xl px-6 py-3 text-base font-semibold shadow-md">Consultar Egressos</Button>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        <div>
-          <h2 className="text-xl font-semibold mb-2">Egressos</h2>
-          <ul className="space-y-4">
-            {egressosFiltrados.map((egresso) => (
-              <li key={egresso.id} className="border rounded p-4 shadow-sm">
-                <p><strong>CPF:</strong> {egresso.cpf}</p>
-                <p><strong>Email:</strong> {egresso.email}</p>
-                <p><strong>Cargo:</strong> {egresso.cargoAtual || 'Não informado'}</p>
-                <p><strong>Empresa:</strong> {egresso.empresaAtual || 'Não informado'}</p>
-                <p><strong>Local:</strong> {`${egresso.cidade}, ${egresso.estado}, ${egresso.pais}`}</p>
-                {egresso.linkedin && <p><strong>LinkedIn:</strong> {egresso.linkedin}</p>}
-                {egresso.instagram && <p><strong>Instagram:</strong> {egresso.instagram}</p>}
-                <button onClick={() => visualizarPerfil(egresso.id)} title="Visualizar Perfil" className="mt-2 inline-flex items-center gap-2 text-blue-600 hover:underline"><Eye size={20}/> Visualizar Perfil</button>
-              </li>
-            ))}
-          </ul>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div>
+              <h2 className="text-xl font-semibold mb-2">Egressos</h2>
+              <ul className="space-y-4">
+                {egressosFiltrados.map((egresso) => (
+                  <li key={egresso.id} className="border rounded p-4 shadow-sm">
+                    <p><strong>CPF:</strong> {egresso.cpf}</p>
+                    <p><strong>Email:</strong> {egresso.email}</p>
+                    <p><strong>Cargo:</strong> {egresso.cargoAtual || 'Não informado'}</p>
+                    <p><strong>Empresa:</strong> {egresso.empresaAtual || 'Não informado'}</p>
+                    <p><strong>Local:</strong> {`${egresso.cidade}, ${egresso.estado}, ${egresso.pais}`}</p>
+                    {egresso.linkedin && <p><strong>LinkedIn:</strong> {egresso.linkedin}</p>}
+                    {egresso.instagram && <p><strong>Instagram:</strong> {egresso.instagram}</p>}
+                    <button onClick={() => visualizarPerfil(egresso.id)} title="Visualizar Perfil" className="mt-2 inline-flex items-center gap-2 text-blue-600 hover:underline"><Eye size={20}/> Visualizar Perfil</button>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
         </div>
       </div>
     </div>
