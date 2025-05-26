@@ -4,6 +4,7 @@ import emailjs from '@emailjs/browser';
 import React, { useEffect, useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import Papa, { ParseResult, ParseError } from 'papaparse';
+import { Button } from "@/components/ui/button";
 
 import { Curso as PrismaCurso, Matricula as PrismaMatricula } from '@/app/generated/prisma';
 
@@ -37,6 +38,7 @@ export default function App_Instituicao(){
     const [ordenacao, setOrdenacao] = useState("nome");
     const [cursos, setCursos] = useState<any[]>([]);
     const [alunos, setAlunos] = useState<any[]>([]);
+    const router = useRouter();
 
     const salvarDadosNoBanco = async (cursosParaSalvar: { id: number; nome: string }[], pessoasParaSalvar: { id: number; nome: string; cpf: string; email: string }[], matriculasParaSalvar: Matricula[]) => {
         try {
@@ -348,11 +350,16 @@ export default function App_Instituicao(){
       <div className="max-w-7xl mx-auto px-4 py-6 grid grid-cols-1 lg:grid-cols-4 gap-6">
         {/* Coluna da esquerda - Perfil */}
         <aside className="col-span-1 bg-white rounded-2xl shadow p-4 flex flex-col items-center">
-          {perfil?.fotoPerfil && (<img src={perfil.fotoPerfil} alt="Foto da Instituição" className="w-32 h-32 rounded-full object-cover border-4 border-primary mb-4"/>)}
 
-          <ul className="w-full text-sm text-gray-700 space-y-1">
-            {cursos.map((curso, index) => (<li key={index} className="px-2 py-1 rounded hover:bg-gray-100">{curso.nome}</li>))}
-          </ul>
+            {perfil?.fotoPerfil && (<img src={perfil.fotoPerfil} alt="Foto da Instituição" className="w-32 h-32 rounded-full object-cover border-4 border-primary mb-4"/>)}
+            <p className="text-lg font-semibold mb-2">{perfil?.nomeCompleto || "Nome não encontrado!"}</p><br/>
+
+            <Button onClick={() => router.push('/cursos_alunos')}>Cursos</Button><br/>
+            <Button onClick={() => router.push('/editarperfil_instituicao')}>Editar Informações</Button>
+
+            <ul className="w-full text-sm text-gray-700 space-y-1">
+                {cursos.map((curso, index) => (<li key={index} className="px-2 py-1 rounded hover:bg-gray-100">{curso.nome}</li>))}
+            </ul>
         </aside>
         {/* Coluna central - Filtros + Tabela */}
         <main className="col-span-3 space-y-6">
