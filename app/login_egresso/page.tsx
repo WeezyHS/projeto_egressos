@@ -2,17 +2,17 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input'; // Certifique-se que este caminho está correto
+import { Button } from '@/components/ui/button'; // Certifique-se que este caminho está correto
 
 export default function Login_Egresso() {
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
   const router = useRouter();
 
-  const validacaoEmail = (email: string) => {
-    const regex = /^[^\s@]+@(gmail\.com|outlook\.com)$/;
-    return regex.test(email);
+  const validacaoEmail = (emailValue: string) => {
+    const regex = /^[^\s@]+@([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}$/;
+    return regex.test(emailValue);
   };
 
   const camposVazios = () => {
@@ -46,53 +46,69 @@ export default function Login_Egresso() {
       });
 
       if (!res.ok) {
-        const errorData = await res.json();
-        alert(errorData.error || 'Erro ao fazer login!');
+        const errorText = await res.text(); // Pega o texto bruto do erro
+        try {
+          const errorData = JSON.parse(errorText); // Tenta parsear como JSON, pois algumas APIs de erro retornam JSON
+          alert(errorData.error || 'Erro ao fazer login!');
+        } catch (e) {
+          alert(`Erro ao fazer login: ${errorText || res.statusText}`); // Se não for JSON, mostra o texto bruto ou uma mensagem genérica
+        }
+        return;
+      }
+      // Se o login foi teoricamente bem-sucedido (res.ok é true)
+      const responseText = await res.text(); // Pega o texto bruto da resposta de sucesso
+
+      if (!responseText) {
+        alert('O servidor respondeu com sucesso, mas não retornou dados. Por favor, contate o suporte.');
         return;
       }
 
-      const userData = await res.json();
-      localStorage.removeItem('perfilEgresso');
-      localStorage.setItem('perfilEgresso', JSON.stringify(userData));
-      router.push('/app_egresso');
-    } catch (error) {
-      alert('Erro ao conectar com o servidor!');
+      try {
+        const userData = JSON.parse(responseText); // Agora tenta parsear o texto que você logou
+
+        const egressoData = userData.egresso;
+        const cpfDoUsuario = egressoData ? egressoData.cpf : null;
+
+        if (cpfDoUsuario) {
+          localStorage.setItem('userCpf', cpfDoUsuario);
+          localStorage.setItem('userSenha', senha); 
+
+          if (egressoData) {
+            localStorage.removeItem('perfilEgresso');
+            localStorage.setItem('perfilEgresso', JSON.stringify(egressoData));
+          }
+          router.push('/app_egresso');
+        } else {
+          alert('Login bem-sucedido, mas houve um problema ao obter os dados do seu perfil (CPF não encontrado na resposta da API).');
+        }
+      } catch (parseError) {
+        alert('Erro ao processar a resposta do servidor. A resposta não parece ser um JSON válido.');
+      }
+
+    } catch (networkError) {
+      alert('Erro ao conectar com o servidor. Verifique sua conexão e tente novamente.');
     }
   };
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-gray-50 px-6 py-12 lg:px-8">
-      <div className="w-full max-w-md space-y-8 rounded-xl bg-white p-10 shadow-lg">
-        <h1 className="text-center text-3xl font-bold tracking-tight text-gray-900">Conta de Usuário</h1>
+    <div className="flex min-h-screen flex-col items-center justify-center bg-gray-100 px-6 py-12 lg:px-8">
+      <div className="w-full max-w-md space-y-8 rounded-xl bg-white p-10 shadow-2xl">
+        <h1 className="text-center text-3xl font-bold tracking-tight text-gray-800">Acesso do Egresso</h1>
 
-        <div className="mt-8 space-y-6">
-          <div className="flex flex-col gap-2">
+        <div className="mt-10 space-y-6">
+          <div className="flex flex-col gap-y-2">
             <label htmlFor="email" className="text-sm font-semibold text-gray-700">Email:</label>
-            <Input
-              type="email"
-              id="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="seu.email@gmail.com"
-              autoComplete="email"
-            />
+            <Input type="email" id="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="seu.email@exemplo.com" autoComplete="email" className="w-full px-4 py-2.5 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"/>
           </div>
 
-          <div className="flex flex-col gap-2">
+          <div className="flex flex-col gap-y-2">
             <label htmlFor="senha" className="text-sm font-semibold text-gray-700">Senha:</label>
-            <Input
-              type="password"
-              id="senha"
-              value={senha}
-              onChange={(e) => setSenha(e.target.value)}
-              placeholder="********"
-              autoComplete="current-password"
-            />
+            <Input type="password" id="senha" value={senha} onChange={(e) => setSenha(e.target.value)} placeholder="********" autoComplete="current-password" className="w-full px-4 py-2.5 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"/>
           </div>
 
-          <div className="flex flex-col gap-4 pt-4">
-            <Button onClick={handleEntrar} variant="default" className="w-full bg-blue-600 hover:bg-blue-700">Entrar</Button>
-            <Button onClick={handleCriarConta} variant="outline" className="w-full">Criar Conta</Button>
+          <div className="flex flex-col gap-4 pt-6">
+            <Button onClick={handleEntrar} variant="default" className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 text-base font-medium rounded-lg shadow-md hover:shadow-lg transition-all">Entrar</Button>
+            <Button onClick={handleCriarConta} variant="outline" className="w-full py-3 text-base font-medium rounded-lg border-gray-300 text-gray-700 hover:bg-gray-100 transition-colors">Criar Conta</Button>
           </div>
         </div>
       </div>
