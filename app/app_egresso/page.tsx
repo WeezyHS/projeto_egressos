@@ -3,6 +3,7 @@
 import { useState, useMemo, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from "@/components/ui/button";
+import Image from 'next/image';
 
 interface Pessoa {
   id: number;
@@ -16,8 +17,7 @@ interface Pessoa {
   }[];
 }
 
-// Função auxiliar para converter "DD/MM/AAAA" para "AAAA/S" ou "AAAA"
-const converterDataParaAnoSemestreOuAno = (dataString: string | null): string | null => {
+const converterDataParaAnoSemestreOuAno = (dataString: string | null): string | null => { // Função auxiliar para converter "DD/MM/AAAA" para "AAAA/S" ou "AAAA"
   if (!dataString) return null;
   const partes = dataString.split('/');
   if (partes.length === 3) {
@@ -35,8 +35,7 @@ const converterDataParaAnoSemestreOuAno = (dataString: string | null): string | 
   return null; // Formato não reconhecido
 };
 
-// Função auxiliar para ordenar strings "AAAA/S" ou "AAAA"
-const ordenarAnoSemestre = (a: string, b: string) => {
+const ordenarAnoSemestre = (a: string, b: string) => { // Função auxiliar para ordenar strings "AAAA/S" ou "AAAA"
   const [anoA, semAStr] = a.split('/');
   const [anoB, semBStr] = b.split('/');
   const numAnoA = parseInt(anoA, 10);
@@ -50,17 +49,72 @@ const ordenarAnoSemestre = (a: string, b: string) => {
   return numSemA - numSemB;
 };
 
-
 export default function App_Egresso() {
   const [pessoas, setPessoas] = useState<Pessoa[]>([]);
   const [filtroNome, setFiltroNome] = useState('');
   const [filtroPrimeiraLetra, setFiltroPrimeiraLetra] = useState('');
   const [filtroCurso, setFiltroCurso] = useState('');
-  const [filtroAnoEntrada, setFiltroAnoEntrada] = useState(''); // Armazenará "AAAA/S" ou "AAAA"
-  const [filtroAnoSaida, setFiltroAnoSaida] = useState(''); // Armazenará "AAAA/S" ou "AAAA"
+  const [filtroAnoEntrada, setFiltroAnoEntrada] = useState('');
+  const [filtroAnoSaida, setFiltroAnoSaida] = useState('');
   const router = useRouter();
 
-  const buscarEgressos = async () => {
+  const [nomeEgressoLogado, setNomeEgressoLogado] = useState<string>('Carregando...');
+  const [fotoPerfilUrlEgressoLogado, setFotoPerfilUrlEgressoLogado] = useState<string | null>(null);
+
+  const buscarDadosEgressoLogado = async () => {
+    const cpf = localStorage.getItem('userCpf');
+    const senha = localStorage.getItem('userSenha'); // Lembre-se do aviso de segurança
+
+    if (!cpf || !senha) {
+      setNomeEgressoLogado('Usuário Desconhecido');
+      setFotoPerfilUrlEgressoLogado(null);
+      return;
+    }
+
+    try {
+      const response = await fetch('/api/egresso/perfil_egresso', { 
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ cpf, senha }),
+      });
+
+      if (response.ok) {
+        const responseText = await response.text();
+
+        if (!responseText) {
+          alert('O servidor de perfil respondeu com sucesso, mas não retornou dados. Verifique o console.');
+          setNomeEgressoLogado('Dados não recebidos');
+          setFotoPerfilUrlEgressoLogado(null);
+          return;
+        }
+
+        try {
+          const data = JSON.parse(responseText);
+          setNomeEgressoLogado(data.nome || 'Nome não disponível');
+          setFotoPerfilUrlEgressoLogado(data.fotoPerfil || null);
+        } catch (parseError) {
+          alert('Erro ao processar os dados do perfil. Resposta não é JSON válido.');
+          setNomeEgressoLogado('Erro nos dados');
+          setFotoPerfilUrlEgressoLogado(null);
+        }
+      } else {
+        const errorText = await response.text();
+        try {
+          const erroData = JSON.parse(errorText);
+        } catch (e) {
+        }
+        setNomeEgressoLogado('Falha ao carregar perfil');
+        setFotoPerfilUrlEgressoLogado(null);
+      }
+    } catch (error) {
+      setNomeEgressoLogado('Erro de conexão');
+      setFotoPerfilUrlEgressoLogado(null);
+    }
+  };
+
+  const buscarEgressosLista = async () => {
     const egressoLogadoId = localStorage.getItem('egressoId');
     if (egressoLogadoId && !isNaN(Number(egressoLogadoId))) {
       try {
@@ -68,17 +122,13 @@ export default function App_Egresso() {
           headers: { 'X-Egresso-ID': egressoLogadoId },
         });
         if (response.ok) {
-          const data = await response.json();
+          const data = await response.json(); // Assumindo que esta API retorna JSON corretamente
           setPessoas(data.pessoas || []);
           localStorage.setItem('pessoas', JSON.stringify(data.pessoas || []));
         } else {
-          console.error('Erro ao buscar egressos:', response.status);
         }
       } catch (error) {
-        console.error('Erro de conexão ao buscar egressos:', error);
       }
-    } else {
-      console.error('ID do egresso não encontrado localmente.');
     }
   };
 
@@ -88,15 +138,15 @@ export default function App_Egresso() {
       try {
         setPessoas(JSON.parse(pessoasSalvas));
       } catch (e) {
-        console.error("Erro ao parsear pessoas do localStorage", e);
         localStorage.removeItem('pessoas');
       }
     }
-    buscarEgressos();
+    buscarEgressosLista(); 
+    buscarDadosEgressoLogado(); 
   }, []);
 
   const handleConsultarEgresso = () => router.push('/consultar_egresso');
-  const handleBotaoConsultarPessoas = () => buscarEgressos();
+  const handleBotaoConsultarPessoas = () => buscarEgressosLista();
 
   const nomesDeCursosUnicos = useMemo(() => {
     const todosOsCursos = new Set<string>();
@@ -104,7 +154,6 @@ export default function App_Egresso() {
     return Array.from(todosOsCursos).sort();
   }, [pessoas]);
 
-  // Coletar anos/semestres de entrada únicos
   const anosEntradaUnicos = useMemo(() => {
     const anos = new Set<string>();
     pessoas.forEach(p => p.cursos.forEach(c => {
@@ -114,7 +163,6 @@ export default function App_Egresso() {
     return Array.from(anos).sort(ordenarAnoSemestre);
   }, [pessoas]);
 
-  // Coletar anos/semestres de saída únicos
   const anosSaidaUnicos = useMemo(() => {
     const anos = new Set<string>();
     pessoas.forEach(p => p.cursos.forEach(c => {
@@ -132,17 +180,15 @@ export default function App_Egresso() {
     const filtroPrimeiraLetraLower = filtroPrimeiraLetra.toLowerCase();
     const filtroCursoLower = filtroCurso.toLowerCase();
 
-    // As funções de filtro de ano já esperam o formato "AAAA/S" ou "AAAA" do estado do filtro
-    // e "DD/MM/AAAA" dos dados da pessoa, então elas devem funcionar como estão.
     const filtroAnoValidoEntrada = (cursoAnoEntrada: string) => {
-      if (!filtroAnoEntrada) return true; // Se filtroAnoEntrada está vazio, não filtra
-      const [anoFiltro, semestreFiltro] = filtroAnoEntrada.split('/'); // Ex: "2023" ou "2023", "1"
-      const [diaCurso, mesCurso, anoCurso] = cursoAnoEntrada.split('/').map(Number); // Ex: 01, 03, 2023
+      if (!filtroAnoEntrada) return true; 
+      const [anoFiltro, semestreFiltro] = filtroAnoEntrada.split('/'); 
+      const [diaCurso, mesCurso, anoCurso] = cursoAnoEntrada.split('/').map(Number); 
 
       if (!anoFiltro || isNaN(diaCurso) || isNaN(mesCurso) || isNaN(anoCurso)) return false;
       if (anoCurso.toString() !== anoFiltro) return false;
 
-      if (semestreFiltro) { // Se o filtro inclui semestre (ex: "2023/1")
+      if (semestreFiltro) { 
         if (semestreFiltro === '1' && mesCurso > 6) return false;
         if (semestreFiltro === '2' && mesCurso <= 6) return false;
       }
@@ -151,7 +197,7 @@ export default function App_Egresso() {
 
     const filtroAnoValidoSaida = (cursoAnoSaida: string | null) => {
       if (!filtroAnoSaida) return true;
-      if (!cursoAnoSaida) return false; // Se não há ano de saída no curso, e o filtro está ativo, não corresponde
+      if (!cursoAnoSaida) return false; 
 
       const [anoFiltro, semestreFiltro] = filtroAnoSaida.split('/');
       const [diaCurso, mesCurso, anoCurso] = cursoAnoSaida.split('/').map(Number);
@@ -176,89 +222,87 @@ export default function App_Egresso() {
   });
 
   return (
-    <div className="p-6 sm:p-10 max-w-6xl mx-auto">
-      <h1 className="text-3xl font-bold text-gray-800 mb-8">Consulta de Alunos/Egressos</h1>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
-        <div className="space-y-4">
-          {/* Filtro Nome */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Nome:</label>
-            <input type="text" placeholder="Pesquisar por nome" value={filtroNome} onChange={(e) => setFiltroNome(e.target.value)} className="w-full px-4 py-2 border border-gray-500 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"/>
-          </div>
-          {/* Filtro Primeira Letra */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Primeira letra do nome:</label>
-            <input type="text" placeholder="Ex: A" value={filtroPrimeiraLetra} onChange={(e) => setFiltroPrimeiraLetra(e.target.value)} className="w-full px-4 py-2 border border-gray-500 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"/>
-          </div>
-          {/* Filtro Curso (Dropdown) */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Curso:</label>
-            <select value={filtroCurso} onChange={(e) => setFiltroCurso(e.target.value)} className="w-full px-4 py-2 border border-gray-500 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500">
-              <option value="">Todos</option>
-              {nomesDeCursosUnicos.map((nomeCurso) => (
-                <option key={nomeCurso} value={nomeCurso.toLowerCase()}>{nomeCurso}</option>
-              ))}
-            </select>
-          </div>
+    <div className="flex min-h-screen bg-gray-100">
+      <div className="w-full max-w-xs bg-white border-r border-gray-200 p-6 flex flex-col items-center shadow-md">
+        <div className="w-32 h-32 relative mb-4">
+          <Image src={fotoPerfilUrlEgressoLogado || "/images/foto_padrao.png"} alt="Foto de perfil" fill sizes="128px" priority className="rounded-full object-cover border-2 border-gray-300"/>
         </div>
-        <div className="space-y-4">
-            {/* Filtro Ano/Semestre de Entrada (Dropdown) */}
-            <div>
-                <label className="block text-sm font-medium text-gray-700">Ano/Semestre de Entrada:</label>
-                <select value={filtroAnoEntrada} onChange={(e) => setFiltroAnoEntrada(e.target.value)} className="w-full px-4 py-2 border border-gray-500 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500">
-                <option value="">Todos</option>
-                {anosEntradaUnicos.map((anoSem) => (
-                    <option key={anoSem} value={anoSem}>{anoSem}</option>
-                ))}
-                </select>
-            </div>
-            {/* Filtro Ano/Semestre de Saída (Dropdown) */}
-            <div>
-                <label className="block text-sm font-medium text-gray-700">Ano/Semestre de Saída:</label>
-                <select value={filtroAnoSaida} onChange={(e) => setFiltroAnoSaida(e.target.value)} className="w-full px-4 py-2 border border-gray-500 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500">
-                <option value="">Todos</option>
-                {anosSaidaUnicos.map((anoSem) => (
-                    <option key={anoSem} value={anoSem}>{anoSem}</option>
-                ))}
-                </select>
-            </div>
-        </div>
+        <h2 className="text-xl font-semibold text-gray-800 text-center">{nomeEgressoLogado}</h2>
+        <Button onClick={() => router.push('/editarperfil_egresso')}>Editar Informações</Button>
       </div>
 
-      <div className="flex flex-wrap gap-4 mb-10">
-        <Button className="rounded-xl px-6 py-3 text-base font-semibold shadow-md" onClick={handleBotaoConsultarPessoas}>
-          Consultar Pessoas
-        </Button>
-        <Button className="rounded-xl px-6 py-3 text-base font-semibold shadow-md" onClick={handleConsultarEgresso}>
-          Consultar Egressos
-        </Button>
-      </div>
+      <div className="flex-1 p-6 sm:p-10 overflow-y-auto">
+        <h1 className="text-3xl font-bold text-gray-800 mb-8">Consulta de Alunos/Egressos</h1>
 
-      <div className="bg-white p-6 rounded-xl shadow-md">
-        <h2 className="text-xl font-semibold text-gray-800 mb-4">Planilha de Alunos e Cursos</h2>
-        {pessoasFiltradas.length > 0 ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6 mb-8 p-6 bg-white rounded-xl shadow-md">
+          <div className="space-y-4">
+            <div>
+              <label htmlFor="filtroNome" className="block text-sm font-medium text-gray-700 mb-1">Nome:</label>
+              <input id="filtroNome" type="text" placeholder="Pesquisar por nome" value={filtroNome} onChange={(e) => setFiltroNome(e.target.value)} className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm"/>
+            </div>
+            <div>
+              <label htmlFor="filtroPrimeiraLetra" className="block text-sm font-medium text-gray-700 mb-1">Primeira letra do nome:</label>
+              <input id="filtroPrimeiraLetra" type="text" placeholder="Ex: A" value={filtroPrimeiraLetra} onChange={(e) => setFiltroPrimeiraLetra(e.target.value)} className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm"/>
+            </div>
+            <div>
+              <label htmlFor="filtroCurso" className="block text-sm font-medium text-gray-700 mb-1">Curso:</label>
+              <select id="filtroCurso" value={filtroCurso} onChange={(e) => setFiltroCurso(e.target.value)} className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm bg-white">
+                <option value="">Todos</option>
+                {nomesDeCursosUnicos.map((nomeCurso) => (<option key={nomeCurso} value={nomeCurso.toLowerCase()}>{nomeCurso}</option>))}
+              </select>
+            </div>
+          </div>
+
+          <div className="space-y-4">
+            <div>
+              <label htmlFor="filtroAnoEntrada" className="block text-sm font-medium text-gray-700 mb-1">Ano/Semestre de Entrada:</label>
+              <select id="filtroAnoEntrada" value={filtroAnoEntrada} onChange={(e) => setFiltroAnoEntrada(e.target.value)} className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm bg-white">
+                <option value="">Todos</option>
+                {anosEntradaUnicos.map((anoSem) => (<option key={anoSem} value={anoSem}>{anoSem}</option>))}
+              </select>
+            </div>
+            <div>
+              <label htmlFor="filtroAnoSaida" className="block text-sm font-medium text-gray-700 mb-1">Ano/Semestre de Saída:</label>
+              <select id="filtroAnoSaida" value={filtroAnoSaida} onChange={(e) => setFiltroAnoSaida(e.target.value)} className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm bg-white">
+                <option value="">Todos</option>
+                {anosSaidaUnicos.map((anoSem) => (<option key={anoSem} value={anoSem}>{anoSem}</option>))}
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div className="flex flex-wrap gap-4 mb-10">
+          <Button className="bg-blue-600 hover:bg-blue-700 text-white rounded-lg px-6 py-3 text-base font-semibold shadow-md transition-colors" onClick={handleBotaoConsultarPessoas}>Consultar Pessoas</Button>
+          <Button className="bg-gray-600 hover:bg-gray-700 text-white rounded-lg px-6 py-3 text-base font-semibold shadow-md transition-colors" onClick={handleConsultarEgresso}>Consultar Egressos</Button>
+        </div>
+
+        <div className="bg-white p-6 rounded-xl shadow-md">
+          <h2 className="text-xl font-semibold text-gray-800 mb-4">Alunos e Egressos</h2>
+          {pessoasFiltradas.length > 0 ? (
             <ul className="space-y-6">
-            {pessoasFiltradas.map((pessoa) => (
-                <li key={pessoa.id} className="border-b pb-4">
-                <p className="text-lg font-semibold text-gray-800">{pessoa.nome}</p>
-                <p className="text-sm text-gray-600">E-mail: {pessoa.email}</p>
-                <p className="text-sm text-gray-600">CPF: {pessoa.cpf}</p>
-                <div className="mt-2">
+              {pessoasFiltradas.map((pessoa) => (
+                <li key={pessoa.id} className="border-b border-gray-200 pb-6 mb-6 last:border-b-0 last:pb-0 last:mb-0">
+                  <p className="text-lg font-semibold text-gray-800">{pessoa.nome}</p>
+                  <p className="text-sm text-gray-600">E-mail: {pessoa.email}</p>
+                  <p className="text-sm text-gray-600">CPF: {pessoa.cpf}</p>
+                  <div className="mt-2">
                     <p className="font-medium text-sm text-gray-700">Curso(s):</p>
-                    <ul className="ml-4 list-disc text-sm text-gray-600">
-                    {pessoa.cursos.map((curso, index) => (
+                    <ul className="ml-4 list-disc text-sm text-gray-600 space-y-1">
+                      {pessoa.cursos.map((curso, index) => (
                         <li key={index}>
-                        {curso.nomeCurso} — {curso.anoEntrada} até {curso.anoSaida || <strong>ATUALMENTE</strong>}
+                          {curso.nomeCurso} — {curso.anoEntrada} até{" "}
+                          {curso.anoSaida || <strong className="text-green-600">ATUALMENTE</strong>}
                         </li>
-                    ))}
+                      ))}
                     </ul>
-                </div>
+                  </div>
                 </li>
-            ))}
+              ))}
             </ul>
-        ) : (
-            <p className="text-center text-gray-500">Nenhuma pessoa encontrada com os filtros aplicados.</p>
-        )}
+          ) : (
+            <p className="text-center text-gray-500 py-8">Nenhuma pessoa encontrada com os filtros aplicados.</p>
+          )}
+        </div>
       </div>
     </div>
   );
