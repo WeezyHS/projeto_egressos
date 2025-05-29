@@ -3,8 +3,11 @@
 import { useState, useMemo, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from "@/components/ui/button";
+import { Input } from '@/components/ui/input';
 import Image from 'next/image';
+//import { GraduationCap } from "lucide-react";
 
+// Interface Pessoa, ajustada para como a API /api/pessoa/listar-todos vai retornar
 interface Pessoa {
   id: number;
   nome: string;
@@ -12,45 +15,34 @@ interface Pessoa {
   email: string;
   cursos: {
     nomeCurso: string;
-    anoEntrada: string; // Esperado no formato "DD/MM/AAAA"
-    anoSaida: string | null; // Esperado no formato "DD/MM/AAAA" ou null
+    anoEntrada: string;
+    anoSaida: string | null; // Esperado no formato "AAAA/S", "AAAA" ou null da API
   }[];
 }
 
-const converterDataParaAnoSemestreOuAno = (dataString: string | null): string | null => { // Função auxiliar para converter "DD/MM/AAAA" para "AAAA/S" ou "AAAA"
-  if (!dataString) return null;
-  const partes = dataString.split('/');
-  if (partes.length === 3) {
-    const mes = parseInt(partes[1], 10);
-    const ano = parseInt(partes[2], 10);
-    if (!isNaN(mes) && !isNaN(ano)) {
-      const semestre = mes <= 6 ? '1' : '2';
-      return `${ano}/${semestre}`;
-    }
-  }
-  // Se já for apenas "AAAA" ou "AAAA/S", retorna como está
-  if (/^\d{4}(\/(1|2))?$/.test(dataString)) {
-    return dataString;
-  }
-  return null; // Formato não reconhecido
-};
+// Função auxiliar para ordenar strings "AAAA/S" ou "AAAA" (mantida)
+const ordenarAnoSemestre = (a: string, b: string): number => {
+  const eValorValido = (val: string) => val && val !== 'Não informado' && val !== null;
+  const aValido = eValorValido(a);
+  const bValido = eValorValido(b);
 
-const ordenarAnoSemestre = (a: string, b: string) => { // Função auxiliar para ordenar strings "AAAA/S" ou "AAAA"
+  if (aValido && !bValido) return -1;
+  if (!aValido && bValido) return 1;
+  if (!aValido && !bValido) return 0;
+  
   const [anoA, semAStr] = a.split('/');
   const [anoB, semBStr] = b.split('/');
   const numAnoA = parseInt(anoA, 10);
   const numAnoB = parseInt(anoB, 10);
-  const numSemA = semAStr ? parseInt(semAStr, 10) : 0; // Considera ano sem semestre como semestre 0
+  const numSemA = semAStr ? parseInt(semAStr, 10) : 0;
   const numSemB = semBStr ? parseInt(semBStr, 10) : 0;
 
-  if (numAnoA !== numAnoB) {
-    return numAnoA - numAnoB;
-  }
+  if (numAnoA !== numAnoB) return numAnoA - numAnoB;
   return numSemA - numSemB;
 };
 
 export default function App_Egresso() {
-  const [pessoas, setPessoas] = useState<Pessoa[]>([]);
+  const [pessoas, setPessoas] = useState<Pessoa[]>([]); // Estado para a lista de Pessoas
   const [filtroNome, setFiltroNome] = useState('');
   const [filtroPrimeiraLetra, setFiltroPrimeiraLetra] = useState('');
   const [filtroCurso, setFiltroCurso] = useState('');
@@ -60,105 +52,108 @@ export default function App_Egresso() {
 
   const [nomeEgressoLogado, setNomeEgressoLogado] = useState<string>('Carregando...');
   const [fotoPerfilUrlEgressoLogado, setFotoPerfilUrlEgressoLogado] = useState<string | null>(null);
+  const [cpfEgressoLogado, setCpfEgressoLogado] = useState<string | null>(null);
+  const [cidadeLogado, setCidadeLogado] = useState<string | null>(null);
+  const [estadoLogado, setEstadoLogado] = useState<string | null>(null);
+  const [paisLogado, setPaisLogado] = useState<string | null>(null);
 
   const buscarDadosEgressoLogado = async () => {
     const cpf = localStorage.getItem('userCpf');
-    const senha = localStorage.getItem('userSenha'); // Lembre-se do aviso de segurança
-
+    const senha = localStorage.getItem('userSenha');
     if (!cpf || !senha) {
-      setNomeEgressoLogado('Usuário Desconhecido');
+      console.warn('App_Egresso: Credenciais para perfil (sidebar) não encontradas.');
+      setNomeEgressoLogado('Usuário');
       setFotoPerfilUrlEgressoLogado(null);
+      setCpfEgressoLogado(null);
       return;
     }
-
+    setCpfEgressoLogado(cpf);
     try {
-      const response = await fetch('/api/egresso/perfil_egresso', { 
+      const response = await fetch('/api/egresso/perfil_egresso', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ cpf, senha }),
       });
-
+      console.log('App_Egresso - buscarDadosEgressoLogado (Sidebar) - Status API Perfil:', response.status, response.statusText);
       if (response.ok) {
-        const responseText = await response.text();
-
-        if (!responseText) {
-          alert('O servidor de perfil respondeu com sucesso, mas não retornou dados. Verifique o console.');
-          setNomeEgressoLogado('Dados não recebidos');
-          setFotoPerfilUrlEgressoLogado(null);
-          return;
-        }
-
-        try {
-          const data = JSON.parse(responseText);
+        const data = await response.json().catch(() => null);
+        if (data) {
           setNomeEgressoLogado(data.nome || 'Nome não disponível');
           setFotoPerfilUrlEgressoLogado(data.fotoPerfil || null);
-        } catch (parseError) {
-          alert('Erro ao processar os dados do perfil. Resposta não é JSON válido.');
-          setNomeEgressoLogado('Erro nos dados');
-          setFotoPerfilUrlEgressoLogado(null);
+          setCpfEgressoLogado(data.cpf || 'CPF inválido');
+          setCidadeLogado(data.cidade || 'Localização desconhecida');
+          setEstadoLogado(data.estado);
+          setPaisLogado(data.pais);
+        } else {
+          console.error("App_Egresso - buscarDadosEgressoLogado (Sidebar): Resposta OK, mas JSON inválido/vazio.");
+          setNomeEgressoLogado('Falha (dados perfil)');
         }
       } else {
         const errorText = await response.text();
-        try {
-          const erroData = JSON.parse(errorText);
-        } catch (e) {
-        }
-        setNomeEgressoLogado('Falha ao carregar perfil');
-        setFotoPerfilUrlEgressoLogado(null);
+        //console.error('App_Egresso - buscarDadosEgressoLogado (Sidebar) - Erro API Perfil (texto bruto):', errorText);
+        setNomeEgressoLogado('Falha (API perfil)');
       }
     } catch (error) {
-      setNomeEgressoLogado('Erro de conexão');
-      setFotoPerfilUrlEgressoLogado(null);
+      console.error('App_Egresso - buscarDadosEgressoLogado (Sidebar) - Erro de conexão API Perfil.', error);
+      setNomeEgressoLogado('Falha (conexão perfil)');
     }
   };
 
-  const buscarEgressosLista = async () => {
-    const egressoLogadoId = localStorage.getItem('egressoId');
-    if (egressoLogadoId && !isNaN(Number(egressoLogadoId))) {
-      try {
-        const response = await fetch('/api/egresso/lista_egressos', {
-          headers: { 'X-Egresso-ID': egressoLogadoId },
-        });
-        if (response.ok) {
-          const data = await response.json(); // Assumindo que esta API retorna JSON corretamente
-          setPessoas(data.pessoas || []);
-          localStorage.setItem('pessoas', JSON.stringify(data.pessoas || []));
-        } else {
+  // Função para buscar a lista de TODAS as pessoas
+  const buscarTodasAsPessoas = async () => {
+    console.log('App_Egresso - buscarTodasAsPessoas: Iniciando busca da API /api/egresso/lista_geral...');
+    try {
+      const response = await fetch('/api/egresso/lista_geral'); // Chamando a NOVA API
+      
+      console.log('App_Egresso - buscarTodasAsPessoas - Status da resposta:', response.status, response.statusText);
+
+      if (response.ok) {
+        const responseText = await response.text();
+        if (!responseText) {
+          console.error('App_Egresso - buscarTodasAsPessoas: API retornou um corpo VAZIO.');
+          setPessoas([]); return;
         }
-      } catch (error) {
+        try {
+          const data = JSON.parse(responseText);
+          const pessoasDaApi = data.pessoas || []; // API retorna { pessoas: [...] }
+          console.log('App_Egresso - buscarTodasAsPessoas: "data.pessoas" recebido:', pessoasDaApi.length, "pessoas");
+          setPessoas(pessoasDaApi);
+        } catch (parseError) {
+          console.error('App_Egresso - buscarTodasAsPessoas: Falha ao parsear JSON:', parseError, "Resposta bruta:", responseText);
+          setPessoas([]);
+        }
+      } else {
+        const errorText = await response.text();
+        console.error('App_Egresso - buscarTodasAsPessoas - Erro da API (texto bruto):', errorText);
+        setPessoas([]);
       }
+    } catch (error) {
+      console.error('App_Egresso - buscarTodasAsPessoas: Erro de conexão:', error);
+      setPessoas([]);
     }
   };
 
   useEffect(() => {
-    const pessoasSalvas = localStorage.getItem('pessoas');
-    if (pessoasSalvas) {
-      try {
-        setPessoas(JSON.parse(pessoasSalvas));
-      } catch (e) {
-        localStorage.removeItem('pessoas');
-      }
-    }
-    buscarEgressosLista(); 
-    buscarDadosEgressoLogado(); 
+    buscarDadosEgressoLogado(); // Para a sidebar
+    buscarTodasAsPessoas();    // Para a tabela principal
   }, []);
 
-  const handleConsultarEgresso = () => router.push('/consultar_egresso');
-  const handleBotaoConsultarPessoas = () => buscarEgressosLista();
+  const handleConsultarEgresso = () => router.push('/consultar_egresso'); 
+  const handleBotaoAtualizarLista = () => buscarTodasAsPessoas();
 
+  // useMemo para dropdowns, adaptado para a interface Pessoa e os campos de curso
   const nomesDeCursosUnicos = useMemo(() => {
-    const todosOsCursos = new Set<string>();
-    pessoas.forEach(p => p.cursos.forEach(c => todosOsCursos.add(c.nomeCurso)));
-    return Array.from(todosOsCursos).sort();
+    const cursos = new Set<string>();
+    pessoas.forEach(p => p.cursos.forEach(c => {
+      if(c.nomeCurso && c.nomeCurso !== 'Não informado') cursos.add(c.nomeCurso);
+    }));
+    return Array.from(cursos).sort();
   }, [pessoas]);
 
   const anosEntradaUnicos = useMemo(() => {
     const anos = new Set<string>();
     pessoas.forEach(p => p.cursos.forEach(c => {
-      const anoSemestre = converterDataParaAnoSemestreOuAno(c.anoEntrada);
-      if (anoSemestre) anos.add(anoSemestre);
+      if (c.anoEntrada && c.anoEntrada !== 'Não informado') anos.add(c.anoEntrada);
     }));
     return Array.from(anos).sort(ordenarAnoSemestre);
   }, [pessoas]);
@@ -166,83 +161,73 @@ export default function App_Egresso() {
   const anosSaidaUnicos = useMemo(() => {
     const anos = new Set<string>();
     pessoas.forEach(p => p.cursos.forEach(c => {
-      if (c.anoSaida) {
-        const anoSemestre = converterDataParaAnoSemestreOuAno(c.anoSaida);
-        if (anoSemestre) anos.add(anoSemestre);
+      if (c.anoSaida && c.anoSaida !== 'Não informado' && c.anoSaida !== null) {
+        anos.add(c.anoSaida);
       }
     }));
     return Array.from(anos).sort(ordenarAnoSemestre);
   }, [pessoas]);
 
+  // Lógica de filtragem para Pessoa
   const pessoasFiltradas = pessoas.filter((pessoa) => {
-    const nomeLower = pessoa.nome.toLowerCase();
+    const nomeLower = pessoa.nome ? pessoa.nome.toLowerCase() : '';
     const filtroNomeLower = filtroNome.toLowerCase();
     const filtroPrimeiraLetraLower = filtroPrimeiraLetra.toLowerCase();
     const filtroCursoLower = filtroCurso.toLowerCase();
-
-    const filtroAnoValidoEntrada = (cursoAnoEntrada: string) => {
-      if (!filtroAnoEntrada) return true; 
-      const [anoFiltro, semestreFiltro] = filtroAnoEntrada.split('/'); 
-      const [diaCurso, mesCurso, anoCurso] = cursoAnoEntrada.split('/').map(Number); 
-
-      if (!anoFiltro || isNaN(diaCurso) || isNaN(mesCurso) || isNaN(anoCurso)) return false;
-      if (anoCurso.toString() !== anoFiltro) return false;
-
-      if (semestreFiltro) { 
-        if (semestreFiltro === '1' && mesCurso > 6) return false;
-        if (semestreFiltro === '2' && mesCurso <= 6) return false;
-      }
-      return true;
-    };
-
-    const filtroAnoValidoSaida = (cursoAnoSaida: string | null) => {
-      if (!filtroAnoSaida) return true;
-      if (!cursoAnoSaida) return false; 
-
-      const [anoFiltro, semestreFiltro] = filtroAnoSaida.split('/');
-      const [diaCurso, mesCurso, anoCurso] = cursoAnoSaida.split('/').map(Number);
-
-      if (!anoFiltro || isNaN(diaCurso) || isNaN(mesCurso) || isNaN(anoCurso)) return false;
-      if (anoCurso.toString() !== anoFiltro) return false;
-
-      if (semestreFiltro) {
-        if (semestreFiltro === '1' && mesCurso > 6) return false;
-        if (semestreFiltro === '2' && mesCurso <= 6) return false;
-      }
-      return true;
-    };
-
-    return (
-      (!filtroNome || nomeLower.includes(filtroNomeLower)) &&
-      (!filtroPrimeiraLetra || nomeLower.startsWith(filtroPrimeiraLetraLower)) &&
-      (!filtroCurso || pessoa.cursos.some(c => c.nomeCurso.toLowerCase() === filtroCursoLower)) &&
-      (pessoa.cursos.some(curso => filtroAnoValidoEntrada(curso.anoEntrada))) &&
-      (pessoa.cursos.some(curso => filtroAnoValidoSaida(curso.anoSaida)))
+    
+    const nomeMatch = !filtroNome || nomeLower.includes(filtroNomeLower);
+    const primeiraLetraMatch = !filtroPrimeiraLetra || nomeLower.startsWith(filtroPrimeiraLetraLower);
+    // Filtro de curso agora verifica se algum dos cursos da pessoa corresponde
+    const cursoMatch = !filtroCursoLower || pessoa.cursos.some(c => c.nomeCurso && c.nomeCurso.toLowerCase() === filtroCursoLower);
+    // Filtro de ano/semestre, comparando diretamente
+    const anoEntradaMatch = !filtroAnoEntrada || pessoa.cursos.some(c => c.anoEntrada && c.anoEntrada === filtroAnoEntrada);
+    const anoSaidaMatch = !filtroAnoSaida || pessoa.cursos.some(c => 
+        (c.anoSaida && c.anoSaida === filtroAnoSaida) || 
+        (!c.anoSaida && (filtroAnoSaida === "ATUALMENTE" || filtroAnoSaida === "")) // Considera "ATUALMENTE" se filtroSaida for vazio ou "ATUALMENTE"
     );
+    return nomeMatch && primeiraLetraMatch && cursoMatch && anoEntradaMatch && anoSaidaMatch;
   });
+
+  const BotaoLogout = () => {
+    localStorage.removeItem('cpfEgresso');
+    // ou sessionStorage.removeItem('cpfEgresso');
+    window.location.href = 'http://localhost:3000'; // ou qualquer página de login
+  };
 
   return (
     <div className="flex min-h-screen bg-gray-100">
-      <div className="w-full max-w-xs bg-white border-r border-gray-200 p-6 flex flex-col items-center shadow-md">
-        <div className="w-32 h-32 relative mb-4">
-          <Image src={fotoPerfilUrlEgressoLogado || "/images/foto_padrao.png"} alt="Foto de perfil" fill sizes="128px" priority className="rounded-full object-cover border-2 border-gray-300"/>
+      {/* Coluna lateral (Sidebar) */}
+      <div className="w-full max-w-xs bg-white border-r border-gray-200 p-6 flex flex-col items-center shadow-md space-y-4">
+        <div className="w-32 h-32 relative">
+          {fotoPerfilUrlEgressoLogado ? (
+            <Image src={fotoPerfilUrlEgressoLogado} alt="Foto de perfil" fill sizes="128px" priority className="rounded-full object-cover border-2 border-gray-300"/>
+          ) : (
+            <div className="w-32 h-32 rounded-full bg-gray-300 flex items-center justify-center text-gray-500 border-2 border-gray-300">
+              <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round" className="text-white"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+            </div>
+          )}
         </div>
         <h2 className="text-xl font-semibold text-gray-800 text-center">{nomeEgressoLogado}</h2>
-        <Button onClick={() => router.push('/editarperfil_egresso')}>Editar Informações</Button>
+        <h2 className="text-x1 font-semibold text-gray-800 text-center">CPF: {cpfEgressoLogado}</h2>
+        <h2>Localização: {cidadeLogado} {estadoLogado} {paisLogado}</h2>
+        <Button onClick={() => router.push('/editarperfil_egresso')} className="w-full">Editar Informações</Button><br/>
+        <div className="flex justify-end mb-4">
+          <Button onClick={BotaoLogout} className="bg-red-600 hover:bg-red-700 text-white font-semibold px-4 py-2 rounded-lg shadow-sm transition-colors">Sair</Button>
+        </div>
       </div>
-
+      {/* Conteúdo principal */}
       <div className="flex-1 p-6 sm:p-10 overflow-y-auto">
-        <h1 className="text-3xl font-bold text-gray-800 mb-8">Consulta de Alunos/Egressos</h1>
-
+        <h1 className="text-3xl font-bold text-gray-800 mb-8">Consulta de Pessoas (Alunos/Egressos)</h1>
+        {/* Filtros */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6 mb-8 p-6 bg-white rounded-xl shadow-md">
           <div className="space-y-4">
             <div>
               <label htmlFor="filtroNome" className="block text-sm font-medium text-gray-700 mb-1">Nome:</label>
-              <input id="filtroNome" type="text" placeholder="Pesquisar por nome" value={filtroNome} onChange={(e) => setFiltroNome(e.target.value)} className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm"/>
+              <Input id="filtroNome" type="text" placeholder="Pesquisar por nome" value={filtroNome} onChange={(e) => setFiltroNome(e.target.value)} className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm"/>
             </div>
             <div>
-              <label htmlFor="filtroPrimeiraLetra" className="block text-sm font-medium text-gray-700 mb-1">Primeira letra do nome:</label>
-              <input id="filtroPrimeiraLetra" type="text" placeholder="Ex: A" value={filtroPrimeiraLetra} onChange={(e) => setFiltroPrimeiraLetra(e.target.value)} className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm"/>
+              <label htmlFor="filtroPrimeiraLetra" className="block text-sm font-medium text-gray-700 mb-1">Primeira letra:</label>
+              <Input id="filtroPrimeiraLetra" type="text" placeholder="Ex: A" value={filtroPrimeiraLetra} onChange={(e) => setFiltroPrimeiraLetra(e.target.value)} className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm"/>
             </div>
             <div>
               <label htmlFor="filtroCurso" className="block text-sm font-medium text-gray-700 mb-1">Curso:</label>
@@ -252,19 +237,19 @@ export default function App_Egresso() {
               </select>
             </div>
           </div>
-
           <div className="space-y-4">
             <div>
-              <label htmlFor="filtroAnoEntrada" className="block text-sm font-medium text-gray-700 mb-1">Ano/Semestre de Entrada:</label>
+              <label htmlFor="filtroAnoEntrada" className="block text-sm font-medium text-gray-700 mb-1">Ano/Sem. Entrada:</label>
               <select id="filtroAnoEntrada" value={filtroAnoEntrada} onChange={(e) => setFiltroAnoEntrada(e.target.value)} className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm bg-white">
                 <option value="">Todos</option>
                 {anosEntradaUnicos.map((anoSem) => (<option key={anoSem} value={anoSem}>{anoSem}</option>))}
               </select>
             </div>
             <div>
-              <label htmlFor="filtroAnoSaida" className="block text-sm font-medium text-gray-700 mb-1">Ano/Semestre de Saída:</label>
+              <label htmlFor="filtroAnoSaida" className="block text-sm font-medium text-gray-700 mb-1">Ano/Sem. Saída:</label>
               <select id="filtroAnoSaida" value={filtroAnoSaida} onChange={(e) => setFiltroAnoSaida(e.target.value)} className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm bg-white">
                 <option value="">Todos</option>
+                {/* Você pode adicionar uma opção "Cursando/Não informado" se a API retornar um valor específico para isso */}
                 {anosSaidaUnicos.map((anoSem) => (<option key={anoSem} value={anoSem}>{anoSem}</option>))}
               </select>
             </div>
@@ -272,38 +257,59 @@ export default function App_Egresso() {
         </div>
 
         <div className="flex flex-wrap gap-4 mb-10">
-          <Button className="bg-blue-600 hover:bg-blue-700 text-white rounded-lg px-6 py-3 text-base font-semibold shadow-md transition-colors" onClick={handleBotaoConsultarPessoas}>Consultar Pessoas</Button>
-          <Button className="bg-gray-600 hover:bg-gray-700 text-white rounded-lg px-6 py-3 text-base font-semibold shadow-md transition-colors" onClick={handleConsultarEgresso}>Consultar Egressos</Button>
+          <Button className="bg-blue-600 hover:bg-blue-700 text-white rounded-lg px-6 py-3 text-base font-semibold shadow-md transition-colors" onClick={handleBotaoAtualizarLista}>
+            Atualizar Lista
+          </Button>
         </div>
-
         <div className="bg-white p-6 rounded-xl shadow-md">
-          <h2 className="text-xl font-semibold text-gray-800 mb-4">Alunos e Egressos</h2>
-          {pessoasFiltradas.length > 0 ? (
-            <ul className="space-y-6">
-              {pessoasFiltradas.map((pessoa) => (
-                <li key={pessoa.id} className="border-b border-gray-200 pb-6 mb-6 last:border-b-0 last:pb-0 last:mb-0">
-                  <p className="text-lg font-semibold text-gray-800">{pessoa.nome}</p>
+        <h2 className="text-xl font-semibold text-gray-800 mb-4">Pessoas</h2>
+        {pessoasFiltradas.length > 0 ? (
+          <ul className="space-y-6">
+            {pessoasFiltradas.map((pessoa) => {
+              const isLogado = cpfEgressoLogado && pessoa.cpf === cpfEgressoLogado;
+              return (
+                <li
+                  key={pessoa.id}
+                  className={`border-b border-gray-200 pb-6 mb-6 last:border-b-0 last:pb-0 last:mb-0 p-4 rounded-md transition-all duration-200 ease-in-out ${isLogado ? 'bg-blue-100 border-l-4 border-blue-600 shadow-lg' : 'hover:bg-gray-50'}`}
+                >
+                  <p className="text-lg font-semibold text-gray-800 flex items-center gap-2 flex-wrap">
+                    {pessoa.nome}
+                    {isLogado && (
+                      <span className="text-sm text-blue-700 font-semibold">(Este é você)</span>
+                    )}
+                  </p>
                   <p className="text-sm text-gray-600">E-mail: {pessoa.email}</p>
                   <p className="text-sm text-gray-600">CPF: {pessoa.cpf}</p>
                   <div className="mt-2">
-                    <p className="font-medium text-sm text-gray-700">Curso(s):</p>
-                    <ul className="ml-4 list-disc text-sm text-gray-600 space-y-1">
-                      {pessoa.cursos.map((curso, index) => (
-                        <li key={index}>
-                          {curso.nomeCurso} — {curso.anoEntrada} até{" "}
-                          {curso.anoSaida || <strong className="text-green-600">ATUALMENTE</strong>}
+                    <p className="font-medium text-sm text-gray-700">Curso(s) Registrado(s):</p>
+                    {pessoa.cursos && pessoa.cursos.length > 0 ? (
+                      <ul className="ml-4 list-disc text-sm text-gray-600 space-y-1">
+                        {pessoa.cursos.map((curso, index) => (
+                          <li key={index}>
+                          {curso.nomeCurso} (Entrada: {curso.anoEntrada} - Saída:{" "}
+                          {curso.anoSaida ? (
+                            <>
+                              {curso.anoSaida} - <strong className="text-blue-600">Egresso</strong>
+                            </>
+                          ) : (
+                            <strong className="text-green-600">Cursando/Não Finalizado</strong>
+                          )})
                         </li>
-                      ))}
-                    </ul>
+                        ))}
+                      </ul>
+                    ) : (
+                      <p className="ml-4 text-sm text-gray-500 italic">Nenhum curso registrado para esta pessoa.</p>
+                    )}
                   </div>
                 </li>
-              ))}
-            </ul>
-          ) : (
-            <p className="text-center text-gray-500 py-8">Nenhuma pessoa encontrada com os filtros aplicados.</p>
-          )}
-        </div>
+              );
+            })}
+          </ul>
+        ) : (
+          <p className="text-center text-gray-500 py-8">Nenhuma pessoa encontrada com os filtros aplicados ou a lista está vazia.</p>
+        )}
       </div>
     </div>
-  );
+  </div>
+);
 }
