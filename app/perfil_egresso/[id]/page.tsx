@@ -1,3 +1,4 @@
+//app/perfil_egresso/[id]
 import { notFound } from 'next/navigation';
 import styles from './perfil_egresso.module.css';
 
