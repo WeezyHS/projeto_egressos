@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 
 import { Curso as PrismaCurso, Matricula as PrismaMatricula } from '@/app/generated/prisma';
 
-interface AlunosCSVRow{ //Modelo (tipo) para garantir que os dados lidos do arquivo CSV tenham a estrutura correta ao serem processados.
+interface AlunosCSVRow {
     curso: string;
     nome: string;
     cpf: string;
@@ -16,7 +16,7 @@ interface AlunosCSVRow{ //Modelo (tipo) para garantir que os dados lidos do arqu
     entrada: string;
     saida?: string | null;
 }
-interface Matricula{
+interface Matricula {
     cursoId: number;
     pessoaId: number;
     entrada: string;
@@ -24,9 +24,8 @@ interface Matricula{
     matricula: string;
 }
 
-export default function App_Instituicao(){
-
-    const [perfil, setPerfil] = useState<any>(null); //Armazenam e controlam diversas informações. Gerencia dados carregados, filtrados e exibidos no sistema de gerenciamento de alunos e cursos
+export default function App_Instituicao() {
+    const [perfil, setPerfil] = useState<any>(null);
     const [pagina, setPagina] = useState(1);
     const [alunosFiltrados, setAlunosFiltrados] = useState<any[]>([]);
     const [totalPaginas, setTotalPaginas] = useState(1);
@@ -58,8 +57,8 @@ export default function App_Instituicao(){
                 setPessoas([]);
                 setMatriculas([]);
                 setAlunos([]);
-                buscarAlunosDoBanco(); //Recarregar os dados do banco
-                exibirAlunos(); //Recarregar a lista exibida
+                buscarAlunosDoBanco();
+                exibirAlunos();
             } else {
                 alert(data.error || 'Erro ao salvar os dados do CSV no banco de dados.');
             }
@@ -68,12 +67,11 @@ export default function App_Instituicao(){
         }
     };
 
-    useEffect(() => { //Carrega os dados do perfil da Instituição armazenados no localStorage
+    useEffect(() => {
         const dadosPerfil = localStorage.getItem("perfilInstituicao");
-        if (dadosPerfil){
+        if (dadosPerfil) {
             setPerfil(JSON.parse(dadosPerfil));
         } else {
-            // Se não houver no localStorage, tente buscar do backend
             buscarPerfilInstituicao();
         }
     }, []);
@@ -85,101 +83,103 @@ export default function App_Instituicao(){
                 const data = await response.json();
                 setPerfil(data);
                 localStorage.setItem("perfilInstituicao", JSON.stringify(data));
-            } else {}
+            }
         } catch (error) {}
     };
 
-    useEffect(() => { //Chama a função exibirAlunos() sempre que alguma das dependências listadas muda.
+    useEffect(() => {
         exibirAlunos();
     }, [perfil, pessoas, matriculas, cursos, pagina, filtroCurso, filtroEntrada, filtroSaida, ordenacao]);
 
     useEffect(() => {
-        buscarAlunosDoBanco(); //Carrega os dados iniciais
+        buscarAlunosDoBanco();
     }, []);
 
-    function gerarCodigoAleatorio(){ //Gera um código quando uma pessoa é cadastrada
+    function gerarCodigoAleatorio() {
         const caracteres = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
         let codigo = "";
-        for (let i = 0; i < 8; i++){
+        for (let i = 0; i < 8; i++) {
             codigo += caracteres.charAt(Math.floor(Math.random() * caracteres.length));
         }
         return codigo;
     }
-    async function enviarEmail(email: string, codigo: string): Promise<boolean>{ //Envia o código gerado por e-mail
+
+    async function enviarEmail(email: string, codigo: string): Promise<boolean> {
         const templateParams = {
             to_email: email,
             codigo: codigo,
         };
 
         try {
-            const response = await emailjs.send(
+            await emailjs.send(
                 "service_rqwpj7q",
                 "template_12nvjhg",
                 templateParams,
-            "Ygc6WQijXU3rWrMEV"
-        );
-        return true;
-    } catch (error){
-        return false;
+                "Ygc6WQijXU3rWrMEV"
+            );
+            return true;
+        } catch (error) {
+            return false;
+        }
     }
-    };
+
     const processarCSV = async (file: File, tipo: "cursos" | "alunos"): Promise<void> => {
         return new Promise<void>((resolve, reject) => {
-        const reader = new FileReader();
-        const emailsEnviados = new Set<string>();
+            const reader = new FileReader();
+            const emailsEnviados = new Set<string>();
 
-    reader.onload = async (e: ProgressEvent<FileReader>) => { //Handlers para eventos do FileReader
-        if (!e.target?.result) {
-            reject(new Error("Falha ao ler o arquivo"));
-            return;
-        }
-        try {
-            await processarDadosCSV(e.target.result as string, tipo, emailsEnviados);
-            resolve();
-        } catch (error) {
-            reject(error);
-        }
-    };
+            reader.onload = async (e: ProgressEvent<FileReader>) => {
+                if (!e.target?.result) {
+                    reject(new Error("Falha ao ler o arquivo"));
+                    return;
+                }
+                try {
+                    await processarDadosCSV(e.target.result as string, tipo, emailsEnviados);
+                    resolve();
+                } catch (error) {
+                    reject(error);
+                }
+            };
 
-    reader.onerror = () => {
-        reject(new Error("Erro na leitura do arquivo"));
-    };
+            reader.onerror = () => {
+                reject(new Error("Erro na leitura do arquivo"));
+            };
 
-    reader.readAsText(file);
+            reader.readAsText(file);
         });
     };
 
-    const processarDadosCSV = async ( //Função separada para processamento lógico
+    const processarDadosCSV = async (
         csvData: string,
         tipo: "cursos" | "alunos",
         emailsEnviados: Set<string>
     ): Promise<void> => {
         return new Promise((resolve, reject) => {
-        Papa.parse<AlunosCSVRow>(csvData, {
-            header: true,
-            skipEmptyLines: true,
-            complete: (result: ParseResult<AlunosCSVRow>) => {
-                try {
-                    if (tipo === "alunos") {
-                        (async () => {
-                            await processarAlunos(result.data, emailsEnviados);
+            Papa.parse<AlunosCSVRow>(csvData, {
+                header: true,
+                skipEmptyLines: true,
+                complete: (result: ParseResult<AlunosCSVRow>) => {
+                    try {
+                        if (tipo === "alunos") {
+                            (async () => {
+                                await processarAlunos(result.data, emailsEnviados);
+                                resolve();
+                            })();
+                        } else {
                             resolve();
-                        })();
-                    } else{
-                        resolve();
+                        }
+                    } catch (error) {
+                        reject(error);
                     }
-                } catch (error) {
-                    reject(error);
-                }
-            },
-            error: (err: Error) => {
-                reject(new Error(`Erro ao parsear CSV: ${err.message}`));
+                },
+                error: (err: Error) => {
+                    reject(new Error(`Erro ao parsear CSV: ${err.message}`));
                 },
             });
         });
     };
 
-    const processarAlunos = async ( //Lógica específica para alunos
+    const processarAlunos = async (
         dados: AlunosCSVRow[],
         emailsEnviados: Set<string>
     ): Promise<void> => {
@@ -208,16 +208,16 @@ export default function App_Instituicao(){
         let cursoIdCounter = 1;
         let pessoaIdCounter = 1;
 
-        for (const aluno of dadosFiltrados) { //Processamento assíncrono serializado
+        for (const aluno of dadosFiltrados) {
             const cursoNome = aluno.curso.trim();
             const cpf = aluno.cpf.trim();
 
-            if (!cursoMap.has(cursoNome)) { //Processar cursos
+            if (!cursoMap.has(cursoNome)) {
                 cursoMap.set(cursoNome, cursoIdCounter++);
                 novosCursos.push({ id: cursoMap.get(cursoNome)!, nome: cursoNome });
             }
 
-            if (!pessoaMap.has(cpf) && !emailsEnviados.has(aluno.email)) { //Processar pessoas (com controle de e-mails únicos)
+            if (!pessoaMap.has(cpf) && !emailsEnviados.has(aluno.email)) {
                 const codigo = gerarCodigoAleatorio();
                 const enviado = await enviarEmail(aluno.email, codigo);
 
@@ -230,22 +230,23 @@ export default function App_Instituicao(){
                         cpf: aluno.cpf,
                         email: aluno.email,
                     });
-            } else{
-                continue;
+
+                    const cursoId = cursoMap.get(cursoNome)!;
+                    const pessoaId = pessoaMap.get(cpf)!;
+                    const saidaTratada = aluno.saida === "Em andamento" ? null : aluno.saida || null;
+
+                    novasMatriculas.push({
+                        cursoId,
+                        pessoaId,
+                        entrada: aluno.entrada,
+                        saida: saidaTratada,
+                        matricula: `${cursoId}-${pessoaId}-${aluno.entrada}-${aluno.saida || "Em andamento"}`
+                    });
+                }
             }
-            const cursoId = cursoMap.get(cursoNome)!; //Matrículas
-            const pessoaId = pessoaMap.get(cpf)!;
-            const saidaTratada = aluno.saida === "Em andamento" ? null : aluno.saida || null;
-            novasMatriculas.push({
-                cursoId,
-                pessoaId,
-                entrada: aluno.entrada,
-                saida: saidaTratada,
-                matricula: `<span class="math-inline">\{cursoId\}\-</span>{pessoaId}-<span class="math-inline">\{aluno\.entrada\}\-</span>{aluno.saida || "Em andamento"}`,
-            });
         }
-    }
-        setAlunos(dadosFiltrados); //Atualização de estado (batch)
+
+        setAlunos(dadosFiltrados);
         setCursos(novosCursos);
         setPessoas(novasPessoas);
         setMatriculas(novasMatriculas);
@@ -258,8 +259,8 @@ export default function App_Instituicao(){
             const response = await fetch('/api/instituicao/buscar_aluno');
             if (response.ok) {
                 const data = await response.json();
-                setAlunos(data); //Atualiza o estado 'alunos' com os dados do banco
-            } else {}
+                setAlunos(data);
+            }
         } catch (error) {}
     };
 
@@ -340,6 +341,12 @@ export default function App_Instituicao(){
         return <p>Carregando perfil...</p>;
     }
 
+    const BotaoLogout = () => {
+        localStorage.removeItem('cpfEgresso');
+        // ou sessionStorage.removeItem('cpfEgresso');
+        window.location.href = 'http://localhost:3000'; // ou qualquer página de login
+      };
+
   return (
     <div className="min-h-screen bg-gray-100 text-gray-900">
       {/* Header */}
@@ -359,7 +366,10 @@ export default function App_Instituicao(){
 
             <ul className="w-full text-sm text-gray-700 space-y-1">
                 {cursos.map((curso, index) => (<li key={index} className="px-2 py-1 rounded hover:bg-gray-100">{curso.nome}</li>))}
-            </ul>
+            </ul><br/>
+            <div className="flex justify-end mb-4">
+            <Button onClick={BotaoLogout} className="bg-red-600 hover:bg-red-700 text-white font-semibold px-4 py-2 rounded-lg shadow-sm transition-colors">Sair</Button>
+            </div>
         </aside>
         {/* Coluna central - Filtros + Tabela */}
         <main className="col-span-3 space-y-6">
