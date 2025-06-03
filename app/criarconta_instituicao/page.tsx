@@ -85,7 +85,7 @@ export default function CriarContaInstituicao() {
       }
 
       alert(data.message || "Perfil da instituição salvo com sucesso!");
-      router.push('/app_instituicao');
+      router.push('/instituicao');
     } catch (error: any) {
       alert("Erro de conexão com o servidor!");
     }
