@@ -25,7 +25,7 @@ export default function EditarPerfilInstituicao() {
   };
 
   const handleSalvar = () => {
-    // Aqui você faria a lógica de envio para o banco de dados ou API
+    //Lógica de envio para o banco de dados ou API
     console.log('Nome:', nome);
     console.log('Foto:', foto);
   };
@@ -34,15 +34,14 @@ export default function EditarPerfilInstituicao() {
     <div className="flex justify-center p-6">
       <Card className="w-full max-w-md">
         <CardContent className="space-y-6 p-6">
-          <h2 className="text-xl font-bold text-center">Editar Perfil da Instituição</h2>
+          <h2 className="text-xl font-bold text-center">Editar Perfil</h2>
 
           <div className="flex flex-col items-center gap-2">
             {preview ? (<Image src={preview} alt="Foto de perfil" width={120} height={120} className="rounded-full object-cover"/>) : (<div className="w-[120px] h-[120px] rounded-full bg-gray-200 flex items-center justify-center text-gray-500">Sem imagem</div>)}
             <Input type="file" accept="image/*" onChange={handleFotoChange}/>
           </div>
-
           <div>
-            <label className="block mb-1 font-medium">Nome da Instituição</label>
+            <label className="block mb-1 font-medium">Nome</label>
             <Input value={nome} onChange={handleNomeChange} placeholder="Digite o nome"/>
           </div>
           <div>
@@ -50,22 +49,17 @@ export default function EditarPerfilInstituicao() {
             <Input value={nome} onChange={handleNomeChange} placeholder="Digite o nome"/>
           </div>
           <div>
-            <label className="block mb-1 font-medium">Endereço</label>
+            <label className="block mb-1 font-medium">Linkedin</label>
             <Input value={nome} onChange={handleNomeChange} placeholder="Digite o nome"/>
           </div>
           <div>
-            <label className="block mb-1 font-medium">CEP</label>
-            <Input value={nome} onChange={handleNomeChange} placeholder="Digite o nome"/>
-          </div>
-          <div>
-            <label className="block mb-1 font-medium">Nome do representante</label>
+            <label className="block mb-1 font-medium">Instagram</label>
             <Input value={nome} onChange={handleNomeChange} placeholder="Digite o nome"/>
           </div>
           <div>
             <label className="block mb-1 font-medium">Senha</label>
             <Input value={nome} onChange={handleNomeChange} placeholder="Digite o nome"/>
           </div>
-
           <Button className="w-full" onClick={handleSalvar}>Salvar Alterações</Button>
         </CardContent>
       </Card>
