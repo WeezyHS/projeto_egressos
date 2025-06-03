@@ -15,7 +15,7 @@ export default function HomePage() {
             Bem-vindo ao Sistema
           </CardTitle>
           <p className="text-center text-sm text-gray-500 mt-2">
-            Selecione o seu tipo de perfil para acessar a plataforma.
+            Selecione o tipo de perfil para acessar a plataforma.
           </p>
         </CardHeader>
         <CardContent className="flex flex-col gap-4 mt-6">
