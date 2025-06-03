@@ -1,5 +1,5 @@
 'use client'
-
+//app/login_instituicao/page.tsx
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Input } from "@/components/ui/input"
@@ -52,7 +52,7 @@ export default function LoginInstituicao() {
         const data = await response.json();
         localStorage.removeItem("perfilInstituicao");
         localStorage.setItem("perfilInstituicao", JSON.stringify(data));
-        router.push('/app_instituicao');
+        router.push('/instituicao');
       } else {
         const errorData = await response.json();
         alert(errorData.error || 'Erro ao fazer login.');
@@ -66,7 +66,7 @@ export default function LoginInstituicao() {
     <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
       <div className="bg-white p-8 rounded-2xl shadow-xl w-full max-w-md">
         <h1 className="text-3xl font-bold text-center text-gray-800 mb-6">
-          Acesso da Instituição
+          Conta da Instituição
         </h1>
 
         <div className="mb-4">
@@ -96,14 +96,9 @@ export default function LoginInstituicao() {
             className="w-full"
           />
         </div>
-
-        <div className="flex flex-col gap-3">
-          <Button onClick={handleCriarConta} className="w-full bg-blue-600 hover:bg-blue-700">
-            Criar Conta
-          </Button>
-          <Button onClick={handleEntrar} variant="outline" className="w-full">
-            Entrar
-          </Button>
+        <div className="flex flex-col gap-4 pt-6">
+          <Button onClick={handleEntrar} variant="default" className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 text-base font-medium rounded-lg shadow-md hover:shadow-lg transition-all">Entrar</Button>
+          <Button onClick={handleCriarConta} variant="outline" className="w-full py-3 text-base font-medium rounded-lg border-gray-300 text-gray-700 hover:bg-gray-100 transition-colors">Criar Conta</Button>
         </div>
       </div>
     </div>
