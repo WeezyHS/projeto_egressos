@@ -89,10 +89,11 @@ export default function App_Instituicao() {
 
     useEffect(() => {
         exibirAlunos();
-    }, [perfil, pessoas, matriculas, cursos, pagina, filtroCurso, filtroEntrada, filtroSaida, ordenacao]);
+    }, [alunos, perfil, pessoas, matriculas, cursos, pagina, filtroCurso, filtroEntrada, filtroSaida, ordenacao]);
 
     useEffect(() => {
         buscarAlunosDoBanco();
+        //alunosFiltrados();
     }, []);
 
     function gerarCodigoAleatorio() {
@@ -353,7 +354,6 @@ export default function App_Instituicao() {
       <header className="bg-white shadow p-4 sticky top-0 z-10">
         <h1 className="text-2xl font-bold">Perfil da Instituição</h1>
       </header>
-
       <div className="max-w-7xl mx-auto px-4 py-6 grid grid-cols-1 lg:grid-cols-4 gap-6">
         {/* Coluna da esquerda - Perfil */}
         <aside className="col-span-1 bg-white rounded-2xl shadow p-4 flex flex-col items-center">
@@ -361,6 +361,7 @@ export default function App_Instituicao() {
             {perfil?.fotoPerfil && (<img src={perfil.fotoPerfil} alt="Foto da Instituição" className="w-32 h-32 rounded-full object-cover border-4 border-primary mb-4"/>)}
             <p className="text-lg font-semibold mb-2">{perfil?.nomeCompleto || "Nome não encontrado!"}</p><br/>
 
+            <Button>Gerenciar Cursos</Button><br/>
             <Button onClick={() => router.push('/cursos_alunos')}>Cursos</Button><br/>
             <Button onClick={() => router.push('/editarperfil_instituicao')}>Editar Informações</Button>
 
@@ -392,7 +393,6 @@ export default function App_Instituicao() {
                 <input type="text" id="filtroSaida" className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary/50" value={filtroSaida} onChange={(e) => setFiltroSaida(e.target.value)}/>
               </div>
             </div>
-
             <div className="mt-4">
               <label className="block text-sm font-medium">Ordenar por:</label>
               <select className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary/50" value={ordenacao} onChange={(e) => setOrdenacao(e.target.value)}>
