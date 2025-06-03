@@ -77,7 +77,7 @@ export default function Login_Egresso() {
             localStorage.removeItem('perfilEgresso');
             localStorage.setItem('perfilEgresso', JSON.stringify(egressoData));
           }
-          router.push('/app_egresso');
+          router.push('/egresso');
         } else {
           alert('Login bem-sucedido, mas houve um problema ao obter os dados do seu perfil (CPF não encontrado na resposta da API).');
         }
