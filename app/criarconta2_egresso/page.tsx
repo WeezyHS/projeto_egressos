@@ -51,7 +51,7 @@ export default function CriarContaEgresso2(){
             });
             if (response.ok) {
                 alert('Informações profissionais salvas com sucesso!');
-                router.push('/app_egresso');
+                router.push('/egresso');
               } else {
                 const errorData = await response.json();
                 alert(`Erro ao salvar informações profissionais: ${errorData.error || 'Erro desconhecido'}`);
@@ -61,7 +61,7 @@ export default function CriarContaEgresso2(){
             alert("Erro ao enviar dados de experiência.");
         }
         //===================================================================
-        router.push("/app_egresso");
+        router.push("/egresso");
     }
     return(
         <div className={styles.container}>
