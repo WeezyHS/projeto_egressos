@@ -31,7 +31,7 @@ export default function EditarPerfilInstituicao() {
   };
 
   return (
-    <div className="flex justify-center p-6">
+    <div className="flex flex-col justify-center p-6">
       <Card className="w-full max-w-md">
         <CardContent className="space-y-6 p-6">
           <h2 className="text-xl font-bold text-center">Editar Perfil</h2>
@@ -41,13 +41,18 @@ export default function EditarPerfilInstituicao() {
             <Input type="file" accept="image/*" onChange={handleFotoChange}/>
           </div>
           <div>
-            <label className="block mb-1 font-medium">Nome</label>
-            <Input value={nome} onChange={handleNomeChange} placeholder="Digite o nome"/>
-          </div>
-          <div>
             <label className="block mb-1 font-medium">Telefone</label>
             <Input value={nome} onChange={handleNomeChange} placeholder="Digite o nome"/>
           </div>
+          <div>
+            <label className="block mb-1 font-medium">Senha</label>
+            <Input value={nome} onChange={handleNomeChange} placeholder="Digite o nome"/>
+          </div>
+          <Button className="w-full" onClick={handleSalvar}>Salvar Alterações</Button>
+        </CardContent>
+      </Card><br/>
+      <Card className="w-full max-w-md">
+        <CardContent className="space-y-6 p-6">
           <div>
             <label className="block mb-1 font-medium">Linkedin</label>
             <Input value={nome} onChange={handleNomeChange} placeholder="Digite o nome"/>
@@ -56,11 +61,6 @@ export default function EditarPerfilInstituicao() {
             <label className="block mb-1 font-medium">Instagram</label>
             <Input value={nome} onChange={handleNomeChange} placeholder="Digite o nome"/>
           </div>
-          <div>
-            <label className="block mb-1 font-medium">Senha</label>
-            <Input value={nome} onChange={handleNomeChange} placeholder="Digite o nome"/>
-          </div>
-          <Button className="w-full" onClick={handleSalvar}>Salvar Alterações</Button>
         </CardContent>
       </Card>
     </div>
