@@ -7,8 +7,7 @@ import { Input } from '@/components/ui/input';
 import Image from 'next/image';
 //import { GraduationCap } from "lucide-react";
 
-// Interface Pessoa, ajustada para como a API /api/pessoa/listar-todos vai retornar
-interface Pessoa {
+interface Pessoa { // Interface Pessoa, ajustada para como a API /api/pessoa/listar-todos vai retornar
   id: number;
   nome: string;
   cpf: string;
@@ -20,7 +19,6 @@ interface Pessoa {
   }[];
 }
 
-// Função auxiliar para ordenar strings "AAAA/S" ou "AAAA" (mantida)
 const ordenarAnoSemestre = (a: string, b: string): number => {
   const eValorValido = (val: string) => val && val !== 'Não informado' && val !== null;
   const aValido = eValorValido(a);
@@ -90,7 +88,6 @@ export default function App_Egresso() {
         }
       } else {
         const errorText = await response.text();
-        //console.error('App_Egresso - buscarDadosEgressoLogado (Sidebar) - Erro API Perfil (texto bruto):', errorText);
         setNomeEgressoLogado('Falha (API perfil)');
       }
     } catch (error) {
@@ -99,12 +96,11 @@ export default function App_Egresso() {
     }
   };
 
-  // Função para buscar a lista de TODAS as pessoas
-  const buscarTodasAsPessoas = async () => {
+  const buscarTodasAsPessoas = async () => { // Função para buscar a lista de TODAS as pessoas
     console.log('App_Egresso - buscarTodasAsPessoas: Iniciando busca da API /api/egresso/lista_geral...');
     try {
       const response = await fetch('/api/egresso/lista_geral'); // Chamando a NOVA API
-      
+
       console.log('App_Egresso - buscarTodasAsPessoas - Status da resposta:', response.status, response.statusText);
 
       if (response.ok) {
@@ -138,11 +134,10 @@ export default function App_Egresso() {
     buscarTodasAsPessoas();    // Para a tabela principal
   }, []);
 
-  const handleConsultarEgresso = () => router.push('/consultar_egresso'); 
+  //const handleConsultarEgresso = () => router.push('/consultar_egresso'); 
   const handleBotaoAtualizarLista = () => buscarTodasAsPessoas();
 
-  // useMemo para dropdowns, adaptado para a interface Pessoa e os campos de curso
-  const nomesDeCursosUnicos = useMemo(() => {
+  const nomesDeCursosUnicos = useMemo(() => { // useMemo para dropdowns, adaptado para a interface Pessoa e os campos de curso
     const cursos = new Set<string>();
     pessoas.forEach(p => p.cursos.forEach(c => {
       if(c.nomeCurso && c.nomeCurso !== 'Não informado') cursos.add(c.nomeCurso);
@@ -168,13 +163,12 @@ export default function App_Egresso() {
     return Array.from(anos).sort(ordenarAnoSemestre);
   }, [pessoas]);
 
-  // Lógica de filtragem para Pessoa
-  const pessoasFiltradas = pessoas.filter((pessoa) => {
+  const pessoasFiltradas = pessoas.filter((pessoa) => { // Lógica de filtragem para Pessoa
     const nomeLower = pessoa.nome ? pessoa.nome.toLowerCase() : '';
     const filtroNomeLower = filtroNome.toLowerCase();
     const filtroPrimeiraLetraLower = filtroPrimeiraLetra.toLowerCase();
     const filtroCursoLower = filtroCurso.toLowerCase();
-    
+
     const nomeMatch = !filtroNome || nomeLower.includes(filtroNomeLower);
     const primeiraLetraMatch = !filtroPrimeiraLetra || nomeLower.startsWith(filtroPrimeiraLetraLower);
     // Filtro de curso agora verifica se algum dos cursos da pessoa corresponde
@@ -188,33 +182,8 @@ export default function App_Egresso() {
     return nomeMatch && primeiraLetraMatch && cursoMatch && anoEntradaMatch && anoSaidaMatch;
   });
 
-  const BotaoLogout = () => {
-    localStorage.removeItem('cpfEgresso');
-    // ou sessionStorage.removeItem('cpfEgresso');
-    window.location.href = 'http://localhost:3000'; // ou qualquer página de login
-  };
-
   return (
     <div className="flex min-h-screen bg-gray-100">
-      {/* Coluna lateral (Sidebar) */}
-      {/* <div className="w-full max-w-xs bg-white border-r border-gray-200 p-6 flex flex-col items-center shadow-md space-y-4">
-        <div className="w-32 h-32 relative">
-          {fotoPerfilUrlEgressoLogado ? (
-            <Image src={fotoPerfilUrlEgressoLogado} alt="Foto de perfil" fill sizes="128px" priority className="rounded-full object-cover border-2 border-gray-300"/>
-          ) : (
-            <div className="w-32 h-32 rounded-full bg-gray-300 flex items-center justify-center text-gray-500 border-2 border-gray-300">
-              <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round" className="text-white"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-            </div>
-          )}
-        </div>
-        <h2 className="text-xl font-semibold text-gray-800 text-center">{nomeEgressoLogado}</h2>
-        <h2 className="text-x1 font-semibold text-gray-800 text-center">CPF: {cpfEgressoLogado}</h2>
-        <h2>Localização: {cidadeLogado} {estadoLogado} {paisLogado}</h2>
-        <Button onClick={() => router.push('/editarperfil_egresso')} className="w-full">Editar Informações</Button><br/>
-        <div className="flex justify-end mb-4">
-          <Button onClick={BotaoLogout} className="bg-red-600 hover:bg-red-700 text-white font-semibold px-4 py-2 rounded-lg shadow-sm transition-colors">Sair</Button>
-        </div>
-      </div> */}
       {/* Conteúdo principal */}
       <div className="flex-1 p-6 sm:p-10 overflow-y-auto">
         <h1 className="text-3xl font-bold text-gray-800 mb-8">Consulta de Pessoas (Alunos/Egressos)</h1>
@@ -255,7 +224,6 @@ export default function App_Egresso() {
             </div>
           </div>
         </div>
-
         <div className="flex flex-wrap gap-4 mb-10">
           <Button className="bg-blue-600 hover:bg-blue-700 text-white rounded-lg px-6 py-3 text-base font-semibold shadow-md transition-colors" onClick={handleBotaoAtualizarLista}>
             Atualizar Lista
@@ -279,7 +247,6 @@ export default function App_Egresso() {
                     )}
                   </p>
                   <p className="text-sm text-gray-600">E-mail: {pessoa.email}</p>
-                  <p className="text-sm text-gray-600">CPF: {pessoa.cpf}</p>
                   <div className="mt-2">
                     <p className="font-medium text-sm text-gray-700">Curso(s) Registrado(s):</p>
                     {pessoa.cursos && pessoa.cursos.length > 0 ? (
