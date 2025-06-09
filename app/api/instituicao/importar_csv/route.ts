@@ -1,3 +1,4 @@
+//app/api/instituicao/importar_csv
 import { NextResponse, NextRequest } from 'next/server';
 import { PrismaClient } from '@/app/generated/prisma';
 import { Curso as PrismaCurso, Pessoa as PrismaPessoa } from '@/app/generated/prisma'; // Importe os tipos do Prisma
