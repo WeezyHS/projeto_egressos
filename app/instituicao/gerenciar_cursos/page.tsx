@@ -1,5 +1,6 @@
 'use client';
 
+//app/instituicao/gerenciar_cursos
 import emailjs from '@emailjs/browser';
 import React, { useEffect, useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
