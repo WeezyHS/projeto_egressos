@@ -1,12 +1,16 @@
-// app/api/alunos/[id]/route.ts
-import { PrismaClient } from '@prisma/client';
-import { NextResponse } from "next/server";
+// app/api/instituicao/alunos/[id]/route.ts
+import { PrismaClient } from '@prisma/client'
+import { NextRequest, NextResponse } from 'next/server'
 
-const prisma = new PrismaClient();
+const prisma = new PrismaClient()
 
-export async function PUT(req: Request, { params }: { params: { id: string } }) {
-  const pessoaId = Number(params.id);
-  const data = await req.json();
+export async function PUT(
+  req: NextRequest,
+  contextPromise: Promise<{ params: { id: string } }>
+) {
+  const { params } = await contextPromise
+  const pessoaId = Number(params.id)
+  const data = await req.json()
 
   try {
     const pessoa = await prisma.pessoa.update({
@@ -16,19 +20,19 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
         email: data.email,
         matriculas: {
           update: {
-            where: { id: data.matriculaId }, // você precisa mandar esse ID
+            where: { id: data.matriculaId },
             data: {
               anoSemestreEntrada: data.anoSemestreEntrada,
-              anoSemestreSaida: data.anoSemestreSaida,
+              anoSemestreSaida: data.anoSemestreSaida
             }
           }
         }
       }
-    });
+    })
 
-    return NextResponse.json(pessoa);
+    return NextResponse.json(pessoa)
   } catch (error) {
-    console.error(error);
-    return NextResponse.json({ error: "Erro ao editar aluno" }, { status: 500 });
+    console.error(error)
+    return NextResponse.json({ error: 'Erro ao editar aluno' }, { status: 500 })
   }
 }
