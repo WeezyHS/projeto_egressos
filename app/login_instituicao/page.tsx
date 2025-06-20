@@ -52,6 +52,9 @@ export default function LoginInstituicao() {
       if (response.ok) {
         const data = await response.json();
         localStorage.removeItem("perfilInstituicao");
+
+        localStorage.setItem('instituicaoId', data.id);
+
         localStorage.setItem("perfilInstituicao", JSON.stringify(data));
         router.push('/instituicao');
       } else {
