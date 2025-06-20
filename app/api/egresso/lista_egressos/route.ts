@@ -1,3 +1,4 @@
+//app/api/egresso/lista_egressos
 import { NextResponse } from 'next/server';
 import { PrismaClient } from '@/app/generated/prisma';
 

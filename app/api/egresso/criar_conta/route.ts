@@ -1,5 +1,5 @@
+//app/api/egresso/criar_conta/route.ts
 import { NextResponse } from 'next/server';
-// import { PrismaClient } from '@/app/generated/prisma';
 import { PrismaClient } from '@prisma/client';
 import bcrypt from 'bcrypt';
 import { NextRequest } from 'next/server';
