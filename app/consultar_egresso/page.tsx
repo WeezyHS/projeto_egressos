@@ -1,5 +1,6 @@
 'use client';
 
+//app/consultar_egresso
 import { useEffect, useState } from 'react';
 
 type Egresso = {

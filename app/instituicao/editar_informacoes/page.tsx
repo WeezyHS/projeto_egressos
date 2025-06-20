@@ -1,6 +1,6 @@
-// app/editarperfil_instituicao/page.tsx
 'use client';
 
+// app/instituicao/editar_informacoes
 import { useState, ChangeEvent } from 'react';
 import Image from 'next/image';
 import { Input } from '@/components/ui/input';
@@ -47,23 +47,23 @@ export default function EditarPerfilInstituicao() {
           </div>
           <div>
             <label className="block mb-1 font-medium">Telefone</label>
-            <Input value={nome} onChange={handleNomeChange} placeholder="Digite o nome"/>
+            <Input value={nome} onChange={handleNomeChange} placeholder="Digite o telefone"/>
           </div>
           <div>
             <label className="block mb-1 font-medium">Endereço</label>
-            <Input value={nome} onChange={handleNomeChange} placeholder="Digite o nome"/>
+            <Input value={nome} onChange={handleNomeChange} placeholder="Digite o endereço"/>
           </div>
           <div>
             <label className="block mb-1 font-medium">CEP</label>
-            <Input value={nome} onChange={handleNomeChange} placeholder="Digite o nome"/>
+            <Input value={nome} onChange={handleNomeChange} placeholder="Digite o CEP"/>
           </div>
           <div>
             <label className="block mb-1 font-medium">Nome do representante</label>
-            <Input value={nome} onChange={handleNomeChange} placeholder="Digite o nome"/>
+            <Input value={nome} onChange={handleNomeChange} placeholder="Digite o nome do representante"/>
           </div>
           <div>
             <label className="block mb-1 font-medium">Senha</label>
-            <Input value={nome} onChange={handleNomeChange} placeholder="Digite o nome"/>
+            <Input value={nome} onChange={handleNomeChange} placeholder="Digite a senha"/>
           </div>
 
           <Button className="w-full" onClick={handleSalvar}>Salvar Alterações</Button>

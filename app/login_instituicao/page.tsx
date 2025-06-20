@@ -1,5 +1,6 @@
 'use client'
-//app/login_instituicao/page.tsx
+
+//app/login_instituicao
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Input } from "@/components/ui/input"

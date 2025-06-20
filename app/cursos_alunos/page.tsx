@@ -1,5 +1,6 @@
 'use client';
 
+//app/cursos_alunos
 import React, { useEffect, useState } from 'react';
 
 interface Curso {

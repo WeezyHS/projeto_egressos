@@ -1,6 +1,6 @@
-// app/editarperfil_instituicao/page.tsx
 'use client';
 
+// app/egresso/editar_informacoes
 import { useState, ChangeEvent } from 'react';
 import Image from 'next/image';
 import { Input } from '@/components/ui/input';
@@ -24,7 +24,7 @@ export default function EditarPerfilInstituicao() {
     }
   };
 
-  const handleSalvar = () => {
+  const BotaoSalvar = () => {
     //Lógica de envio para o banco de dados ou API
     console.log('Nome:', nome);
     console.log('Foto:', foto);
@@ -41,26 +41,70 @@ export default function EditarPerfilInstituicao() {
             <Input type="file" accept="image/*" onChange={handleFotoChange}/>
           </div>
           <div>
+            <label className="block mb-1 font-medium">E-mail</label>
+            <Input value={nome} onChange={handleNomeChange} placeholder="Digite o e-mail"/>
+          </div>
+          <div>
             <label className="block mb-1 font-medium">Telefone</label>
-            <Input value={nome} onChange={handleNomeChange} placeholder="Digite o nome"/>
+            <Input value={nome} onChange={handleNomeChange} placeholder="Digite o telefone"/>
           </div>
           <div>
             <label className="block mb-1 font-medium">Senha</label>
-            <Input value={nome} onChange={handleNomeChange} placeholder="Digite o nome"/>
+            <Input value={nome} onChange={handleNomeChange} placeholder="Digite a senha"/>
           </div>
-          <Button className="w-full" onClick={handleSalvar}>Salvar Alterações</Button>
         </CardContent>
       </Card><br/>
       <Card className="w-full max-w-md">
         <CardContent className="space-y-6 p-6">
           <div>
+            <label className="block mb-1 font-medium">Cidade</label>
+            <Input value={nome} onChange={handleNomeChange} placeholder="Digite a cidade que mora"/>
+          </div>
+          <div>
+            <label className="block mb-1 font-medium">Estado</label>
+            <Input value={nome} onChange={handleNomeChange} placeholder="Digite o estado que mora"/>
+          </div>
+          <div>
+            <label className="block mb-1 font-medium">País</label>
+            <Input value={nome} onChange={handleNomeChange} placeholder="Digite o país que mora"/>
+          </div>
+          <div>
             <label className="block mb-1 font-medium">Linkedin</label>
-            <Input value={nome} onChange={handleNomeChange} placeholder="Digite o nome"/>
+            <Input value={nome} onChange={handleNomeChange} placeholder="Link do seu Linkedin"/>
           </div>
           <div>
             <label className="block mb-1 font-medium">Instagram</label>
+            <Input value={nome} onChange={handleNomeChange} placeholder="Link do seu Instagram"/>
+          </div>
+        </CardContent>
+      </Card><br/>
+      <Card className="w-full max-w-md">
+        <CardContent className="space-y-6 p-6">
+          <div>
+            <label className="block mb-1 font-medium">Nome da Empresa</label>
             <Input value={nome} onChange={handleNomeChange} placeholder="Digite o nome"/>
           </div>
+          <div>
+            <label className="block mb-1 font-medium">Cidade da Empresa</label>
+            <Input value={nome} onChange={handleNomeChange} placeholder="Digite a cidade"/>
+          </div>
+          <div>
+            <label className="block mb-1 font-medium">Estado da Empresa</label>
+            <Input value={nome} onChange={handleNomeChange} placeholder="Digite o estado"/>
+          </div>
+          <div>
+            <label className="block mb-1 font-medium">País da Empresa</label>
+            <Input value={nome} onChange={handleNomeChange} placeholder="Digite o país"/>
+          </div>
+          <div>
+            <label className="block mb-1 font-medium">Cargo</label>
+            <Input value={nome} onChange={handleNomeChange} placeholder="Cargo atual"/>
+          </div>
+          <div>
+            <label className="block mb-1 font-medium">Ano de Entrada</label>
+            <Input value={nome} onChange={handleNomeChange} placeholder="Ano de entrada na empresa"/>
+          </div>
+          <Button className="w-full" onClick={BotaoSalvar}>Salvar Alterações</Button>
         </CardContent>
       </Card>
     </div>

@@ -1,6 +1,6 @@
 'use client';
-//FILTRAR CURSOS
 
+//app/instituicao/cursos
 import React, { useEffect, useState } from 'react';
 
 interface Curso {

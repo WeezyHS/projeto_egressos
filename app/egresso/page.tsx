@@ -1,11 +1,13 @@
 'use client';
 
+//app/egresso/page.tsx
 import { useState, useMemo, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from "@/components/ui/button";
 import { Input } from '@/components/ui/input';
+import Link from 'next/link';
 import Image from 'next/image';
-//import { GraduationCap } from "lucide-react";
+import { Eye } from "lucide-react";
 
 interface Pessoa { // Interface Pessoa, ajustada para como a API /api/pessoa/listar-todos vai retornar
   id: number;
@@ -235,11 +237,18 @@ export default function App_Egresso() {
           <ul className="space-y-6">
             {pessoasFiltradas.map((pessoa) => {
               const isLogado = cpfEgressoLogado && pessoa.cpf === cpfEgressoLogado;
+
               return (
                 <li
                   key={pessoa.id}
-                  className={`border-b border-gray-200 pb-6 mb-6 last:border-b-0 last:pb-0 last:mb-0 p-4 rounded-md transition-all duration-200 ease-in-out ${isLogado ? 'bg-blue-100 border-l-4 border-blue-600 shadow-lg' : 'hover:bg-gray-50'}`}
+                  className={`relative border-b border-gray-200 pb-6 mb-6 last:border-b-0 last:pb-0 last:mb-0 p-4 rounded-md transition-all duration-200 ease-in-out ${isLogado ? 'bg-blue-100 border-l-4 border-blue-600 shadow-lg' : 'hover:bg-gray-50'}`}
                 >
+                  <div className="absolute top-4 right-4">
+                    <Link href={`/perfil_egresso/${pessoa.cpf}`} passHref>
+                      <Eye className="w-5 h-5 text-gray-600 hover:text-blue-600 cursor-pointer" />
+                    </Link>
+                  </div>
+
                   <p className="text-lg font-semibold text-gray-800 flex items-center gap-2 flex-wrap">
                     {pessoa.nome}
                     {isLogado && (

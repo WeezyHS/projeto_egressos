@@ -1,5 +1,6 @@
 'use client';
 
+//app/egresso/layout.tsx
 import { useState, useMemo, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from "@/components/ui/button";

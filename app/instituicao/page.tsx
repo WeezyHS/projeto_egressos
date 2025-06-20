@@ -1,6 +1,6 @@
 'use client';
 
-//app/instituicao
+//app/instituicao/page.tsx
 import React, { useEffect, useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { Input } from '@/components/ui/input';
