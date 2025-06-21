@@ -75,6 +75,7 @@ export default function Login_Egresso() {
           localStorage.setItem('userSenha', senha); 
 
           if (egressoData) {
+            localStorage.setItem('egressoId', egressoData.id);
             localStorage.removeItem('perfilEgresso');
             localStorage.setItem('perfilEgresso', JSON.stringify(egressoData));
           }
