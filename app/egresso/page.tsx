@@ -248,7 +248,6 @@ export default function App_Egresso() {
                       <Eye className="w-5 h-5 text-gray-600 hover:text-blue-600 cursor-pointer" />
                     </Link>
                   </div>
-
                   <p className="text-lg font-semibold text-gray-800 flex items-center gap-2 flex-wrap">
                     {pessoa.nome}
                     {isLogado && (
