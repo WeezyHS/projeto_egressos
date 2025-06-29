@@ -4,6 +4,10 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { Input } from '@/components/ui/input';
+
+import { Eye, Edit, Save, X } from 'lucide-react';
+import Link from 'next/link';
+
 import { Curso as PrismaCurso, Matricula as PrismaMatricula } from '@/app/generated/prisma';
 
 export default function App_Instituicao() {
@@ -283,12 +287,12 @@ export default function App_Instituicao() {
             <table className="min-w-full divide-y divide-gray-200">
               <thead>
                 <tr>
-                  <th className="text-left text-sm font-medium text-gray-600 py-2 px-4">Nome</th>
-                  <th className="text-left text-sm font-medium text-gray-600 py-2 px-4">CPF</th>
-                  <th className="text-left text-sm font-medium text-gray-600 py-2 px-4">Email</th>
-                  <th className="text-left text-sm font-medium text-gray-600 py-2 px-4">Curso</th>
-                  <th className="text-left text-sm font-medium text-gray-600 py-2 px-4">Ano/Sem. Entrada</th>
-                  <th className="text-left text-sm font-medium text-gray-600 py-2 px-4">Ano/Sem. Saída</th>
+                    <th className="text-left text-sm font-medium text-gray-600 py-2 px-4">Nome</th>
+                    <th className="text-left text-sm font-medium text-gray-600 py-2 px-4">CPF</th>
+                    <th className="text-left text-sm font-medium text-gray-600 py-2 px-4">Email</th>
+                    <th className="text-left text-sm font-medium text-gray-600 py-2 px-4">Curso</th>
+                    <th className="text-left text-sm font-medium text-gray-600 py-2 px-4">Ano/Sem. Entrada</th>
+                    <th className="text-left text-sm font-medium text-gray-600 py-2 px-4">Ano/Sem. Saída</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100">
@@ -342,6 +346,9 @@ export default function App_Instituicao() {
                         <td className="py-2 px-4">{aluno.matriculas[0]?.anoSemestreEntrada || "N/A"}</td>
                         <td className="py-2 px-4">{aluno.matriculas[0]?.anoSemestreSaida || "Em andamento"}</td>
                         <td className="py-2 px-4">
+                        <Link href={`/perfil_egresso/${aluno.cpf}`} passHref>
+                            <Eye className="w-5 h-5 text-gray-600 hover:text-blue-600 cursor-pointer" />
+                        </Link>
                             <button onClick={() => iniciarEdicao(aluno)} className="text-blue-600 hover:underline">Editar</button>
                         </td>
                         </>
