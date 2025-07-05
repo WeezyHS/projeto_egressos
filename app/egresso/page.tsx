@@ -6,7 +6,6 @@ import { useRouter } from 'next/navigation';
 import { Button } from "@/components/ui/button";
 import { Input } from '@/components/ui/input';
 import Link from 'next/link';
-import Image from 'next/image';
 import { Eye } from "lucide-react";
 
 interface Pessoa { // Interface Pessoa, ajustada para como a API /api/pessoa/listar-todos vai retornar
@@ -135,8 +134,6 @@ export default function App_Egresso() {
     buscarDadosEgressoLogado(); // Para a sidebar
     buscarTodasAsPessoas();    // Para a tabela principal
   }, []);
-
-  //const handleConsultarEgresso = () => router.push('/consultar_egresso'); 
   const handleBotaoAtualizarLista = () => buscarTodasAsPessoas();
 
   const nomesDeCursosUnicos = useMemo(() => { // useMemo para dropdowns, adaptado para a interface Pessoa e os campos de curso
@@ -170,7 +167,6 @@ export default function App_Egresso() {
     const filtroNomeLower = filtroNome.toLowerCase();
     const filtroPrimeiraLetraLower = filtroPrimeiraLetra.toLowerCase();
     const filtroCursoLower = filtroCurso.toLowerCase();
-
     const nomeMatch = !filtroNome || nomeLower.includes(filtroNomeLower);
     const primeiraLetraMatch = !filtroPrimeiraLetra || nomeLower.startsWith(filtroPrimeiraLetraLower);
     // Filtro de curso agora verifica se algum dos cursos da pessoa corresponde
@@ -220,16 +216,13 @@ export default function App_Egresso() {
               <label htmlFor="filtroAnoSaida" className="block text-sm font-medium text-gray-700 mb-1">Ano/Sem. Saída:</label>
               <select id="filtroAnoSaida" value={filtroAnoSaida} onChange={(e) => setFiltroAnoSaida(e.target.value)} className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm bg-white">
                 <option value="">Todos</option>
-                {/* Você pode adicionar uma opção "Cursando/Não informado" se a API retornar um valor específico para isso */}
                 {anosSaidaUnicos.map((anoSem) => (<option key={anoSem} value={anoSem}>{anoSem}</option>))}
               </select>
             </div>
           </div>
         </div>
         <div className="flex flex-wrap gap-4 mb-10">
-          <Button className="bg-blue-600 hover:bg-blue-700 text-white rounded-lg px-6 py-3 text-base font-semibold shadow-md transition-colors" onClick={handleBotaoAtualizarLista}>
-            Atualizar Lista
-          </Button>
+          <Button className="bg-blue-600 hover:bg-blue-700 text-white rounded-lg px-6 py-3 text-base font-semibold shadow-md transition-colors" onClick={handleBotaoAtualizarLista}>Atualizar Lista</Button>
         </div>
         <div className="bg-white p-6 rounded-xl shadow-md">
         <h2 className="text-xl font-semibold text-gray-800 mb-4">Pessoas</h2>
@@ -239,10 +232,7 @@ export default function App_Egresso() {
               const isLogado = cpfEgressoLogado && pessoa.cpf === cpfEgressoLogado;
 
               return (
-                <li
-                  key={pessoa.id}
-                  className={`relative border-b border-gray-200 pb-6 mb-6 last:border-b-0 last:pb-0 last:mb-0 p-4 rounded-md transition-all duration-200 ease-in-out ${isLogado ? 'bg-blue-100 border-l-4 border-blue-600 shadow-lg' : 'hover:bg-gray-50'}`}
-                >
+                <li key={pessoa.id} className={`relative border-b border-gray-200 pb-6 mb-6 last:border-b-0 last:pb-0 last:mb-0 p-4 rounded-md transition-all duration-200 ease-in-out ${isLogado ? 'bg-blue-100 border-l-4 border-blue-600 shadow-lg' : 'hover:bg-gray-50'}`}>
                   <div className="absolute top-4 right-4">
                     <Link href={`/perfil_egresso/${pessoa.cpf}`} passHref>
                       <Eye className="w-5 h-5 text-gray-600 hover:text-blue-600 cursor-pointer" />
@@ -250,9 +240,7 @@ export default function App_Egresso() {
                   </div>
                   <p className="text-lg font-semibold text-gray-800 flex items-center gap-2 flex-wrap">
                     {pessoa.nome}
-                    {isLogado && (
-                      <span className="text-sm text-blue-700 font-semibold">(Este é você)</span>
-                    )}
+                    {isLogado && (<span className="text-sm text-blue-700 font-semibold">(Este é você)</span>)}
                   </p>
                   <p className="text-sm text-gray-600">E-mail: {pessoa.email}</p>
                   <div className="mt-2">

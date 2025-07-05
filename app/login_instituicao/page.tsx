@@ -31,7 +31,6 @@ export default function LoginInstituicao() {
       alert("A senha deve ter no mínimo 8 caracteres!");
       return false;
     }
-
     return true;
   }
 
@@ -52,9 +51,7 @@ export default function LoginInstituicao() {
       if (response.ok) {
         const data = await response.json();
         localStorage.removeItem("perfilInstituicao");
-
         localStorage.setItem('instituicaoId', data.id);
-
         localStorage.setItem("perfilInstituicao", JSON.stringify(data));
         router.push('/instituicao');
       } else {
@@ -69,36 +66,15 @@ export default function LoginInstituicao() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
       <div className="bg-white p-8 rounded-2xl shadow-xl w-full max-w-md">
-        <h1 className="text-3xl font-bold text-center text-gray-800 mb-6">
-          Conta da Instituição
-        </h1>
+        <h1 className="text-3xl font-bold text-center text-gray-800 mb-6">Conta da Instituição</h1>
 
         <div className="mb-4">
-          <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-            Email:
-          </label>
-          <Input
-            id="email"
-            type="email"
-            placeholder="exemplo@instituicao.com"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="w-full"
-          />
+          <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">Email:</label>
+          <Input id="email" type="email" placeholder="exemplo@instituicao.com" value={email} onChange={(e) => setEmail(e.target.value)} className="w-full"/>
         </div>
-
         <div className="mb-6">
-          <label htmlFor="senha" className="block text-sm font-medium text-gray-700 mb-1">
-            Senha:
-          </label>
-          <Input
-            id="senha"
-            type="password"
-            placeholder="********"
-            value={senha}
-            onChange={(e) => setSenha(e.target.value)}
-            className="w-full"
-          />
+          <label htmlFor="senha" className="block text-sm font-medium text-gray-700 mb-1">Senha:</label>
+          <Input id="senha" type="password" placeholder="********" value={senha} onChange={(e) => setSenha(e.target.value)} className="w-full"/>
         </div>
         <div className="flex flex-col gap-4 pt-6">
           <Button onClick={handleEntrar} variant="default" className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 text-base font-medium rounded-lg shadow-md hover:shadow-lg transition-all">Entrar</Button>

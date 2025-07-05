@@ -21,13 +21,11 @@ export default function EditarPerfilInstituicao() {
   const [loading, setLoading] = useState(true);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [selectedFileName, setSelectedFileName] = useState<string>('');
-
   //useEffect para buscar os dados da instituição ao carregar a página
   useEffect(() => {
     const instituicaoId = localStorage.getItem('instituicaoId');
     if (!instituicaoId) {
       alert("Não foi possível identificar a instituição. Faça login novamente.");
-      //router.push('/login_instituicao'); //Redireciona se não houver ID
       setLoading(false);
       return;
     }
@@ -90,7 +88,6 @@ export default function EditarPerfilInstituicao() {
 
       if (response.ok) {
         alert('Perfil atualizado com sucesso!');
-        // Opcional: forçar um recarregamento dos dados do perfil no localStorage/outras páginas
       } else {
         const errorData = await response.json().catch(() => null);
         alert(`Falha ao salvar: ${errorData?.error || 'Erro desconhecido'}`);
@@ -120,7 +117,6 @@ export default function EditarPerfilInstituicao() {
             <Button variant="outline" onClick={handleBotaoFotoClick}>Alterar Foto</Button>
               {selectedFileName && (<p className="text-sm text-gray-500 mt-2">Ficheiro: {selectedFileName}</p>)}
           </div>
-
           {/* Inputs agora ligados a seus próprios estados */}
           <div>
             <label className="block mb-1 font-medium">Nome da Instituição</label>
@@ -146,7 +142,6 @@ export default function EditarPerfilInstituicao() {
             <label className="block mb-1 font-medium">Nova Senha</label>
             <Input type="password" value={senha} onChange={(e) => setSenha(e.target.value)} placeholder="Digite a nova senha caso queira alterar"/>
           </div>
-
           <Button className="w-full" onClick={handleSalvar}>Salvar Alterações</Button>
         </CardContent>
       </Card>

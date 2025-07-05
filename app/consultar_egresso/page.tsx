@@ -50,36 +50,17 @@ export default function ConsultarEgressoPage() {
     <main className="p-6 max-w-5xl mx-auto">
       <h1 className="text-2xl font-bold mb-4">Consultar Egressos</h1>
 
-      <input
-        type="text"
-        placeholder="Buscar por nome ou cargo"
-        value={filtro}
-        onChange={(e) => setFiltro(e.target.value)}
-        className="border p-2 rounded w-full mb-6"
-      />
+      <input type="text" placeholder="Buscar por nome ou cargo" value={filtro} onChange={(e) => setFiltro(e.target.value)} className="border p-2 rounded w-full mb-6"/>
 
-      <div className="grid gap-4">
-        {egressosFiltrados.map((egresso) => (
-          <div key={egresso.id} className="border rounded p-4 flex gap-4 items-center">
-            {egresso.fotoPerfil ? (
-              <img
-                src={egresso.fotoPerfil}
-                alt={egresso.nome}
-                className="w-20 h-20 object-cover rounded-full"
-              />
-            ) : (
-              <div className="w-20 h-20 bg-gray-300 rounded-full flex items-center justify-center">
-                <span className="text-sm text-gray-600">Sem Foto</span>
-              </div>
-            )}
-            <div>
-              <h2 className="text-xl font-semibold">{egresso.nome}</h2>
-              <p><strong>Curso:</strong> {egresso.curso}</p>
-              <p><strong>Cargo:</strong> {egresso.cargoAtual}</p>
-              <p><strong>Empresa:</strong> {egresso.empresaAtual}</p>
-              <p><strong>Email:</strong> {egresso.email}</p>
-            </div>
+      <div className="grid gap-4">{egressosFiltrados.map((egresso) => (<div key={egresso.id} className="border rounded p-4 flex gap-4 items-center">{egresso.fotoPerfil ? (<img src={egresso.fotoPerfil} alt={egresso.nome} className="w-20 h-20 object-cover rounded-full"/>) : (<div className="w-20 h-20 bg-gray-300 rounded-full flex items-center justify-center"><span className="text-sm text-gray-600">Sem Foto</span></div>)}
+          <div>
+            <h2 className="text-xl font-semibold">{egresso.nome}</h2>
+            <p><strong>Curso:</strong> {egresso.curso}</p>
+            <p><strong>Cargo:</strong> {egresso.cargoAtual}</p>
+            <p><strong>Empresa:</strong> {egresso.empresaAtual}</p>
+            <p><strong>Email:</strong> {egresso.email}</p>
           </div>
+        </div>
         ))}
       </div>
     </main>

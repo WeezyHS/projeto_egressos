@@ -61,16 +61,7 @@ export default function CursosAlunosPage() {
     <div className="p-6 max-w-3xl mx-auto">
       <h1 className="text-2xl font-bold mb-4">Lista de Cursos</h1>
 
-      <input
-        type="text"
-        placeholder="Filtrar por nome do curso"
-        className="border p-2 rounded mb-4 w-full"
-        value={filtroNome}
-        onChange={(e) => {
-          setPagina(1); // resetar a paginação ao filtrar
-          setFiltroNome(e.target.value);
-        }}
-      />
+      <input type="text" placeholder="Filtrar por nome do curso" className="border p-2 rounded mb-4 w-full" value={filtroNome} onChange={(e) => {setPagina(1); setFiltroNome(e.target.value);}}/>
 
       {cursosFiltrados.length === 0 ? (
         <p>Nenhum curso encontrado.</p>
@@ -85,23 +76,9 @@ export default function CursosAlunosPage() {
       )}
 
       <div className="flex justify-between mt-4">
-        <button
-          onClick={handleAnterior}
-          disabled={pagina === 1}
-          className="px-4 py-2 bg-gray-300 rounded disabled:opacity-50"
-        >
-          Anterior
-        </button>
-        <span>
-          Página {pagina} de {totalPaginas}
-        </span>
-        <button
-          onClick={handleProximo}
-          disabled={pagina === totalPaginas}
-          className="px-4 py-2 bg-gray-300 rounded disabled:opacity-50"
-        >
-          Próximo
-        </button>
+        <button onClick={handleAnterior} disabled={pagina === 1} className="px-4 py-2 bg-gray-300 rounded disabled:opacity-50">Anterior</button>
+        <span>Página {pagina} de {totalPaginas}</span>
+        <button onClick={handleProximo} disabled={pagina === totalPaginas} className="px-4 py-2 bg-gray-300 rounded disabled:opacity-50">Próximo</button>
       </div>
     </div>
   );

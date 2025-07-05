@@ -2,13 +2,8 @@
 
 //app/instituicao/gerenciar_cursos
 import emailjs from '@emailjs/browser';
-import React, { useEffect, useState, useRef } from 'react';
-import { useRouter } from 'next/navigation';
-import Papa, { ParseResult, ParseError } from 'papaparse';
-import { Button } from "@/components/ui/button";
-import Link from "next/link";
-
-import { Curso as PrismaCurso, Matricula as PrismaMatricula } from '@/app/generated/prisma';
+import React, { useEffect, useState } from 'react';
+import Papa, { ParseResult } from 'papaparse';
 
 interface AlunosCSVRow {
     curso: string;
@@ -28,18 +23,10 @@ interface Matricula {
 
 export default function App_Instituicao() {
     const [perfil, setPerfil] = useState<any>(null);
-    const [pagina, setPagina] = useState(1);
-    const [alunosFiltrados, setAlunosFiltrados] = useState<any[]>([]);
-    const [totalPaginas, setTotalPaginas] = useState(1);
     const [pessoas, setPessoas] = useState<{ id: number; nome: string; cpf: string; email: string }[]>([]);
     const [matriculas, setMatriculas] = useState<{ cursoId: number; pessoaId: number; entrada: string; saida: string | null }[]>([]);
-    const [filtroCurso, setFiltroCurso] = useState("");
-    const [filtroEntrada, setFiltroEntrada] = useState("");
-    const [filtroSaida, setFiltroSaida] = useState("");
-    const [ordenacao, setOrdenacao] = useState("nome");
     const [cursos, setCursos] = useState<any[]>([]);
     const [alunos, setAlunos] = useState<any[]>([]);
-    const router = useRouter();
 
     const salvarDadosNoBanco = async (cursosParaSalvar: { id: number; nome: string }[], pessoasParaSalvar: { id: number; nome: string; cpf: string; email: string }[], matriculasParaSalvar: Matricula[]) => {
         try {
@@ -60,7 +47,6 @@ export default function App_Instituicao() {
                 setMatriculas([]);
                 setAlunos([]);
                 buscarAlunosDoBanco();
-                exibirAlunos();
             } else {
                 alert(data.error || 'Erro ao salvar os dados do CSV no banco de dados.');
             }
@@ -90,12 +76,7 @@ export default function App_Instituicao() {
     };
 
     useEffect(() => {
-        exibirAlunos();
-    }, [alunos, perfil, pessoas, matriculas, cursos, pagina, filtroCurso, filtroEntrada, filtroSaida, ordenacao]);
-
-    useEffect(() => {
         buscarAlunosDoBanco();
-        //alunosFiltrados();
     }, []);
 
     function gerarCodigoAleatorio() {
@@ -267,79 +248,6 @@ export default function App_Instituicao() {
         } catch (error) {}
     };
 
-    const exibirAlunos = () => {
-        const alunosFiltrados = alunos
-            .filter(aluno => filtroCurso ? aluno.matriculas.some((mat: PrismaMatricula & { curso: PrismaCurso }) =>
-                        mat.curso.nome === filtroCurso
-                    )
-                    : true
-            )
-            .filter(aluno => filtroEntrada ? aluno.matriculas.some((mat: PrismaMatricula) => {
-                        const entrada = mat.anoSemestreEntrada?.toLowerCase() || '';
-                        return entrada.includes(filtroEntrada.toLowerCase());
-                    })
-                    : true
-            )
-            .filter(aluno => filtroSaida ? aluno.matriculas.some((mat: PrismaMatricula) => {
-                        const saida = mat.anoSemestreSaida?.toLowerCase() || '';
-                        return saida.includes(filtroSaida.toLowerCase());
-                    })
-                    : true
-            )
-            .sort((a, b) => {
-                if (ordenacao === 'nome') {
-                    return a.nome.localeCompare(b.nome);
-                }
-
-                const getValorEntrada = (aluno: typeof a) => {
-                    const entradasValidas = aluno.matriculas
-                        .map((m: PrismaMatricula) => m.anoSemestreEntrada)
-                        .filter((s: string | null | undefined): s is string => !!s)
-                        .map((data: string) => {
-                            const [ano, semestre] = data.split('/');
-                            return parseInt(ano) * 10 + parseInt(semestre);
-                        });
-                
-                    return entradasValidas.length > 0 ? Math.min(...entradasValidas) : Number.MAX_SAFE_INTEGER;
-                };
-
-                if (ordenacao === 'anoSemestreEntrada') {
-                    return getValorEntrada(a) - getValorEntrada(b);
-                }
-
-                const getValorSaida = (aluno: typeof a) => {
-                    const saidasValidas = aluno.matriculas
-                        .map((m: PrismaMatricula) => m.anoSemestreSaida)
-                        .filter((s: string | null | undefined): s is string => !!s && !s.toLowerCase().includes('andamento'))
-                        .map((data: string) => {
-                            const [ano, semestre] = data.split('/');
-                            return parseInt(ano) * 10 + parseInt(semestre);
-                        });
-                
-                    return saidasValidas.length > 0 ? Math.min(...saidasValidas) : Number.MAX_SAFE_INTEGER;
-                };
-
-                if (ordenacao === 'anoSemestreSaida') {
-                    return getValorSaida(a) - getValorSaida(b);
-                }
-                return 0;
-            });
-
-        const alunosPorPagina = 10;
-        const totalPaginasCalculado = Math.ceil(alunosFiltrados.length / alunosPorPagina);
-        setTotalPaginas(totalPaginasCalculado);
-
-        const alunosPagina = alunosFiltrados.slice((pagina - 1) * alunosPorPagina, pagina * alunosPorPagina);
-        setAlunosFiltrados(alunosPagina);
-    };
-
-    const handleAnterior = () => { //Controla a navegação entre páginas na tabela de alunos.
-        setPagina(prevPagina => Math.max(prevPagina - 1, 1));
-    }
-    const handleProximo = () => { //Controla a navegação entre páginas na tabela de alunos.
-        setPagina(prevPagina => Math.min(prevPagina + 1, totalPaginas));
-    }
-
     if (!perfil){ //Verifica se o perfil da instituição foi carregado. Caso não, houve um erro.
         return <p>Carregando perfil...</p>;
     }
@@ -349,34 +257,6 @@ export default function App_Instituicao() {
       <div className="max-w-7xl mx-auto px-4 py-6 grid grid-cols-1 lg:grid-cols-4 gap-6">
         {/* Coluna central - Filtros + Tabela */}
         <main className="col-span-3 space-y-6">
-          {/* Filtros */}
-          {/* <div className="bg-white rounded-2xl shadow p-6 space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div>
-                <label htmlFor="filtroCurso" className="block text-sm font-medium">Curso:</label>
-                <select id="filtroCurso" className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary/50" value={filtroCurso} onChange={(e) => setFiltroCurso(e.target.value)}>
-                  <option value="">Todos</option>
-                  {cursos.map((curso, index) => (<option key={index} value={curso.nome}>{curso.nome}</option>))}
-                </select>
-              </div>
-              <div>
-                <label htmlFor="filtroEntrada" className="block text-sm font-medium">Ano/Semestre de Entrada:</label>
-                <input type="text" id="filtroEntrada" className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary/50" value={filtroEntrada} onChange={(e) => setFiltroEntrada(e.target.value)}/>
-              </div>
-              <div>
-                <label htmlFor="filtroSaida" className="block text-sm font-medium">Ano/Semestre de Saída:</label>
-                <input type="text" id="filtroSaida" className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary/50" value={filtroSaida} onChange={(e) => setFiltroSaida(e.target.value)}/>
-              </div>
-            </div>
-            <div className="mt-4">
-              <label className="block text-sm font-medium">Ordenar por:</label>
-              <select className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary/50" value={ordenacao} onChange={(e) => setOrdenacao(e.target.value)}>
-                <option value="nome">Nome</option>
-                <option value="anoSemestreEntrada">Ano/Semestre Entrada</option>
-                <option value="anoSemestreSaida">Ano/Semestre Saída</option>
-              </select>
-            </div>
-          </div> */}
           {/* Uploads */}
           <div className="bg-white rounded-2xl shadow p-6 space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -392,39 +272,6 @@ export default function App_Instituicao() {
               </div>
             </div>
           </div>
-          {/* Tabela */}
-          {/* <div className="bg-white rounded-2xl shadow p-6 overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead>
-                <tr>
-                  <th className="text-left text-sm font-medium text-gray-600 py-2 px-4">Nome</th>
-                  <th className="text-left text-sm font-medium text-gray-600 py-2 px-4">CPF</th>
-                  <th className="text-left text-sm font-medium text-gray-600 py-2 px-4">Email</th>
-                  <th className="text-left text-sm font-medium text-gray-600 py-2 px-4">Curso</th>
-                  <th className="text-left text-sm font-medium text-gray-600 py-2 px-4">Ano/Sem. Entrada</th>
-                  <th className="text-left text-sm font-medium text-gray-600 py-2 px-4">Ano/Sem. Saída</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-100">
-                {alunosFiltrados.map((aluno, index) => (
-                  <tr key={index} className="hover:bg-gray-50">
-                    <td className="py-2 px-4 whitespace-nowrap">{aluno.nome || ""}</td>
-                    <td className="py-2 px-4 whitespace-nowrap">{aluno.cpf || ""}</td>
-                    <td className="py-2 px-4 whitespace-nowrap">{aluno.email || ""}</td>
-                    <td className="py-2 px-4 whitespace-nowrap">{aluno.matriculas[0]?.curso?.nome || "N/A"}</td>
-                    <td className="py-2 px-4 whitespace-nowrap">{aluno.matriculas[0]?.anoSemestreEntrada || "N/A"}</td>
-                    <td className="py-2 px-4 whitespace-nowrap">{aluno.matriculas[0]?.anoSemestreSaida || "Em andamento"}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div> */}
-          {/* Paginação */}
-          {/* <div className="flex justify-between items-center bg-white rounded-2xl shadow p-4">
-            <button onClick={handleAnterior} disabled={pagina === 1} className="px-4 py-2 rounded-md bg-gray-200 hover:bg-gray-300 disabled:opacity-50">Anterior</button>
-            <span className="text-sm">{pagina} / {totalPaginas}</span>
-            <button onClick={handleProximo} disabled={pagina === totalPaginas} className="px-4 py-2 rounded-md bg-gray-200 hover:bg-gray-300 disabled:opacity-50">Próximo</button>
-          </div> */}
         </main>
       </div>
     </div>

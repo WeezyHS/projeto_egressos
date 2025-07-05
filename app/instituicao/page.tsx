@@ -1,11 +1,10 @@
 'use client';
 
 //app/instituicao/page.tsx
-import React, { useEffect, useState, useRef } from 'react';
-import { useRouter } from 'next/navigation';
+import React, { useEffect, useState } from 'react';
 import { Input } from '@/components/ui/input';
 
-import { Eye, Edit, Save, X } from 'lucide-react';
+import { Eye } from 'lucide-react';
 import Link from 'next/link';
 
 import { Curso as PrismaCurso, Matricula as PrismaMatricula } from '@/app/generated/prisma';
@@ -23,7 +22,6 @@ export default function App_Instituicao() {
     const [ordenacao, setOrdenacao] = useState("nome");
     const [cursos, setCursos] = useState<any[]>([]);
     const [alunos, setAlunos] = useState<any[]>([]);
-    const router = useRouter();
 
     const [cadastroAtivo, setCadastroAtivo] = useState(false);
     const [novoAluno, setNovoAluno] = useState({
@@ -113,7 +111,6 @@ export default function App_Instituicao() {
 
     useEffect(() => {
         buscarAlunosDoBanco();
-        //alunosFiltrados();
     }, []);
 
     const buscarAlunosDoBanco = async () => {
@@ -193,8 +190,7 @@ export default function App_Instituicao() {
     };
 
     const salvarNovoAluno = async () => {
-        // Verificação dos campos obrigatórios
-        if (
+        if ( // Verificação dos campos obrigatórios
           !novoAluno.nome ||
           !novoAluno.cpf ||
           !novoAluno.email ||
@@ -204,7 +200,6 @@ export default function App_Instituicao() {
           alert("Por favor, preencha todos os campos obrigatórios.");
           return;
         }
-      
         try {
           const response = await fetch("/api/instituicao/novoaluno_separado", {
             method: "POST",
@@ -213,12 +208,12 @@ export default function App_Instituicao() {
             },
             body: JSON.stringify(novoAluno),
           });
-      
+
           if (!response.ok) throw new Error("Erro ao salvar aluno.");
-      
+
           const alunoSalvo = await response.json();
           setAlunos((prev) => [...prev, alunoSalvo]); // Atualiza a lista
-      
+
           setNovoAluno({
             nome: "",
             cpf: "",
@@ -227,14 +222,13 @@ export default function App_Instituicao() {
             anoSemestreEntrada: "",
             anoSemestreSaida: "",
           });
-      
+
           setCadastroAtivo(false); // Esconde o mini formulário
         } catch (error) {
           console.error("Erro ao salvar aluno:", error);
           alert("Erro ao salvar aluno. Tente novamente.");
         }
       };
-      
 
     const handleAnterior = () => { //Controla a navegação entre páginas na tabela de alunos.
         setPagina(prevPagina => Math.max(prevPagina - 1, 1));
@@ -280,8 +274,6 @@ export default function App_Instituicao() {
               </select>
             </div>
           </div>
-          {/* Uploads */}
-
           {/* Tabela */}
           <div className="bg-white rounded-2xl shadow p-6 overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-200">
@@ -370,67 +362,18 @@ export default function App_Instituicao() {
             <div className="bg-white rounded-2xl shadow p-6 space-y-4 mt-4">
                 <h2 className="text-lg font-semibold">Cadastrar novo aluno</h2>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <input
-                    type="text"
-                    name="nome"
-                    placeholder="Nome"
-                    value={novoAluno.nome}
-                    onChange={(e) => setNovoAluno({ ...novoAluno, nome: e.target.value })}
-                    className="border rounded px-3 py-2 w-full"
-                />
-                <input
-                    type="text"
-                    placeholder="CPF"
-                    value={novoAluno.cpf}
-                    onChange={(e) => setNovoAluno({ ...novoAluno, cpf: e.target.value })}
-                    className="border rounded px-3 py-2 w-full"
-                />
-                <input
-                    type="email"
-                    placeholder="Email"
-                    value={novoAluno.email}
-                    onChange={(e) => setNovoAluno({ ...novoAluno, email: e.target.value })}
-                    className="border rounded px-3 py-2 w-full"
-                />
-                <Input
-                type="text"
-                name="nomeCurso"
-                placeholder="Digite o nome do curso"
-                value={novoAluno.curso}
-                onChange={(e) => setNovoAluno({ ...novoAluno, curso: e.target.value })}
-                />
-
-                <input
-                    type="text"
-                    placeholder="Ano/Semestre de Entrada"
-                    value={novoAluno.anoSemestreEntrada}
-                    onChange={(e) =>
-                    setNovoAluno({ ...novoAluno, anoSemestreEntrada: e.target.value })
-                    }
-                    className="border rounded px-3 py-2 w-full"
-                />
-                <input
-                    type="text"
-                    placeholder="Ano/Semestre de Saída (opcional)"
-                    value={novoAluno.anoSemestreSaida}
-                    onChange={(e) =>
-                    setNovoAluno({ ...novoAluno, anoSemestreSaida: e.target.value })
-                    }
-                    className="border rounded px-3 py-2 w-full"
-                />
+                <input type="text" name="nome" placeholder="Nome" value={novoAluno.nome} onChange={(e) => setNovoAluno({ ...novoAluno, nome: e.target.value })} className="border rounded px-3 py-2 w-full"/>
+                <input type="text" placeholder="CPF" value={novoAluno.cpf} onChange={(e) => setNovoAluno({ ...novoAluno, cpf: e.target.value })} className="border rounded px-3 py-2 w-full"/>
+                <input type="email" placeholder="Email" value={novoAluno.email} onChange={(e) => setNovoAluno({ ...novoAluno, email: e.target.value })} className="border rounded px-3 py-2 w-full"/>
+                <Input type="text" name="nomeCurso" placeholder="Digite o nome do curso" value={novoAluno.curso} onChange={(e) => setNovoAluno({ ...novoAluno, curso: e.target.value })}/>
+                <input type="text" placeholder="Ano/Semestre de Entrada" value={novoAluno.anoSemestreEntrada} onChange={(e) => setNovoAluno({ ...novoAluno, anoSemestreEntrada: e.target.value })} className="border rounded px-3 py-2 w-full"/>
+                <input type="text" placeholder="Ano/Semestre de Saída (egresso)" value={novoAluno.anoSemestreSaida} onChange={(e) => setNovoAluno({ ...novoAluno, anoSemestreSaida: e.target.value })} className="border rounded px-3 py-2 w-full"/>
                 </div>
-
                 <div className="flex justify-start">
-                <button
-                    onClick={salvarNovoAluno}
-                    className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
-                >
-                    Salvar aluno
-                </button>
+                <button onClick={salvarNovoAluno} className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">Salvar aluno</button>
                 </div>
             </div>
             )}
-
         </main>
       </div>
     </div>

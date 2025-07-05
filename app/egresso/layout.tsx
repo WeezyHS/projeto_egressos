@@ -4,9 +4,7 @@
 import { useState, useMemo, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from "@/components/ui/button";
-import { Input } from '@/components/ui/input';
 import Image from 'next/image';
-//import { GraduationCap } from "lucide-react";
 
 // Interface Pessoa, ajustada para como a API /api/pessoa/listar-todos vai retornar
 interface Pessoa {
@@ -91,7 +89,6 @@ export default function EgressoLayout({ children }: {children: React.ReactNode})
         }
       } else {
         const errorText = await response.text();
-        //console.error('App_Egresso - buscarDadosEgressoLogado (Sidebar) - Erro API Perfil (texto bruto):', errorText);
         setNomeEgressoLogado('Falha (API perfil)');
       }
     } catch (error) {
@@ -99,7 +96,6 @@ export default function EgressoLayout({ children }: {children: React.ReactNode})
       setNomeEgressoLogado('Falha (conexão perfil)');
     }
   };
-
   // Função para buscar a lista de TODAS as pessoas
   const buscarTodasAsPessoas = async () => {
     console.log('App_Egresso - buscarTodasAsPessoas: Iniciando busca da API /api/egresso/lista_geral...');
@@ -139,18 +135,6 @@ export default function EgressoLayout({ children }: {children: React.ReactNode})
     buscarTodasAsPessoas();    // Para a tabela principal
   }, []);
 
-  const handleConsultarEgresso = () => router.push('/consultar_egresso'); 
-  const handleBotaoAtualizarLista = () => buscarTodasAsPessoas();
-
-  // useMemo para dropdowns, adaptado para a interface Pessoa e os campos de curso
-  const nomesDeCursosUnicos = useMemo(() => {
-    const cursos = new Set<string>();
-    pessoas.forEach(p => p.cursos.forEach(c => {
-      if(c.nomeCurso && c.nomeCurso !== 'Não informado') cursos.add(c.nomeCurso);
-    }));
-    return Array.from(cursos).sort();
-  }, [pessoas]);
-
   const anosEntradaUnicos = useMemo(() => {
     const anos = new Set<string>();
     pessoas.forEach(p => p.cursos.forEach(c => {
@@ -168,7 +152,6 @@ export default function EgressoLayout({ children }: {children: React.ReactNode})
     }));
     return Array.from(anos).sort(ordenarAnoSemestre);
   }, [pessoas]);
-
   // Lógica de filtragem para Pessoa
   const pessoasFiltradas = pessoas.filter((pessoa) => {
     const nomeLower = pessoa.nome ? pessoa.nome.toLowerCase() : '';
@@ -202,28 +185,11 @@ export default function EgressoLayout({ children }: {children: React.ReactNode})
       <div className="sticky top-0 h-screen w-full max-w-xs bg-white border-r border-gray-200 p-6 flex flex-col items-center shadow-md space-y-4">
         <div className="w-32 h-32 relative">
           {fotoPerfilUrlEgressoLogado ? (
-            <Image
-              src={fotoPerfilUrlEgressoLogado}
-              alt="Foto de perfil"
-              fill
-              sizes="128px"
-              priority
-              className="rounded-full object-cover border-2 border-gray-300"
-            />
+            <Image src={fotoPerfilUrlEgressoLogado} alt="Foto de perfil" fill sizes="128px" priority className="rounded-full object-cover border-2 border-gray-300"/>
           ) : (
             <div className="w-32 h-32 rounded-full bg-gray-300 flex items-center justify-center text-gray-500 border-2 border-gray-300">
               <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="48"
-                height="48"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="1"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="text-white"
-              >
+                xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round" className="text-white">
                 <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
                 <circle cx="12" cy="7" r="4"></circle>
               </svg>
@@ -238,15 +204,9 @@ export default function EgressoLayout({ children }: {children: React.ReactNode})
         <Button onClick={() => router.push('/egresso/editar_informacoes')} className="w-full">Editar Informações</Button><br/>
   
         <div className="flex justify-end mb-4">
-          <Button
-            onClick={BotaoLogout}
-            className="bg-red-600 hover:bg-red-700 text-white font-semibold px-4 py-2 rounded-lg shadow-sm transition-colors"
-          >
-            Sair
-          </Button>
+          <Button onClick={BotaoLogout} className="bg-red-600 hover:bg-red-700 text-white font-semibold px-4 py-2 rounded-lg shadow-sm transition-colors">Sair</Button>
         </div>
       </div>
-  
       {/* Conteúdo principal */}
       <main className="flex-1 p-6">
         <header className="bg-white shadow p-4 sticky top-0 z-10">

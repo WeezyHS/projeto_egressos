@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, ChangeEvent, useEffect, useRef } from 'react';
-import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -189,7 +188,6 @@ export default function EditarPerfilEgresso() {
             <div><label className="block mb-1 font-medium text-sm">Ano de Entrada na Empresa</label><Input type="number" value={anoEntrada} onChange={(e) => setAnoEntrada(e.target.value)} placeholder="Ex: 2023"/></div>
           </CardContent>
         </Card>
-
         <div className="flex justify-end pt-4">
           <Button size="lg" onClick={handleSalvar} disabled={isSaving}>
             {isSaving ? 'Salvando...' : 'Salvar Todas as Alterações'}

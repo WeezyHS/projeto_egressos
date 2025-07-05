@@ -1,10 +1,9 @@
 'use client';
 
+//app/criarconta_instituicao
 import { useRouter } from "next/navigation";
 import { useState, ChangeEvent, useRef } from 'react';
 import Image from "next/image";
-
-// Importando componentes do Shadcn UI (sem o Label)
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { 
@@ -17,7 +16,6 @@ import {
 } from "@/components/ui/card";
 
 export default function CriarContaInstituicao() {
-  // --- Lógica do componente (sem alterações) ---
   const [fotoPerfil, setFotoPerfil] = useState<File | null>(null);
   const [fotoPreview, setFotoPreview] = useState<string | null>(null);
   const [nomeCompleto, setNomeCompleto] = useState('');
@@ -86,50 +84,24 @@ export default function CriarContaInstituicao() {
       alert("Erro de conexão com o servidor!");
     }
   };
-  
-  // --- JSX Refatorado com Tailwind e Shadcn ---
+
   return (
     <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4 sm:p-6 lg:p-8">
       <Card className="w-full max-w-3xl shadow-2xl">
         <CardHeader className="text-center">
-          <CardTitle className="text-3xl font-bold tracking-tight">
-            Criar Conta de Instituição
-          </CardTitle>
-          <CardDescription className="pt-2">
-            Preencha os dados abaixo para registrar sua instituição na plataforma.
-          </CardDescription>
+          <CardTitle className="text-3xl font-bold tracking-tight">Criar Conta de Instituição</CardTitle>
+          <CardDescription className="pt-2">Preencha os dados abaixo para registrar sua instituição na plataforma.</CardDescription>
         </CardHeader>
         <CardContent className="p-6 sm:p-8">
           <div className="space-y-8">
-
             {/* Seção de Upload de Foto */}
             <div className="flex flex-col items-center gap-4 border-b pb-8">
               <div className="relative w-32 h-32 rounded-full bg-slate-200 flex items-center justify-center">
-                {fotoPreview ? (
-                  <Image
-                    src={fotoPreview}
-                    alt="Pré-visualização do perfil"
-                    fill
-                    className="rounded-full object-cover"
-                    sizes="128px"
-                  />
-                ) : (
-                   <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-slate-400"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"/><path d="m9 12 2 2 4-4"/></svg>
-                )}
+                {fotoPreview ? (<Image src={fotoPreview} alt="Pré-visualização do perfil" fill className="rounded-full object-cover" sizes="128px"/>) : (<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-slate-400"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"/><path d="m9 12 2 2 4-4"/></svg>)}
               </div>
-              <input 
-                type="file" 
-                id="fotoPerfil" 
-                accept="image/*" 
-                onChange={handleFotoPerfilChange} 
-                className="hidden"
-                ref={fileInputRef}
-              />
-              <Button type="button" variant="outline" onClick={() => fileInputRef.current?.click()}>
-                Selecionar Foto do Perfil
-              </Button>
+              <input type="file" id="fotoPerfil" accept="image/*" onChange={handleFotoPerfilChange} className="hidden" ref={fileInputRef}/>
+              <Button type="button" variant="outline" onClick={() => fileInputRef.current?.click()}>Selecionar Foto do Perfil</Button>
             </div>
-
             {/* Grid de Campos do Formulário */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
               <div className="space-y-2">
@@ -175,9 +147,7 @@ export default function CriarContaInstituicao() {
           </div>
         </CardContent>
         <CardFooter>
-          <Button className="w-full text-lg" size="lg" onClick={handleSalvarPerfil}>
-            Registrar Instituição
-          </Button>
+          <Button className="w-full text-lg" size="lg" onClick={handleSalvarPerfil}>Registrar Instituição</Button>
         </CardFooter>
       </Card>
     </div>

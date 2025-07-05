@@ -3,8 +3,8 @@
 //app/login_egresso
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Input } from '@/components/ui/input'; // Certifique-se que este caminho está correto
-import { Button } from '@/components/ui/button'; // Certifique-se que este caminho está correto
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
 
 export default function Login_Egresso() {
   const [email, setEmail] = useState('');
@@ -86,7 +86,6 @@ export default function Login_Egresso() {
       } catch (parseError) {
         alert('Erro ao processar a resposta do servidor. A resposta não parece ser um JSON válido.');
       }
-
     } catch (networkError) {
       alert('Erro ao conectar com o servidor. Verifique sua conexão e tente novamente.');
     }
@@ -102,12 +101,10 @@ export default function Login_Egresso() {
             <label htmlFor="email" className="text-sm font-semibold text-gray-700">Email:</label>
             <Input type="email" id="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="seu.email@exemplo.com" autoComplete="email" className="w-full px-4 py-2.5 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"/>
           </div>
-
           <div className="flex flex-col gap-y-2">
             <label htmlFor="senha" className="text-sm font-semibold text-gray-700">Senha:</label>
             <Input type="password" id="senha" value={senha} onChange={(e) => setSenha(e.target.value)} placeholder="********" autoComplete="current-password" className="w-full px-4 py-2.5 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"/>
           </div>
-
           <div className="flex flex-col gap-4 pt-6">
             <Button onClick={handleEntrar} variant="default" className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 text-base font-medium rounded-lg shadow-md hover:shadow-lg transition-all">Entrar</Button>
             <Button onClick={handleCriarConta} variant="outline" className="w-full py-3 text-base font-medium rounded-lg border-gray-300 text-gray-700 hover:bg-gray-100 transition-colors">Criar Conta</Button>
