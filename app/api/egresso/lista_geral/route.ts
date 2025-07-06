@@ -1,4 +1,5 @@
 //app/api/egresso/lista_geral/route.ts
+
 import { PrismaClient } from '@prisma/client';
 import { NextResponse } from 'next/server';
 
@@ -15,7 +16,6 @@ export async function GET(request: Request) {
     });
 
     const cpfsEgressos = new Set(egressos.map(e => e.cpf));
-
     // 2. Busca todas as pessoas com os cursos
     const todasAsPessoasComCursos = await prisma.pessoa.findMany({
       include: {
@@ -26,7 +26,6 @@ export async function GET(request: Request) {
       },
       orderBy: { nome: 'asc' }
     });
-
     // 3. Monta o resultado com marcações
     const resultadoFormatado = todasAsPessoasComCursos.map(pessoa => ({
       id: pessoa.id,
@@ -45,7 +44,6 @@ export async function GET(request: Request) {
     return NextResponse.json({ pessoas: resultadoFormatado });
 
   } catch (error) {
-    console.error('Erro ao buscar dados:', error);
     return NextResponse.json(
       { error: 'Erro ao buscar dados das pessoas' },
       { status: 500 }

@@ -5,21 +5,14 @@ import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 
 export async function GET(req: Request, { params }: { params: { cpf: string } }) {
+
   try {
     const cpfNormalizado = params.cpf.replace(/\D/g, '');
-    
-    console.log('[API] Busca iniciada para CPF:', {
-      original: params.cpf,
-      normalizado: cpfNormalizado,
-      comprimento: cpfNormalizado.length
-    });
-
     // 1. Busca direta na tabela Egresso
     let egresso = await prisma.egresso.findUnique({
       where: { cpf: cpfNormalizado },
       include: { trabalhoAtual: true }
     });
-
     // 2. Se não encontrou, verifica na tabela Pessoa
     if (!egresso) {
       console.log('[API] Buscando na tabela Pessoa...');
@@ -59,16 +52,12 @@ export async function GET(req: Request, { params }: { params: { cpf: string } })
         };
       }
     }
-
     // 3. Se ainda não encontrou, verifica possíveis problemas de formatação
     if (!egresso) {
-      console.log('[API] Verificando possíveis problemas de formatação...');
-      
       // Busca todos os egressos para verificar similaridades
       const todosEgressos = await prisma.egresso.findMany({
         select: { cpf: true, nome: true }
       });
-      
       const cpfsSimilares = todosEgressos.filter(e => 
         e.cpf.includes(cpfNormalizado.slice(-4)) // Últimos 4 dígitos
       );
@@ -88,10 +77,9 @@ export async function GET(req: Request, { params }: { params: { cpf: string } })
         { status: 404 }
       );
     }
-
     // 4. Remove campos sensíveis antes de retornar
     const { senha, ...dadosSeguros } = egresso;
-    
+
     return NextResponse.json(dadosSeguros);
 
   } catch (error) {

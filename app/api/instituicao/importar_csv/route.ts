@@ -1,4 +1,5 @@
 //app/api/instituicao/importar_csv
+
 import { NextResponse, NextRequest } from 'next/server';
 import { PrismaClient } from '@/app/generated/prisma';
 import { Curso as PrismaCurso, Pessoa as PrismaPessoa } from '@/app/generated/prisma'; // Importe os tipos do Prisma
@@ -23,10 +24,6 @@ interface MatriculaInput {
   matricula: string;
 }
 
-//========================================================================
-
-//=======================================================================
-
 export async function POST(request: NextRequest) {
   const prisma = new PrismaClient();
 
@@ -37,8 +34,7 @@ export async function POST(request: NextRequest) {
       matriculas: MatriculaInput[];
     };
 
-    // Salvar cursos (verificar duplicidades pelo nome)
-    for (const cursoData of cursos) {
+    for (const cursoData of cursos) { // Salvar cursos (verificar duplicidades pelo nome)
       const cursoExistente = await prisma.curso.findUnique({
         where: { nome: cursoData.nome },
       });
@@ -49,8 +45,7 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Salvar pessoas (verificar duplicidades pelo cpf ou email)
-    for (const pessoaData of pessoas) {
+    for (const pessoaData of pessoas) { // Salvar pessoas (verificar duplicidades pelo cpf ou email)
       const pessoaExistente = await prisma.pessoa.findFirst({
         where: {
           OR: [
@@ -70,8 +65,7 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Buscar IDs de cursos e pessoas para criar matrículas
-    const cursosMapeados = new Map<string, number>();
+    const cursosMapeados = new Map<string, number>(); // Buscar IDs de cursos e pessoas para criar matrículas
     const pessoasMapeadas = new Map<string, number>();
 
     const todosCursos = await prisma.curso.findMany();
@@ -80,8 +74,7 @@ export async function POST(request: NextRequest) {
     const todasPessoas = await prisma.pessoa.findMany();
     todasPessoas.forEach((pessoa: PrismaPessoa) => pessoasMapeadas.set(pessoa.cpf, pessoa.id)); // Use o tipo PrismaPessoa
 
-    // Salvar matrículas (verificar duplicidades por cursoId e pessoaId)
-    for (const matriculaData of matriculas) {
+    for (const matriculaData of matriculas) { // Salvar matrículas (verificar duplicidades por cursoId e pessoaId)
       const cursoId = cursosMapeados.get(
         cursos.find((c: CursoInput) => c.id === matriculaData.cursoId)?.nome || "" // Agora 'c' tem o tipo CursoInput
       );
@@ -113,8 +106,8 @@ export async function POST(request: NextRequest) {
 
     await prisma.$disconnect();
     return NextResponse.json({ message: 'Dados do CSV salvos no banco de dados com sucesso!' });
+
   } catch (error: any) {
-    console.error('Erro ao salvar dados do CSV no banco:', error);
     await prisma.$disconnect();
     return NextResponse.json({ error: error.message || 'Erro ao salvar dados do CSV no banco de dados.' }, { status: 500 });
   }

@@ -1,4 +1,5 @@
 // app/api/instituicao/novoaluno_separado/route.ts
+
 import { PrismaClient } from '@prisma/client'
 import { NextRequest, NextResponse } from 'next/server'
 
@@ -8,8 +9,7 @@ export async function POST(req: NextRequest) {
   const data = await req.json()
 
   try {
-    // Verifica se já existe uma pessoa com o mesmo CPF
-    const pessoaExistente = await prisma.pessoa.findUnique({
+    const pessoaExistente = await prisma.pessoa.findUnique({ // Verifica se já existe uma pessoa com o mesmo CPF
       where: { cpf: data.cpf },
     })
 
@@ -17,8 +17,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'CPF já cadastrado' }, { status: 400 })
     }
 
-    // Verifica se o curso já existe ou cria um novo
-    const curso = await prisma.curso.upsert({
+    const curso = await prisma.curso.upsert({ // Verifica se o curso já existe ou cria um novo
       where: { nome: data.curso }, // <- "curso" vem do front-end
       update: {},
       create: {
@@ -26,8 +25,7 @@ export async function POST(req: NextRequest) {
       },
     })
 
-    // Cria a pessoa com a matrícula vinculada ao curso
-    const pessoa = await prisma.pessoa.create({
+    const pessoa = await prisma.pessoa.create({ // Cria a pessoa com a matrícula vinculada ao curso
       data: {
         nome: data.nome,
         cpf: data.cpf,
@@ -50,8 +48,8 @@ export async function POST(req: NextRequest) {
     })
 
     return NextResponse.json(pessoa)
+
   } catch (error) {
-    console.error('Erro ao salvar aluno:', error)
     return NextResponse.json({ error: 'Erro ao salvar aluno' }, { status: 500 })
   } finally {
     await prisma.$disconnect()

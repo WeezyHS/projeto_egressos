@@ -5,11 +5,6 @@ import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
-/**
- * Manipulador GET para buscar um perfil de egresso por ID.
- * @param req - O objeto de requisição (não usado diretamente, mas necessário pela assinatura).
- * @param params - Contém os parâmetros dinâmicos da URL, neste caso o 'id'.
- */
 export async function GET(req: Request, { params }: { params: { id: string } }) {
   try {
     const egressoId = Number(params.id);
@@ -37,7 +32,6 @@ export async function GET(req: Request, { params }: { params: { id: string } }) 
             empresa: true,
             cargo: true,
             anoEntrada: true,
-            // Adicione cidade/estado/país do trabalho aqui se forem campos diferentes no seu schema
           }
         }
       }
@@ -46,7 +40,6 @@ export async function GET(req: Request, { params }: { params: { id: string } }) 
     if (!egresso) {
       return NextResponse.json({ error: "Egresso não encontrado." }, { status: 404 });
     }
-
     // Retorna os dados do egresso com um status 200 OK.
     return NextResponse.json(egresso);
 

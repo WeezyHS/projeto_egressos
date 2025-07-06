@@ -1,4 +1,5 @@
 // app/api/instituicao/buscar_aluno/route.ts
+
 import { NextResponse } from 'next/server';
 import { PrismaClient } from '@/app/generated/prisma';
 

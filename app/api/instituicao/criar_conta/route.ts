@@ -33,13 +33,11 @@ export async function POST(request: NextRequest) {
       nomeRepresentante, cpfRepresentante, email, senha, fotoPerfilFile
     });
 
-    // Validação de campos obrigatórios
-    if (!nomeCompleto || !cnpj || !telefone || !email || !endereco || !cep || !nomeRepresentante || !cpfRepresentante || !senha) {
+    if (!nomeCompleto || !cnpj || !telefone || !email || !endereco || !cep || !nomeRepresentante || !cpfRepresentante || !senha) { // Validação de campos obrigatórios
       return NextResponse.json({ error: 'Todos os campos obrigatórios devem ser preenchidos.' }, { status: 400 });
     }
 
-    // Verifica se já existe uma instituição com mesmo CNPJ ou email
-    const existente = await prisma.instituicao.findFirst({
+    const existente = await prisma.instituicao.findFirst({ // Verifica se já existe uma instituição com mesmo CNPJ ou email
       where: {
         OR: [{ cnpj }, { email }],
       },
@@ -50,8 +48,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Já existe uma instituição com esse CNPJ ou email.' }, { status: 409 });
     }
 
-    // Verifica se a senha já existe em alguma instituição
-    const todasInstituicoes = await prisma.instituicao.findMany({
+    const todasInstituicoes = await prisma.instituicao.findMany({ // Verifica se a senha já existe em alguma instituição
       select: { senha: true },
     });
 
@@ -62,11 +59,10 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Criptografa a senha
-    const senhaHash = await bcrypt.hash(senha, 10);
+    const senhaHash = await bcrypt.hash(senha, 10); // Criptografa a senha
 
-    // Processa imagem de perfil, se houver
-    let fotoPerfilPath: string | null = null;
+    let fotoPerfilPath: string | null = null; // Processa imagem de perfil, se houver
+
     if (fotoPerfilFile) {
       const bytes = await fotoPerfilFile.arrayBuffer();
       const buffer = Buffer.from(bytes);
@@ -84,8 +80,7 @@ export async function POST(request: NextRequest) {
       console.log('Foto de perfil salva em:', fotoPerfilPath);
     }
 
-    // Cria a instituição no banco
-    const novaInstituicao = await prisma.instituicao.create({
+    const novaInstituicao = await prisma.instituicao.create({ // Cria a instituição no banco
       data: {
         nomeCompleto,
         cnpj,
@@ -102,15 +97,12 @@ export async function POST(request: NextRequest) {
 
     await prisma.$disconnect();
 
-    console.log(`Instituição criada: ${nomeCompleto} (${email}), imagem: ${fotoPerfilPath}`);
-
     return NextResponse.json(
       { message: 'Perfil da instituição criado com sucesso!', instituicao: novaInstituicao },
       { status: 201 }
     );
 
   } catch (error: any) {
-    console.error('Erro ao criar perfil da instituição:', error);
     await prisma.$disconnect();
     return NextResponse.json({ error: 'Erro ao criar perfil da instituição.' }, { status: 500 });
   }

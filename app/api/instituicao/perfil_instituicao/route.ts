@@ -1,4 +1,5 @@
 // app/api/instituicao/perfil_instituicao/route.ts
+
 import { PrismaClient } from '@prisma/client';
 import { NextResponse } from 'next/server';
 
@@ -23,8 +24,8 @@ export async function POST(req: Request) {
     }
 
     return NextResponse.json(instituicao);
+
   } catch (error) {
-    console.error('Erro no login da instituição:', error);
     return NextResponse.json({ erro: 'Erro ao autenticar' }, { status: 500 });
   }
 }

@@ -1,4 +1,5 @@
-// app/api/egresso/perfil_egresso/route.ts
+// app/api/egresso/perfil_egresso
+
 import { PrismaClient } from '@prisma/client'; // Ou do seu @/app/generated/prisma
 import bcrypt from 'bcrypt'; // Importe o bcrypt
 import { NextResponse } from 'next/server';
@@ -33,11 +34,9 @@ export async function POST(req: Request) {
         fotoPerfil: egresso.fotoPerfil,
     };
 
-    console.log("API Perfil: Enviando dados do egresso:", perfilDoEgresso);
     return NextResponse.json(perfilDoEgresso); // Retorna o objeto com nome e fotoPerfil
 
   } catch (error) {
-    console.error('Erro ao buscar perfil do egresso:', error);
     return NextResponse.json({ erro: 'Erro interno ao autenticar egresso' }, { status: 500 });
   } finally {
   }

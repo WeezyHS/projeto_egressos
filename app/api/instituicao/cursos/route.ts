@@ -1,4 +1,5 @@
-// app/api/cursos/route.ts
+//app/api/instituicao/cursos/route.ts
+
 import { PrismaClient } from '@prisma/client';
 import { NextResponse } from "next/server";
 
@@ -12,7 +13,9 @@ export async function POST(req: Request) {
     const curso = await prisma.curso.create({
       data: { nome },
     });
+
     return NextResponse.json(curso);
+
   } catch (error) {
     return NextResponse.json(
       { error: "Erro ao criar curso" },

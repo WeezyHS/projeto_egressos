@@ -1,4 +1,5 @@
 // app/api/instituicao/alunos/[id]/route.ts
+
 import { PrismaClient } from '@prisma/client'
 import { NextRequest, NextResponse } from 'next/server'
 

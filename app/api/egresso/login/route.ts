@@ -5,6 +5,7 @@ import bcrypt from 'bcrypt';
 import { NextResponse } from 'next/server';
 
 export async function POST(request: Request){
+
     try{
         const { email, senha } = await request.json();
         if (!email || !senha) {

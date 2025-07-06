@@ -17,29 +17,27 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
     }
 
     const formData = await req.formData();
-    
+
     const dadosEgresso: any = {};
     const dadosTrabalho: any = {};
 
-    // --- Recolha de Dados para a Tabela Egresso ---
-    // (A extração de nome, telefone, etc., permanece a mesma)
     const nome = formData.get('nome') as string | null;
     if (nome) dadosEgresso.nome = nome;
-    
+
     const telefone = formData.get('telefone') as string | null;
     if (telefone || telefone === '') dadosEgresso.telefone = telefone;
-    
+
     const linkedin = formData.get('linkedin') as string | null;
     if (linkedin !== null) dadosEgresso.linkedin = linkedin;
-    
+
     const instagram = formData.get('instagram') as string | null;
     if (instagram !== null) dadosEgresso.instagram = instagram;
-    
+
     const senha = formData.get('senha') as string | null;
     if (senha) {
       dadosEgresso.senha = await bcrypt.hash(senha, 10);
     }
-    
+
     const foto = formData.get('foto') as File | null;
     if (foto) {
       const buffer = Buffer.from(await foto.arrayBuffer());
@@ -49,7 +47,6 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
       dadosEgresso.fotoPerfil = `/uploads/${fileName}`;
     }
 
-    // --- Recolha de Dados para a Tabela TrabalhoAtual ---
     const empresa = formData.get('empresa') as string | null;
     if (empresa) dadosTrabalho.empresa = empresa;
 
@@ -58,27 +55,24 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
 
     const cidadeTrabalho = formData.get('cidade') as string | null;
     if (cidadeTrabalho) dadosTrabalho.cidade = cidadeTrabalho;
-    
+
     const estadoTrabalho = formData.get('estado') as string | null;
     if (estadoTrabalho) dadosTrabalho.estado = estadoTrabalho;
 
     const paisTrabalho = formData.get('pais') as string | null;
     if (paisTrabalho) dadosTrabalho.pais = paisTrabalho;
 
-    // *** INÍCIO DA CORREÇÃO ***
-    // Converte o ano de entrada para um número antes de o adicionar.
     const anoEntradaTrabalho = formData.get('anoEntrada') as string | null;
     if (anoEntradaTrabalho && !isNaN(parseInt(anoEntradaTrabalho, 10))) {
       dadosTrabalho.anoEntrada = parseInt(anoEntradaTrabalho, 10);
     }
-    // *** FIM DA CORREÇÃO ***
-    
+
     const temDadosDeTrabalho = dadosTrabalho.empresa || dadosTrabalho.cargo || dadosTrabalho.anoEntrada;
-    
+
     if (Object.keys(dadosEgresso).length === 0 && !temDadosDeTrabalho) {
       return NextResponse.json({ error: 'Nenhum dado fornecido para atualização.' }, { status: 400 });
     }
-    
+
     const egressoAtualizado = await prisma.$transaction(async (tx) => {
         if (Object.keys(dadosEgresso).length > 0) {
             await tx.egresso.update({
@@ -91,7 +85,6 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
             if (!dadosTrabalho.anoEntrada) {
                 throw new Error("O ano de entrada na empresa é obrigatório ao adicionar informações profissionais.");
             }
-            
             await tx.trabalhoAtual.upsert({
                 where: { egressoId: egressoId },
                 update: dadosTrabalho,
@@ -106,14 +99,12 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
                 }
             });
         }
-        
         return await tx.egresso.findUnique({ where: { id: egressoId } });
     });
 
     return NextResponse.json({ message: "Perfil atualizado com sucesso!", data: egressoAtualizado });
 
   } catch (error: any) {
-    console.error("Erro na API PUT /api/egresso/editar_egresso/[id]:", error);
     if (error.code === 'P2025') {
         return NextResponse.json({ error: "Egresso para atualizar não encontrado." }, { status: 404 });
     }

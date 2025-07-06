@@ -1,4 +1,5 @@
 //app/api/egresso/lista_egressos
+
 import { NextResponse } from 'next/server';
 import { PrismaClient } from '@/app/generated/prisma';
 
@@ -15,7 +16,6 @@ export async function GET() {
         trabalhoAtual: true,
       }
     });
-
     // Busca todas as pessoas com suas matrículas e cursos
     const pessoas = await prisma.pessoa.findMany({
       where: {

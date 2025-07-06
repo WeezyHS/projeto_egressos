@@ -1,16 +1,14 @@
 // app/api/instituicao/login/route.ts
+
 import { NextResponse, NextRequest } from 'next/server';
 import { PrismaClient } from '@/app/generated/prisma';
 import bcrypt from 'bcrypt';
 
 export async function POST(request: NextRequest) {
-  console.log('Requisição POST recebida em /api/instituicao/login');
   const prisma = new PrismaClient();
 
   try {
     const { email, senha } = await request.json();
-
-    console.log('Dados de login recebidos:', { email, senha });
 
     if (!email || !senha) {
       await prisma.$disconnect();
@@ -55,7 +53,6 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(instituicao, { status: 200 });
 
   } catch (error: any) {
-    console.error('Erro ao fazer login da instituição:', error);
     await prisma.$disconnect();
     return NextResponse.json({ error: 'Erro ao fazer login da instituição.' }, { status: 500 });
   }

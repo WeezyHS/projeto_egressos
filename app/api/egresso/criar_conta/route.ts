@@ -17,7 +17,6 @@ export async function POST(request: NextRequest) {
   console.log('Requisição POST recebida em /api/egresso/criar_conta');
   try {
     const formData = await request.formData();
-
     const nome = formData.get('nome') as string | null;
     const cpf = formData.get('cpf') as string | null;
     const email = formData.get('email') as string | null;
@@ -40,24 +39,20 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       );
     }
-
     // Processar a imagem de perfil, se enviada
     let caminhoImagem: string | null = null;
 
     if (fotoPerfilFile) {
       const arrayBuffer = await fotoPerfilFile.arrayBuffer();
       const buffer = Buffer.from(arrayBuffer);
-
       const extensao = fotoPerfilFile.name.split('.').pop() || 'png';
       const nomeArquivo = `${uuidv4()}.${extensao}`;
       const uploadDir = path.join(process.cwd(), 'public', 'uploads');
       const filePath = path.join(uploadDir, nomeArquivo);
-
       // Cria a pasta se não existir
       if (!fs.existsSync(uploadDir)) {
         fs.mkdirSync(uploadDir, { recursive: true });
       }
-
       fs.writeFileSync(filePath, buffer);
       caminhoImagem = `/uploads/${nomeArquivo}`; // Caminho acessível pela web
     }
@@ -81,19 +76,16 @@ export async function POST(request: NextRequest) {
           fotoPerfil: caminhoImagem,
         },
       });
-
       await prisma.$disconnect();
       return NextResponse.json(
         { message: 'Egresso criado com sucesso!', egresso: novoEgresso },
         { status: 201 }
       );
     } catch (error: any) {
-      console.error('Erro ao criar egresso:', error);
       await prisma.$disconnect();
       return NextResponse.json({ error: 'Erro ao criar egresso.' }, { status: 500 });
     }
   } catch (error) {
-    console.error('Erro geral:', error);
     return NextResponse.json({ error: 'Erro geral no servidor.' }, { status: 500 });
   }
 }
