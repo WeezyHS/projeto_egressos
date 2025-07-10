@@ -22,7 +22,7 @@ export default function AtivarContaPage() {
 
         try {
             // Esta página chama a nova API de verificação
-            const response = await fetch('/api/egresso/verificar-convite', {
+            const response = await fetch('/api/egresso/autenticar_codigo', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ cpf, codigo }),
