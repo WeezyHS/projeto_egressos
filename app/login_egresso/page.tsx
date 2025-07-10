@@ -33,63 +33,52 @@ export default function Login_Egresso() {
   };
 
   const handleCriarConta = () => {
-    router.push('/criarconta_egresso');
+    router.push('/autenticacao');
   };
 
   const handleEntrar = async () => {
     if (!camposVazios()) return;
 
     try {
-      const res = await fetch('/api/egresso/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, senha }),
-      });
+        const res = await fetch('/api/egresso/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, senha }),
+        });
 
-      if (!res.ok) {
-        const errorText = await res.text(); // Pega o texto bruto do erro
-        try {
-          const errorData = JSON.parse(errorText); // Tenta parsear como JSON, pois algumas APIs de erro retornam JSON
-          alert(errorData.error || 'Erro ao fazer login!');
-        } catch (e) {
-          alert(`Erro ao fazer login: ${errorText || res.statusText}`); // Se não for JSON, mostra o texto bruto ou uma mensagem genérica
+        const responseData = await res.json(); // Lê a resposta JSON uma vez
+
+        if (!res.ok) {
+            // Se a resposta não for de sucesso, mostra o erro da API
+            alert(responseData.error || 'Erro ao fazer login!');
+            return;
         }
-        return;
-      }
-      // Se o login foi teoricamente bem-sucedido (res.ok é true)
-      const responseText = await res.text(); // Pega o texto bruto da resposta de sucesso
 
-      if (!responseText) {
-        alert('O servidor respondeu com sucesso, mas não retornou dados. Por favor, contate o suporte.');
-        return;
-      }
+        const egressoData = responseData.egresso;
 
-      try {
-        const userData = JSON.parse(responseText); // Agora tenta parsear o texto que você logou
-
-        const egressoData = userData.egresso;
-        const cpfDoUsuario = egressoData ? egressoData.cpf : null;
+        // --- CORREÇÃO PRINCIPAL AQUI ---
+        // Acedemos ao CPF através do objeto 'pessoa' incluído
+        const cpfDoUsuario = egressoData?.pessoa?.cpf;
 
         if (cpfDoUsuario) {
-          localStorage.setItem('userCpf', cpfDoUsuario);
-          localStorage.setItem('userSenha', senha); 
+            localStorage.setItem('userCpf', cpfDoUsuario);
+            localStorage.setItem('userSenha', senha); // Considere não guardar a senha no localStorage por segurança
 
-          if (egressoData) {
-            localStorage.setItem('egressoId', egressoData.id);
-            localStorage.removeItem('perfilEgresso');
-            localStorage.setItem('perfilEgresso', JSON.stringify(egressoData));
-          }
-          router.push('/egresso');
+            if (egressoData) {
+                localStorage.setItem('egressoId', egressoData.id);
+                localStorage.setItem('perfilEgresso', JSON.stringify(egressoData));
+            }
+            
+            router.push('/egresso'); // Redireciona para a página principal do egresso
         } else {
-          alert('Login bem-sucedido, mas houve um problema ao obter os dados do seu perfil (CPF não encontrado na resposta da API).');
+            alert('Login bem-sucedido, mas houve um problema ao obter os dados do seu perfil (CPF não encontrado na resposta da API).');
         }
-      } catch (parseError) {
-        alert('Erro ao processar a resposta do servidor. A resposta não parece ser um JSON válido.');
-      }
     } catch (networkError) {
-      alert('Erro ao conectar com o servidor. Verifique sua conexão e tente novamente.');
+        console.error("Erro de rede no login:", networkError);
+        alert('Erro ao conectar com o servidor. Verifique sua conexão e tente novamente.');
     }
   };
+
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-gray-100 px-6 py-12 lg:px-8">
