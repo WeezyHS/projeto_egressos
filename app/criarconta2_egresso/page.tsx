@@ -15,7 +15,6 @@ import {
 } from "@/components/ui/card";
 
 export default function CriarContaEgresso2() {
-  // --- Lógica do componente (sem alterações) ---
   const [nomeEmpresa, setNomeEmpresa] = useState('');
   const [cidadeEmpresa, setCidadeEmpresa] = useState('');
   const [estadoEmpresa, setEstadoEmpresa] = useState('');
@@ -24,52 +23,62 @@ export default function CriarContaEgresso2() {
   const [anoEntrada, setAnoEntrada] = useState('');
   const [visivel, setVisivel] = useState(true);
   const [egressoId, setEgressoId] = useState<number | null>(null);
+  const [isLoading, setIsLoading] = useState(false); // Adicionado para feedback ao usuário
   const searchParams = useSearchParams();
   const router = useRouter();
 
   useEffect(() => {
     const id = searchParams.get("id");
-    if (id) {
+    if (id && !isNaN(parseInt(id, 10))) {
       setEgressoId(parseInt(id, 10));
     } else {
-      alert("Erro: ID do egresso não encontrado. Redirecionando para a primeira etapa.");
-      router.push("/criarconta_egresso");
+      alert("Erro: ID do egresso inválido ou não encontrado. Redirecionando...");
+      router.push("/autenticacao"); // Redireciona para o início do fluxo
     }
   }, [searchParams, router]);
 
+  // --- FUNÇÃO CORRIGIDA ---
   const handleFinalizar = async () => {
     if (!nomeEmpresa || !cidadeEmpresa || !estadoEmpresa || !paisEmpresa || !cargo || !anoEntrada || !egressoId) {
       alert('Preencha todos os campos obrigatórios!');
       return;
     }
 
+    setIsLoading(true);
+
     try {
+      // 1. Criar um objeto FormData, assim como na primeira página
+      const formData = new FormData();
+
+      // 2. Adicionar todos os campos ao formData
+      formData.append('id', egressoId.toString());
+      formData.append('nomeEmpresa', nomeEmpresa);
+      formData.append('cidadeEmpresa', cidadeEmpresa);
+      formData.append('estadoEmpresa', estadoEmpresa);
+      formData.append('paisEmpresa', paisEmpresa);
+      formData.append('cargo', cargo);
+      formData.append('anoEntrada', anoEntrada);
+      formData.append('visivel', visivel.toString());
+
+      // 3. Enviar a requisição com o body como formData
+      //    (Não é necessário definir o Content-Type, o navegador faz isso automaticamente)
       const response = await fetch('/api/egresso/criar_conta2', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
-        body: new URLSearchParams({
-          id: egressoId.toString(),
-          nomeEmpresa: nomeEmpresa,
-          cidadeEmpresa: cidadeEmpresa,
-          estadoEmpresa: estadoEmpresa,
-          paisEmpresa: paisEmpresa,
-          cargo: cargo,
-          anoEntrada: anoEntrada,
-          visivel: visivel.toString(),
-        }),
+        body: formData,
       });
 
       if (response.ok) {
         alert('Informações profissionais salvas com sucesso! Cadastro finalizado.');
-        router.push('/egresso');
+        router.push('/egresso'); // ou para a página de login, ou perfil
       } else {
         const errorData = await response.json();
-        alert(`Erro ao salvar informações profissionais: ${errorData.error || 'Erro desconhecido'}`);
+        alert(`Erro ao salvar: ${errorData.error || 'Erro desconhecido do servidor'}`);
       }
     } catch (error) {
-      alert("Erro de conexão ao enviar dados de experiência.");
+      console.error("Erro de conexão:", error);
+      alert("Erro de conexão ao enviar dados de experiência. Verifique sua internet.");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -120,7 +129,9 @@ export default function CriarContaEgresso2() {
           </div>
         </CardContent>
         <CardFooter>
-          <Button className="w-full text-lg" size="lg" onClick={handleFinalizar}>Finalizar Cadastro</Button>
+          <Button className="w-full text-lg" size="lg" onClick={handleFinalizar} disabled={isLoading}>
+            {isLoading ? 'Aguarde...' : 'Finalizar Cadastro'}
+          </Button>
         </CardFooter>
       </Card>
     </div>
