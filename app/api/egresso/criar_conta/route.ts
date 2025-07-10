@@ -1,91 +1,106 @@
-//app/api/egresso/criar_conta/route.ts
-import { NextResponse } from 'next/server';
+// app/api/egresso/criar_conta/route.ts
+import { NextResponse, NextRequest } from 'next/server';
 import { PrismaClient } from '@prisma/client';
 import bcrypt from 'bcrypt';
-import { NextRequest } from 'next/server';
-import fs from 'fs';
+import { verify } from 'jsonwebtoken';
+import fs from 'fs/promises';
 import path from 'path';
 import { v4 as uuidv4 } from 'uuid';
 
-export const config = {
-  api: {
-    bodyParser: false,
-  },
-};
+// Interface para o conteúdo do nosso token JWT
+interface TokenPayload {
+    pessoaId: number;
+    cpf: string;
+}
 
 export async function POST(request: NextRequest) {
-  console.log('Requisição POST recebida em /api/egresso/criar_conta');
-  try {
-    const formData = await request.formData();
-    const nome = formData.get('nome') as string | null;
-    const cpf = formData.get('cpf') as string | null;
-    const email = formData.get('email') as string | null;
-    const telefone = formData.get('telefone') as string | null;
-    const senha = formData.get('senha') as string | null;
-    const cidade = formData.get('cidade') as string | null;
-    const estado = formData.get('estado') as string | null;
-    const pais = formData.get('pais') as string | null;
-    const linkedin = formData.get('linkedin') as string | null;
-    const instagram = formData.get('instagram') as string | null;
-    const fotoPerfilFile = formData.get('fotoPerfil') as File | null;
-
-    console.log('Dados recebidos do formulário:', {
-      nome, cpf, email, telefone, senha, cidade, estado, pais, linkedin, instagram,
-    });
-
-    if (!nome || !cpf || !senha || !telefone || !email || !cidade || !estado || !pais) {
-      return NextResponse.json(
-        { error: 'Todos os campos obrigatórios devem ser preenchidos.' },
-        { status: 400 }
-      );
-    }
-    // Processar a imagem de perfil, se enviada
-    let caminhoImagem: string | null = null;
-
-    if (fotoPerfilFile) {
-      const arrayBuffer = await fotoPerfilFile.arrayBuffer();
-      const buffer = Buffer.from(arrayBuffer);
-      const extensao = fotoPerfilFile.name.split('.').pop() || 'png';
-      const nomeArquivo = `${uuidv4()}.${extensao}`;
-      const uploadDir = path.join(process.cwd(), 'public', 'uploads');
-      const filePath = path.join(uploadDir, nomeArquivo);
-      // Cria a pasta se não existir
-      if (!fs.existsSync(uploadDir)) {
-        fs.mkdirSync(uploadDir, { recursive: true });
-      }
-      fs.writeFileSync(filePath, buffer);
-      caminhoImagem = `/uploads/${nomeArquivo}`; // Caminho acessível pela web
-    }
-
-    const senhaHash = await bcrypt.hash(senha, 10);
     const prisma = new PrismaClient();
-
     try {
-      const novoEgresso = await prisma.egresso.create({
-        data: {
-          nome: nome!,
-          cpf: cpf!,
-          senha: senhaHash,
-          telefone: telefone!,
-          email: email!,
-          cidade: cidade!,
-          estado: estado!,
-          pais: pais!,
-          linkedin,
-          instagram,
-          fotoPerfil: caminhoImagem,
-        },
-      });
-      await prisma.$disconnect();
-      return NextResponse.json(
-        { message: 'Egresso criado com sucesso!', egresso: novoEgresso },
-        { status: 201 }
-      );
+        const formData = await request.formData();
+        
+        // --- PASSO 1: Extrair os dados e o TOKEN de segurança ---
+        const token = formData.get('cadastro_token') as string | null;
+        const senha = formData.get('senha') as string | null;
+        const telefone = formData.get('telefone') as string | null;
+        const emailPreferencial = formData.get('email') as string | null;
+        const cidade = formData.get('cidade') as string | null;
+        const estado = formData.get('estado') as string | null;
+        const pais = formData.get('pais') as string | null;
+        const linkedin = formData.get('linkedin') as string | null;
+        const instagram = formData.get('instagram') as string | null;
+        const fotoPerfilFile = formData.get('fotoPerfil') as File | null;
+
+        if (!token || !senha) {
+            return NextResponse.json({ error: 'Token e senha são obrigatórios.' }, { status: 400 });
+        }
+
+        // --- PASSO 2: Validar o Token de Segurança ---
+        const JWT_SECRET = process.env.JWT_SECRET || 'seu-segredo-deve-ser-mais-longo-e-seguro';
+        let tokenPayload: TokenPayload;
+
+        try {
+            tokenPayload = verify(token, JWT_SECRET) as TokenPayload;
+        } catch (error) {
+            return NextResponse.json({ error: 'Token inválido ou expirado. Por favor, reinicie o processo.' }, { status: 401 });
+        }
+
+        // --- PASSO 3: Verificação de Segurança Anti-Fraude ---
+        // A verificação do CPF do formulário foi REMOVIDA, pois o usuário não digita mais o CPF nesta etapa.
+        // A única fonte confiável do CPF agora é o token.
+        
+        // --- Processamento da Imagem ---
+        let caminhoImagem: string | null = null;
+        if (fotoPerfilFile) {
+            const buffer = Buffer.from(await fotoPerfilFile.arrayBuffer());
+            const nomeArquivo = `${uuidv4()}.${fotoPerfilFile.name.split('.').pop()}`;
+            const uploadDir = path.join(process.cwd(), 'public', 'uploads');
+            await fs.mkdir(uploadDir, { recursive: true });
+            await fs.writeFile(path.join(uploadDir, nomeArquivo), buffer);
+            caminhoImagem = `/uploads/${nomeArquivo}`;
+        }
+
+        // --- PASSO 4: Criar o Egresso e CONECTÁ-LO à Pessoa ---
+        const senhaHash = await bcrypt.hash(senha, 10);
+
+        const novoEgresso = await prisma.egresso.create({
+            data: {
+                senha: senhaHash,
+                emailPreferencial: emailPreferencial,
+                telefone: telefone!,
+                cidade: cidade!,
+                estado: estado!,
+                pais: pais!,
+                linkedin: linkedin,
+                instagram: instagram,
+                fotoPerfil: caminhoImagem,
+                
+                // A LIGAÇÃO MÁGICA ACONTECE AQUI:
+                pessoa: {
+                    connect: {
+                        id: tokenPayload.pessoaId, // Conecta ao ID da Pessoa que estava no token
+                    },
+                },
+            },
+        });
+
+        // Opcional: Atualizar o status da Pessoa para EGRESSO
+        await prisma.pessoa.update({
+            where: { id: tokenPayload.pessoaId },
+            data: { status: 'EGRESSO' }
+        });
+
+        // --- MUDANÇA FINAL: Retornar o ID do Egresso ---
+        // Em vez de retornar o objeto egresso inteiro, retornamos apenas o ID,
+        // que é o que o frontend precisa para o redirecionamento.
+        return NextResponse.json(
+            { message: 'Dados pessoais salvos com sucesso!', egressoId: novoEgresso.id },
+            { status: 201 }
+        );
+
     } catch (error: any) {
-      await prisma.$disconnect();
-      return NextResponse.json({ error: 'Erro ao criar egresso.' }, { status: 500 });
+        console.error('Erro ao criar conta de egresso:', error);
+        return NextResponse.json({ error: 'Erro interno no servidor.' }, { status: 500 });
+    } finally {
+        await prisma.$disconnect();
     }
-  } catch (error) {
-    return NextResponse.json({ error: 'Erro geral no servidor.' }, { status: 500 });
-  }
 }
