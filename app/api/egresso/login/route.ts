@@ -1,40 +1,44 @@
-//Código API Route de login (login_egresso)
-
-import { PrismaClient } from "@/app/generated/prisma";
+// app/api/egresso/login/route.ts
+import { NextResponse, NextRequest } from 'next/server';
 import bcrypt from 'bcrypt';
-import { NextResponse } from 'next/server';
+import { PrismaClient } from '@prisma/client';
 
-export async function POST(request: Request){
+export async function POST(request: NextRequest) {
+    const prisma = new PrismaClient();
 
-    try{
+    try {
         const { email, senha } = await request.json();
         if (!email || !senha) {
-            return NextResponse.json({ error: "E-mail e senha são obrigatórios" }, { status: 400});
+            return NextResponse.json({ error: "E-mail e senha são obrigatórios" }, { status: 400 });
         }
 
-        const prisma = new PrismaClient();
-        const egresso = await prisma.egresso.findUnique({
-            where: { email },
-        })
+        // --- CORREÇÃO PRINCIPAL AQUI ---
+        // Usamos 'include' para trazer os dados da 'Pessoa' relacionada
+        const egresso = await prisma.egresso.findFirst({
+            where: { emailPreferencial: email },
+            include: {
+                pessoa: true, // Isto vai incluir o objeto 'pessoa' com nome, cpf, etc.
+            },
+        });
 
-        if (!egresso){ //Caso não exista a conta no banco de dados
-            return NextResponse.json({ error: "Conta inexistente!" }, {status: 401 });
+        if (!egresso) {
+            return NextResponse.json({ error: "Credenciais inválidas ou conta inexistente." }, { status: 401 });
         }
 
         const senhaCorreta = await bcrypt.compare(senha, egresso.senha);
 
-        if (!senhaCorreta){
-            return NextResponse.json({ error: "Credenciais inválidas!" }, { status: 401 });
+        if (!senhaCorreta) {
+            return NextResponse.json({ error: "Credenciais inválidas ou conta inexistente." }, { status: 401 });
         }
 
-        const { senha: passwordHash, ...egressoSemSenha } = egresso;
+        const { senha: _, ...egressoSemSenha } = egresso;
 
         return NextResponse.json({ egresso: egressoSemSenha }, { status: 200 });
 
-    }catch (error){
+    } catch (error) {
+        console.error("ERRO NA API DE LOGIN:", error);
         return NextResponse.json({ error: "Erro interno do servidor!" }, { status: 500 });
-    } finally{
-        const prisma = new PrismaClient();
+    } finally {
         await prisma.$disconnect();
     }
 }
