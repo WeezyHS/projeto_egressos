@@ -14,56 +14,58 @@ datasource db {
 }
 
 model Egresso {
-  id            Int      @id @default(autoincrement())
-  nome          String?
-  cpf           String   @unique
-  senha         String
-  email         String   @unique
-  telefone      String
-  cidade        String
-  estado        String
-  pais          String
-  fotoPerfil    String?
-  linkedin      String?
-  instagram     String?
-  visivel       Boolean @default(true)
-
-  trabalhoAtual TrabalhoAtual?
+  id                  Int      @id @default(autoincrement())
+  senha               String
+  emailPreferencial   String?  @unique
+  telefone            String
+  cidade              String
+  estado              String
+  pais                String
+  fotoPerfil          String?
+  linkedin            String?
+  instagram           String?
+  visivel             Boolean  @default(true)
+  
+  // Relacionamentos
+  pessoa              Pessoa?  @relation(fields: [pessoaId], references: [id])
+  pessoaId            Int?     @unique // Relação 1-para-1
+  TrabalhoAtual       TrabalhoAtual[]
 }
 
 model TrabalhoAtual {
-  id        Int      @id @default(autoincrement())
-  empresa   String
-  cidade    String
-  estado    String
-  pais      String
-  cargo     String
+  id         Int     @id @default(autoincrement())
+  empresa    String
+  cidade     String
+  estado     String
+  pais       String
+  cargo      String
   anoEntrada Int
 
-  egressoId Int     @unique
-  egresso   Egresso @relation(fields: [egressoId], references: [id])
+  egressoId  Int     @unique
+  // Adicionado onDelete: Cascade para que, se um Egresso for deletado, seu trabalho atual também seja.
+  egresso    Egresso @relation(fields: [egressoId], references: [id], onDelete: Cascade)
 }
 
 model Instituicao {
-  id              Int     @id @default(autoincrement())
-  fotoPerfil      String? // Caminho para a imagem ou dados da imagem
-  nomeCompleto    String
-  cnpj            String  @unique
-  telefone        String?
-  endereco        String?
-  cep             String?
+  id                Int      @id @default(autoincrement())
+  fotoPerfil        String?
+  nomeCompleto      String
+  cnpj              String   @unique
+  telefone          String?
+  endereco          String?
+  cep               String?
   nomeRepresentante String?
   cpfRepresentante  String?
-  email           String  @unique
-  senha           String
+  email             String   @unique
+  senha             String
 
   @@index([cnpj])
 }
 
 model Curso {
-  id        Int      @id @default(autoincrement())
-  nome      String   @unique
-  createdAt DateTime @default(now())
+  id        Int       @id @default(autoincrement())
+  nome      String    @unique
+  createdAt DateTime  @default(now())
 
   matriculas Matricula[]
 }
@@ -74,27 +76,39 @@ enum PessoaStatus {
   OUTRO
 }
 
+// --- MODELO PESSOA CORRIGIDO ---
+// Objetivo: Pessoa é a "fonte da verdade" para os dados acadêmicos e de identidade.
 model Pessoa {
-  id         Int      @id @default(autoincrement())
-  nome       String
-  cpf        String   @unique
-  email      String   @unique
-  createdAt  DateTime @default(now())
-  status     PessoaStatus @default(ALUNO)
-  visivel    Boolean  @default(false)
+  id        Int      @id @default(autoincrement())
+  nome      String
+  cpf       String   @unique
+  email     String   @unique // Este é o e-mail acadêmico/original
+  createdAt DateTime @default(now())
+  status    PessoaStatus @default(ALUNO)
+  visivel   Boolean  @default(false)
 
-  matriculas Matricula[]
+  // --- NOVOS CAMPOS PARA O CONVITE ---
+  // Adicionados para armazenar o código de ativação e sua data de expiração.
+  codigoConvite     String?
+  conviteExpiraEm   DateTime?
+
+  // --- A LIGAÇÃO FUNDAMENTAL (RELAÇÃO 1-PARA-1) ---
+  // Cada Pessoa pode ter UM (ou nenhum, por isso o '?') perfil de Egresso associado.
+  egresso     Egresso?
+
+  matriculas  Matricula[]
 }
 
 model Matricula {
-  id                Int     @id @default(autoincrement())
-  cursoId           Int
-  pessoaId          Int
+  id                 Int      @id @default(autoincrement())
+  cursoId            Int
+  pessoaId           Int
   anoSemestreEntrada String
-  anoSemestreSaida    String?
+  anoSemestreSaida   String?
 
-  curso  Curso  @relation(fields: [cursoId], references: [id])
-  pessoa Pessoa @relation(fields: [pessoaId], references: [id])
+  // Adicionado onDelete: Cascade para que, se um Curso ou Pessoa for deletado, a matrícula também seja.
+  curso  Curso  @relation(fields: [cursoId], references: [id], onDelete: Cascade)
+  pessoa Pessoa @relation(fields: [pessoaId], references: [id], onDelete: Cascade)
 
-  @@unique([cursoId, pessoaId]) // evitar duplicidade de matrícula
+  @@unique([cursoId, pessoaId])
 }
