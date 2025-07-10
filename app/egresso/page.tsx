@@ -2,7 +2,6 @@
 
 //app/egresso/page.tsx
 import { useState, useMemo, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
 import { Button } from "@/components/ui/button";
 import { Input } from '@/components/ui/input';
 import Link from 'next/link';
@@ -47,55 +46,7 @@ export default function App_Egresso() {
   const [filtroCurso, setFiltroCurso] = useState('');
   const [filtroAnoEntrada, setFiltroAnoEntrada] = useState('');
   const [filtroAnoSaida, setFiltroAnoSaida] = useState('');
-  const router = useRouter();
-
-  const [nomeEgressoLogado, setNomeEgressoLogado] = useState<string>('Carregando...');
-  const [fotoPerfilUrlEgressoLogado, setFotoPerfilUrlEgressoLogado] = useState<string | null>(null);
   const [cpfEgressoLogado, setCpfEgressoLogado] = useState<string | null>(null);
-  const [cidadeLogado, setCidadeLogado] = useState<string | null>(null);
-  const [estadoLogado, setEstadoLogado] = useState<string | null>(null);
-  const [paisLogado, setPaisLogado] = useState<string | null>(null);
-
-  const buscarDadosEgressoLogado = async () => {
-    const cpf = localStorage.getItem('userCpf');
-    const senha = localStorage.getItem('userSenha');
-    if (!cpf || !senha) {
-      console.warn('App_Egresso: Credenciais para perfil (sidebar) não encontradas.');
-      setNomeEgressoLogado('Usuário');
-      setFotoPerfilUrlEgressoLogado(null);
-      setCpfEgressoLogado(null);
-      return;
-    }
-    setCpfEgressoLogado(cpf);
-    try {
-      const response = await fetch('/api/egresso/perfil_egresso', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ cpf, senha }),
-      });
-      console.log('App_Egresso - buscarDadosEgressoLogado (Sidebar) - Status API Perfil:', response.status, response.statusText);
-      if (response.ok) {
-        const data = await response.json().catch(() => null);
-        if (data) {
-          setNomeEgressoLogado(data.nome || 'Nome não disponível');
-          setFotoPerfilUrlEgressoLogado(data.fotoPerfil || null);
-          setCpfEgressoLogado(data.cpf || 'CPF inválido');
-          setCidadeLogado(data.cidade || 'Localização desconhecida');
-          setEstadoLogado(data.estado);
-          setPaisLogado(data.pais);
-        } else {
-          console.error("App_Egresso - buscarDadosEgressoLogado (Sidebar): Resposta OK, mas JSON inválido/vazio.");
-          setNomeEgressoLogado('Falha (dados perfil)');
-        }
-      } else {
-        const errorText = await response.text();
-        setNomeEgressoLogado('Falha (API perfil)');
-      }
-    } catch (error) {
-      console.error('App_Egresso - buscarDadosEgressoLogado (Sidebar) - Erro de conexão API Perfil.', error);
-      setNomeEgressoLogado('Falha (conexão perfil)');
-    }
-  };
 
   const buscarTodasAsPessoas = async () => { // Função para buscar a lista de TODAS as pessoas
     console.log('App_Egresso - buscarTodasAsPessoas: Iniciando busca da API /api/egresso/lista_geral...');
@@ -131,9 +82,9 @@ export default function App_Egresso() {
   };
 
   useEffect(() => {
-    buscarDadosEgressoLogado(); // Para a sidebar
     buscarTodasAsPessoas();    // Para a tabela principal
   }, []);
+
   const handleBotaoAtualizarLista = () => buscarTodasAsPessoas();
 
   const nomesDeCursosUnicos = useMemo(() => { // useMemo para dropdowns, adaptado para a interface Pessoa e os campos de curso
@@ -169,9 +120,7 @@ export default function App_Egresso() {
     const filtroCursoLower = filtroCurso.toLowerCase();
     const nomeMatch = !filtroNome || nomeLower.includes(filtroNomeLower);
     const primeiraLetraMatch = !filtroPrimeiraLetra || nomeLower.startsWith(filtroPrimeiraLetraLower);
-    // Filtro de curso agora verifica se algum dos cursos da pessoa corresponde
     const cursoMatch = !filtroCursoLower || pessoa.cursos.some(c => c.nomeCurso && c.nomeCurso.toLowerCase() === filtroCursoLower);
-    // Filtro de ano/semestre, comparando diretamente
     const anoEntradaMatch = !filtroAnoEntrada || pessoa.cursos.some(c => c.anoEntrada && c.anoEntrada === filtroAnoEntrada);
     const anoSaidaMatch = !filtroAnoSaida || pessoa.cursos.some(c => 
         (c.anoSaida && c.anoSaida === filtroAnoSaida) || 
@@ -240,7 +189,7 @@ export default function App_Egresso() {
                   </div>
                   <p className="text-lg font-semibold text-gray-800 flex items-center gap-2 flex-wrap">
                     {pessoa.nome}
-                    {isLogado && (<span className="text-sm text-blue-700 font-semibold">(Este é você)</span>)}
+                    {isLogado && (<span className="text-sm text-blue-700 font-semibold">(Você)</span>)}
                   </p>
                   <p className="text-sm text-gray-600">E-mail: {pessoa.email}</p>
                   <div className="mt-2">
