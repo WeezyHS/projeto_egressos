@@ -1,114 +1,128 @@
-//app/api/instituicao/importar_csv
+// app/api/instituicao/importar_csv/route.ts
 
 import { NextResponse, NextRequest } from 'next/server';
-import { PrismaClient } from '@/app/generated/prisma';
-import { Curso as PrismaCurso, Pessoa as PrismaPessoa } from '@/app/generated/prisma'; // Importe os tipos do Prisma
+// A importação foi ajustada conforme sua preferência.
+import { PrismaClient } from '@prisma/client';
 
+// --- INTERFACES ATUALIZADAS ---
+// Definem a "forma" dos dados que esperamos receber do frontend.
 interface CursoInput {
-  id: number;
-  nome: string;
+    id: number;
+    nome: string;
 }
 
 interface PessoaInput {
-  id: number;
-  nome: string;
-  cpf: string;
-  email: string;
+    id: number;
+    nome: string;
+    cpf: string;
+    email: string;
+    codigoConvite: string;
+    conviteExpiraEm: string; // Vem como string do JSON, convertemos para Date depois
 }
 
 interface MatriculaInput {
-  cursoId: number;
-  pessoaId: number;
-  entrada: string;
-  saida: string | null;
-  matricula: string;
+    cursoId: number;
+    pessoaId: number;
+    entrada: string;
+    saida: string | null;
 }
 
 export async function POST(request: NextRequest) {
-  const prisma = new PrismaClient();
+    // Instanciamos o PrismaClient aqui, no início da função.
+    const prisma = new PrismaClient();
 
-  try {
-    const { cursos, pessoas, matriculas } = await request.json() as { // Defina os tipos aqui
-      cursos: CursoInput[];
-      pessoas: PessoaInput[];
-      matriculas: MatriculaInput[];
-    };
+    try {
+        const body = await request.json();
+        const { cursos, pessoas, matriculas } = body as {
+            cursos: CursoInput[];
+            pessoas: PessoaInput[];
+            matriculas: MatriculaInput[];
+        };
 
-    for (const cursoData of cursos) { // Salvar cursos (verificar duplicidades pelo nome)
-      const cursoExistente = await prisma.curso.findUnique({
-        where: { nome: cursoData.nome },
-      });
-      if (!cursoExistente) {
-        await prisma.curso.create({
-          data: { nome: cursoData.nome },
+        // Usamos uma transação para garantir que toda a importação aconteça com sucesso, ou nada é salvo.
+        const resultado = await prisma.$transaction(async (tx) => {
+            
+            // --- PASSO 1: Salvar os Cursos ---
+            if (cursos.length > 0) {
+                await tx.curso.createMany({
+                    data: cursos.map(c => ({ nome: c.nome })),
+                    skipDuplicates: true,
+                });
+            }
+
+            // --- PASSO 2: Salvar as Pessoas ---
+            const cpfsExistentes = (await tx.pessoa.findMany({
+                where: { cpf: { in: pessoas.map(p => p.cpf) } },
+                select: { cpf: true },
+            })).map(p => p.cpf);
+
+            const novasPessoasParaCriar = pessoas.filter(p => !cpfsExistentes.includes(p.cpf));
+
+            if (novasPessoasParaCriar.length > 0) {
+                await tx.pessoa.createMany({
+                    data: novasPessoasParaCriar.map(p => ({
+                        nome: p.nome,
+                        cpf: p.cpf,
+                        email: p.email,
+                        codigoConvite: p.codigoConvite, // Salvando o código de convite
+                        conviteExpiraEm: new Date(p.conviteExpiraEm), // Convertendo a string para Data
+                    })),
+                    skipDuplicates: true,
+                });
+            }
+
+            // --- PASSO 3: Salvar as Matrículas ---
+            const todosCursosDoBanco = await tx.curso.findMany({ select: { id: true, nome: true } });
+            const todasPessoasDoBanco = await tx.pessoa.findMany({ select: { id: true, cpf: true } });
+
+            const mapaCursos = new Map(todosCursosDoBanco.map(c => [c.nome, c.id]));
+            const mapaPessoas = new Map(todasPessoasDoBanco.map(p => [p.cpf, p.id]));
+            
+            const novasMatriculasParaCriar = matriculas
+                .map(m => {
+                    const nomeCurso = cursos.find(c => c.id === m.cursoId)?.nome;
+                    const cpfPessoa = pessoas.find(p => p.id === m.pessoaId)?.cpf;
+
+                    if (!nomeCurso || !cpfPessoa) return null;
+
+                    const cursoIdReal = mapaCursos.get(nomeCurso);
+                    const pessoaIdReal = mapaPessoas.get(cpfPessoa);
+
+                    if (!cursoIdReal || !pessoaIdReal) return null;
+
+                    return {
+                        cursoId: cursoIdReal,
+                        pessoaId: pessoaIdReal,
+                        anoSemestreEntrada: m.entrada,
+                        anoSemestreSaida: m.saida,
+                    };
+                })
+                .filter((m): m is NonNullable<typeof m> => m !== null);
+            
+            if (novasMatriculasParaCriar.length > 0) {
+                await tx.matricula.createMany({
+                    data: novasMatriculasParaCriar,
+                    skipDuplicates: true,
+                });
+            }
+
+            return {
+                cursosCriados: cursos.length,
+                pessoasCriadas: novasPessoasParaCriar.length,
+                matriculasCriadas: novasMatriculasParaCriar.length,
+            };
         });
-      }
-    }
 
-    for (const pessoaData of pessoas) { // Salvar pessoas (verificar duplicidades pelo cpf ou email)
-      const pessoaExistente = await prisma.pessoa.findFirst({
-        where: {
-          OR: [
-            { cpf: pessoaData.cpf },
-            { email: pessoaData.email },
-          ],
-        },
-      });
-      if (!pessoaExistente) {
-        await prisma.pessoa.create({
-          data: {
-            nome: pessoaData.nome,
-            cpf: pessoaData.cpf,
-            email: pessoaData.email,
-          },
+        return NextResponse.json({ 
+            message: 'Dados do CSV importados com sucesso!',
+            detalhes: resultado
         });
-      }
+
+    } catch (error: any) {
+        console.error('Erro ao importar dados do CSV:', error);
+        return NextResponse.json({ error: error.message || 'Erro ao salvar dados do CSV no banco de dados.' }, { status: 500 });
+    } finally {
+        // É crucial desconectar o cliente Prisma para não esgotar as conexões com o banco.
+        await prisma.$disconnect();
     }
-
-    const cursosMapeados = new Map<string, number>(); // Buscar IDs de cursos e pessoas para criar matrículas
-    const pessoasMapeadas = new Map<string, number>();
-
-    const todosCursos = await prisma.curso.findMany();
-    todosCursos.forEach((curso: PrismaCurso) => cursosMapeados.set(curso.nome, curso.id)); // Use o tipo PrismaCurso
-
-    const todasPessoas = await prisma.pessoa.findMany();
-    todasPessoas.forEach((pessoa: PrismaPessoa) => pessoasMapeadas.set(pessoa.cpf, pessoa.id)); // Use o tipo PrismaPessoa
-
-    for (const matriculaData of matriculas) { // Salvar matrículas (verificar duplicidades por cursoId e pessoaId)
-      const cursoId = cursosMapeados.get(
-        cursos.find((c: CursoInput) => c.id === matriculaData.cursoId)?.nome || "" // Agora 'c' tem o tipo CursoInput
-      );
-      const pessoaId = pessoasMapeadas.get(
-        pessoas.find((p: PessoaInput) => p.id === matriculaData.pessoaId)?.cpf || "" // Agora 'p' tem o tipo PessoaInput
-      );
-
-      if (cursoId && pessoaId) {
-        const matriculaExistente = await prisma.matricula.findUnique({
-          where: {
-            cursoId_pessoaId: {
-              cursoId: cursoId,
-              pessoaId: pessoaId,
-            },
-          },
-        });
-        if (!matriculaExistente) {
-          await prisma.matricula.create({
-            data: {
-              cursoId: cursoId,
-              pessoaId: pessoaId,
-              anoSemestreEntrada: matriculaData.entrada,
-              anoSemestreSaida: matriculaData.saida,
-            },
-          });
-        }
-      }
-    }
-
-    await prisma.$disconnect();
-    return NextResponse.json({ message: 'Dados do CSV salvos no banco de dados com sucesso!' });
-
-  } catch (error: any) {
-    await prisma.$disconnect();
-    return NextResponse.json({ error: error.message || 'Erro ao salvar dados do CSV no banco de dados.' }, { status: 500 });
-  }
 }
